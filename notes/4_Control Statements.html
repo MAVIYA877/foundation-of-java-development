@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Control Statements | IT Training Module — Hour 4</title>
+<style>
+  :root{
+    --bg:#282a36;
+    --bg-alt:#1e1f29;
+    --surface:#2f3140;
+    --surface-2:#363849;
+    --border:#44475a;
+    --text:#f8f8f2;
+    --text-dim:#b8bcd4;
+    --purple:#bd93f9;
+    --pink:#ff79c6;
+    --green:#50fa7b;
+    --cyan:#8be9fd;
+    --orange:#ffb86c;
+    --yellow:#f1fa8c;
+    --red:#ff5555;
+    --radius:14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(189,147,249,0.10), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(139,233,253,0.08), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    line-height:1.65;
+  }
+  a{color:var(--cyan);}
+  code, pre{ font-family:'Cascadia Code','Fira Code',Consolas,'Courier New',monospace; }
+
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(30,31,41,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:10px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+  }
+  .topbar .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px; }
+  .brand .logo{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px; color:#1e1f29; font-weight:900;
+  }
+  .progress-track{
+    flex:1; max-width:420px; height:8px; border-radius:20px;
+    background:var(--surface-2); overflow:hidden; border:1px solid var(--border);
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--green),var(--cyan));
+    transition:width .15s ease;
+  }
+  .nav-links{ display:flex; gap:6px; flex-wrap:wrap; font-size:12.5px; }
+  .nav-links a{
+    color:var(--text-dim); text-decoration:none; padding:6px 10px;
+    border-radius:20px; border:1px solid transparent; white-space:nowrap;
+  }
+  .nav-links a:hover, .nav-links a.active{
+    background:var(--surface-2); color:var(--text); border-color:var(--border);
+  }
+
+  .hero{
+    padding:70px 24px 50px; text-align:center; position:relative; overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:42px 42px; opacity:0.12;
+    mask-image:radial-gradient(circle at 50% 20%, black, transparent 70%);
+  }
+  .hero-inner{position:relative; z-index:1;}
+  .badge-pill{
+    display:inline-block; padding:6px 16px; border-radius:30px;
+    background:var(--surface-2); border:1px solid var(--border);
+    font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--green); font-weight:700; margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(26px,4.6vw,44px); margin:0 0 12px;
+    background:linear-gradient(90deg,var(--green),var(--cyan) 55%,var(--purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
+  }
+  .hero p.sub{ max-width:680px; margin:0 auto; color:var(--text-dim); font-size:16px; }
+  .hero-meta{ display:flex; justify-content:center; gap:28px; margin-top:28px; flex-wrap:wrap; }
+  .hero-meta div{font-size:13px; color:var(--text-dim);}
+  .hero-meta strong{display:block; font-size:20px; color:var(--text);}
+
+  .wrap{max-width:1080px; margin:0 auto; padding:10px 24px 100px;}
+  section.module{ padding:56px 0; border-bottom:1px dashed var(--border); scroll-margin-top:80px; }
+  section.module:last-child{border-bottom:none;}
+  .module-head{ display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .module-num{
+    flex:0 0 auto; width:52px;height:52px;border-radius:14px;
+    background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:20px; color:var(--green);
+  }
+  .module-head h2{ margin:0; font-size:26px; font-weight:800; }
+  .module-head p{margin:2px 0 0; color:var(--text-dim); font-size:14px;}
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:22px; box-shadow:var(--shadow);
+  }
+  .card h3{margin-top:0; font-size:17px; color:var(--cyan); display:flex; gap:8px; align-items:center;}
+  .card h3 .icon{font-size:18px;}
+  .card ul, .card ol{margin:10px 0; padding-left:22px;}
+  .card li{margin-bottom:6px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  .grid-5{display:grid; grid-template-columns:repeat(5,1fr); gap:12px;}
+  @media (max-width:760px){ .grid-2, .grid-3, .grid-4, .grid-5{grid-template-columns:1fr;} }
+
+  .callout{
+    border-radius:var(--radius); padding:16px 20px; margin:18px 0;
+    border:1px solid; display:flex; gap:14px; align-items:flex-start; font-size:14.5px;
+  }
+  .callout .ico{font-size:20px; line-height:1;}
+  .callout.teach{background:rgba(80,250,123,0.08); border-color:rgba(80,250,123,0.4);}
+  .callout.avoid{background:rgba(255,85,85,0.08); border-color:rgba(255,85,85,0.4);}
+  .callout.tip{background:rgba(139,233,253,0.08); border-color:rgba(139,233,253,0.4);}
+  .callout b{color:var(--text);}
+
+  .danger-list{
+    background:rgba(255,85,85,0.06); border:1px solid rgba(255,85,85,0.35);
+    border-radius:var(--radius); padding:18px 22px; margin:16px 0;
+  }
+  .danger-list h4{margin:0 0 10px; color:var(--red); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .danger-list ul{margin:0; padding-left:20px;}
+  .danger-list li{margin-bottom:6px; color:var(--text);}
+
+  .pipe{ display:flex; flex-direction:column; align-items:center; gap:0; margin:26px 0; }
+  .pipe-node{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px;
+    padding:12px 22px; font-weight:700; font-size:14.5px; text-align:center; min-width:200px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  }
+  .pipe-node.accent-purple{border-color:var(--purple); color:var(--purple);}
+  .pipe-node.accent-green{border-color:var(--green); color:var(--green);}
+  .pipe-node.accent-cyan{border-color:var(--cyan); color:var(--cyan);}
+  .pipe-node.accent-orange{border-color:var(--orange); color:var(--orange);}
+  .pipe-node.accent-pink{border-color:var(--pink); color:var(--pink);}
+  .pipe-node.accent-yellow{border-color:var(--yellow); color:var(--yellow);}
+  .pipe-node.accent-red{border-color:var(--red); color:var(--red);}
+  .pipe-arrow{ color:var(--text-dim); font-size:20px; margin:2px 0; line-height:1; }
+  .pipe-split{ display:flex; gap:60px; margin:6px 0 0; flex-wrap:wrap; justify-content:center; }
+  .pipe-split .branch{ display:flex; flex-direction:column; align-items:center; }
+  .pipe-split .branch .branch-label{ font-size:12px; color:var(--text-dim); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+  .pipe-hrow{ display:flex; align-items:stretch; gap:14px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+  .pipe-hrow .pipe-node{min-width:130px;}
+  .pipe-harrow{align-self:center; font-size:22px; color:var(--text-dim);}
+
+  .diagram-box{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin:20px 0; overflow-x:auto;
+  }
+  .diagram-caption{ text-align:center; font-size:12.5px; color:var(--text-dim); margin-top:8px; font-style:italic; }
+
+  .feat-card{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+    padding:16px; display:flex; flex-direction:column; gap:8px;
+  }
+  .feat-card .num{
+    width:30px;height:30px;border-radius:8px; background:var(--bg-alt);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--green); font-size:13px;
+  }
+  .feat-card h4{margin:0; font-size:15px;}
+  .feat-card p{margin:0; font-size:13px; color:var(--text-dim);}
+
+  .code-block{
+    background:#1a1b24; border:1px solid var(--border); border-radius:12px;
+    overflow:hidden; margin:16px 0;
+  }
+  .code-head{
+    display:flex; align-items:center; justify-content:space-between;
+    background:#20212c; padding:9px 16px; border-bottom:1px solid var(--border);
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .code-dots{display:flex; gap:6px;}
+  .code-dots span{width:10px;height:10px;border-radius:50%;}
+  .code-dots span:nth-child(1){background:#ff5f56;}
+  .code-dots span:nth-child(2){background:#ffbd2e;}
+  .code-dots span:nth-child(3){background:#27c93f;}
+  pre.code{ margin:0; padding:18px 20px; overflow-x:auto; font-size:14px; line-height:1.7; }
+  .kw{color:var(--pink);}
+  .cls{color:var(--cyan);}
+  .str{color:var(--yellow);}
+  .mth{color:var(--green);}
+  .cmt{color:#6272a4;}
+  .num-lit{color:var(--orange);}
+  .op{color:var(--red);}
+
+  .code-output{
+    background:#151621; border-top:1px dashed var(--border);
+    padding:12px 20px; font-size:13.5px; color:var(--green); font-family:'Cascadia Code',monospace;
+  }
+  .code-output .lbl{color:var(--text-dim); font-size:11px; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;}
+
+  .line-explain{ display:grid; grid-template-columns:120px 1fr; gap:6px 16px; margin:14px 0; font-size:14px; }
+  .line-explain .lterm{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:8px;
+    padding:4px 10px; font-family:'Cascadia Code',monospace; color:var(--yellow); font-size:13px; align-self:start;
+  }
+  .line-explain .ldesc{color:var(--text-dim); align-self:center;}
+
+  .steps{counter-reset:stepnum; margin:20px 0;}
+  .step{
+    position:relative; padding:16px 20px 16px 56px; margin-bottom:14px;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+  }
+  .step::before{
+    counter-increment:stepnum; content:counter(stepnum);
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:28px; height:28px; border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; color:#1e1f29;
+  }
+  .step h4{margin:0 0 4px; font-size:15px;}
+  .step p{margin:0; font-size:13.5px; color:var(--text-dim);}
+  .step code{background:var(--bg-alt); padding:1px 6px; border-radius:5px; color:var(--cyan); border:1px solid var(--border);}
+
+  .analogy{
+    display:flex; gap:18px; align-items:center; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius); padding:20px; margin:16px 0;
+  }
+  .analogy .side{flex:1; min-width:220px;}
+  .analogy .side h4{margin:0 0 6px; color:var(--orange); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .analogy .arrow{font-size:26px; color:var(--pink);}
+
+  table.breakdown{ width:100%; border-collapse:collapse; margin:14px 0; font-size:14.5px; }
+  table.breakdown th, table.breakdown td{ padding:10px 14px; border-bottom:1px solid var(--border); text-align:left; }
+  table.breakdown th{color:var(--orange); font-size:12px; text-transform:uppercase; letter-spacing:.5px;}
+  table.breakdown td code{ color:var(--cyan); }
+  table.breakdown tr.highlight td{ background:rgba(80,250,123,0.06); }
+
+  .type-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0; }
+  @media (max-width:760px){ .type-grid{grid-template-columns:repeat(2,1fr);} }
+  .type-chip{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:12px; text-align:center; font-family:'Cascadia Code',monospace; color:var(--yellow); font-weight:700;
+  }
+
+  /* Flowchart / decision diagram */
+  .flow-diamond{
+    background:var(--surface-2); border:2px solid var(--purple); color:var(--purple);
+    padding:16px 26px; border-radius:12px; font-weight:700; font-size:14.5px; text-align:center;
+    max-width:340px;
+  }
+  .flow-branch-row{ display:flex; gap:50px; justify-content:center; margin-top:8px; flex-wrap:wrap; }
+  .flow-branch{ display:flex; flex-direction:column; align-items:center; }
+  .flow-branch .tag{
+    font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.6px;
+    padding:3px 12px; border-radius:20px; margin-bottom:6px;
+  }
+  .flow-branch .tag.yes{ color:var(--green); background:rgba(80,250,123,0.12); border:1px solid rgba(80,250,123,0.4); }
+  .flow-branch .tag.no{ color:var(--red); background:rgba(255,85,85,0.12); border:1px solid rgba(255,85,85,0.4); }
+
+  .ladder{ display:flex; flex-direction:column; align-items:center; margin:20px 0; }
+  .ladder-row{ display:flex; align-items:center; gap:14px; margin-bottom:4px; }
+  .ladder-diamond{
+    background:var(--surface-2); border:2px solid var(--purple); color:var(--purple);
+    padding:10px 18px; border-radius:10px; font-weight:700; font-size:13.5px; text-align:center; min-width:190px;
+  }
+  .ladder-result{
+    background:var(--bg-alt); border:1.5px solid var(--green); color:var(--green);
+    padding:8px 16px; border-radius:8px; font-weight:700; font-size:13px; min-width:80px; text-align:center;
+  }
+  .ladder-no{ font-size:11px; color:var(--red); text-transform:uppercase; letter-spacing:.5px; }
+  .ladder-down{ font-size:16px; color:var(--text-dim); margin:2px 0; align-self:flex-start; margin-left:26px; }
+
+  /* Truth table */
+  table.truth{ width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; text-align:center; }
+  table.truth th, table.truth td{ padding:9px 10px; border:1px solid var(--border); }
+  table.truth th{ background:var(--surface-2); color:var(--orange); font-size:11.5px; text-transform:uppercase; }
+  table.truth td.true-cell{ color:var(--green); font-weight:700; }
+  table.truth td.false-cell{ color:var(--red); font-weight:700; }
+
+  /* Timeline for loops */
+  .timeline{ display:flex; align-items:center; gap:0; margin:20px 0; overflow-x:auto; padding-bottom:8px; }
+  .timeline .tstep{
+    flex:0 0 auto; background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; text-align:center; min-width:110px;
+  }
+  .timeline .tstep.exit{ border-color:var(--red); }
+  .timeline .tstep .tval{ font-size:20px; font-weight:800; color:var(--cyan); }
+  .timeline .tstep.exit .tval{ color:var(--red); }
+  .timeline .tstep .tlbl{ font-size:11px; color:var(--text-dim); margin-top:4px; }
+  .timeline .tarrow{ flex:0 0 auto; font-size:20px; color:var(--text-dim); padding:0 10px; }
+
+  /* Loop cycle diagram */
+  .cycle{ display:flex; flex-direction:column; align-items:center; margin:24px 0; gap:0; }
+  .cycle-diamond{
+    background:var(--surface-2); border:2px solid var(--cyan); color:var(--cyan);
+    padding:14px 24px; border-radius:12px; font-weight:700; font-size:14px; text-align:center;
+  }
+  .cycle-body{
+    background:var(--bg-alt); border:1.5px solid var(--green); color:var(--green);
+    padding:12px 22px; border-radius:10px; font-weight:700; font-size:13.5px; text-align:center; margin:10px 0;
+  }
+  .cycle-loopback{ font-size:12px; color:var(--text-dim); margin:2px 0; }
+  .cycle-exit{
+    background:var(--bg-alt); border:1.5px solid var(--red); color:var(--red);
+    padding:8px 20px; border-radius:10px; font-weight:700; font-size:13px; text-align:center; margin-top:14px;
+  }
+
+  .switch-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0; }
+  @media (max-width:760px){ .switch-grid{grid-template-columns:repeat(2,1fr);} }
+  .switch-case{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:12px; text-align:center;
+  }
+  .switch-case .case-lbl{ font-family:'Cascadia Code',monospace; color:var(--orange); font-weight:700; font-size:13px; }
+  .switch-case .case-out{ font-size:12.5px; color:var(--text-dim); margin-top:6px; }
+
+  .quiz-box{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-top:20px;
+  }
+  .quiz-q{font-weight:700; margin-bottom:14px; font-size:15.5px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:10px;}
+  .quiz-opt{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 16px; cursor:pointer; font-size:14px; transition:.15s;
+  }
+  .quiz-opt:hover{border-color:var(--green);}
+  .quiz-opt.correct{background:rgba(80,250,123,0.15); border-color:var(--green); color:var(--green);}
+  .quiz-opt.wrong{background:rgba(255,85,85,0.15); border-color:var(--red); color:var(--red);}
+  .quiz-feedback{margin-top:12px; font-size:13.5px; color:var(--text-dim); min-height:18px;}
+  .quiz-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+  .quiz-nav button{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:9px 18px; border-radius:20px; cursor:pointer; font-size:13.5px; font-weight:600;
+  }
+  .quiz-nav button:hover{border-color:var(--green);}
+  .quiz-nav button:disabled{opacity:.35; cursor:not-allowed;}
+  .quiz-dots{display:flex; gap:6px;}
+  .quiz-dots span{width:8px;height:8px;border-radius:50%; background:var(--border);}
+  .quiz-dots span.active{background:var(--cyan);}
+  .quiz-dots span.done{background:var(--green);}
+  .quiz-score{ text-align:center; padding:20px; font-size:18px; font-weight:800; }
+
+  footer{ text-align:center; padding:30px 20px; color:var(--text-dim); font-size:12.5px; border-top:1px solid var(--border); }
+  ::selection{background:var(--green); color:#1e1f29;}
+
+  .scrolltop{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    color:#1e1f29; font-weight:900; cursor:pointer; box-shadow:var(--shadow);
+    opacity:0; pointer-events:none; transition:.2s;
+  }
+  .scrolltop.show{opacity:1; pointer-events:auto;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="logo">J</div> Java Foundations · Hour 4</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#m22">22. if</a>
+    <a href="#m23">23. if-else</a>
+    <a href="#m24">24. else-if</a>
+    <a href="#m25">25. Nested if</a>
+    <a href="#m26">26. for</a>
+    <a href="#m27">27. Real-life</a>
+    <a href="#m28">28. while</a>
+    <a href="#m29">29. do-while</a>
+    <a href="#m30">30. switch</a>
+    <a href="#quiz">Quiz</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="badge-pill">IT Training &middot; Core Java Track &middot; Hour 4</span>
+    <h1>Control Statements</h1>
+    <p class="sub">In this hour, I'm handing you the tools that let your program actually make decisions and repeat work — every branch and every loop you'll reach for constantly, plus the modern switch syntax you'll see in real codebases.</p>
+    <div class="hero-meta">
+      <div><strong>9</strong>Modules</div>
+      <div><strong>~90 min</strong>Session Length</div>
+      <div><strong>Beginner</strong>Level</div>
+      <div><strong>9</strong>Code Walkthroughs</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- MODULE 22 -->
+  <section class="module" id="m22">
+    <div class="module-head">
+      <div class="module-num">22</div>
+      <div>
+        <h2>if</h2>
+        <p>The simplest decision your program can make</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🗳️</span> Eligible to Vote?</h3>
+      <div class="code-block">
+        <div class="code-head"><span>IfDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> age = <span class="num-lit">20</span>;
+
+<span class="kw">if</span> (age &gt;= <span class="num-lit">18</span>) {
+    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Eligible to vote"</span>);
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Eligible to vote</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔀</span> Reading It as a Flowchart</h3>
+      <div class="diagram-box">
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <div class="flow-diamond">age &gt;= 18 ?</div>
+          <div class="flow-branch-row">
+            <div class="flow-branch">
+              <span class="tag yes">true</span>
+              <div class="pipe-node accent-green">Print "Eligible to vote"</div>
+            </div>
+            <div class="flow-branch">
+              <span class="tag no">false</span>
+              <div class="pipe-node accent-red">Skip the block entirely</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="diagram-caption">A plain <code>if</code> has no fallback — when the condition is false, the block is simply skipped and the program moves on.</p>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>What I want you to notice:</b> the condition inside <code>( )</code> must evaluate to a <code>boolean</code>. The code inside <code>{ }</code> only runs when that condition is <code>true</code>.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 23 -->
+  <section class="module" id="m23">
+    <div class="module-head">
+      <div class="module-num">23</div>
+      <div>
+        <h2>if-else</h2>
+        <p>Giving every condition a fallback path</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">📝</span> Pass or Fail</h3>
+      <div class="code-block">
+        <div class="code-head"><span>IfElseDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> marks = <span class="num-lit">75</span>;
+
+<span class="kw">if</span> (marks &gt;= <span class="num-lit">40</span>) {
+    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Pass"</span>);
+} <span class="kw">else</span> {
+    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Fail"</span>);
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Pass</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔀</span> Now There's Always a Path Taken</h3>
+      <div class="diagram-box">
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <div class="flow-diamond">marks &gt;= 40 ?</div>
+          <div class="flow-branch-row">
+            <div class="flow-branch">
+              <span class="tag yes">true</span>
+              <div class="pipe-node accent-green">"Pass"</div>
+            </div>
+            <div class="flow-branch">
+              <span class="tag no">false</span>
+              <div class="pipe-node accent-red">"Fail"</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="diagram-caption">Unlike a plain <code>if</code>, one of these two branches will <b>always</b> execute — there's no "skip entirely" outcome anymore.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 24 -->
+  <section class="module" id="m24">
+    <div class="module-head">
+      <div class="module-num">24</div>
+      <div>
+        <h2>else-if Ladder</h2>
+        <p>Chaining multiple conditions in order of priority</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🎓</span> Grading a Score</h3>
+      <div class="code-block">
+        <div class="code-head"><span>GradeDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> marks = <span class="num-lit">85</span>;
+
+<span class="kw">if</span> (marks &gt;= <span class="num-lit">90</span>) {
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"A+"</span>);
+
+} <span class="kw">else if</span> (marks &gt;= <span class="num-lit">80</span>) {
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"A"</span>);
+
+} <span class="kw">else if</span> (marks &gt;= <span class="num-lit">70</span>) {
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"B"</span>);
+
+} <span class="kw">else if</span> (marks &gt;= <span class="num-lit">40</span>) {
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"C"</span>);
+
+} <span class="kw">else</span> {
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Fail"</span>);
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>A</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🪜</span> Tracing the Ladder Top to Bottom</h3>
+      <div class="diagram-box">
+        <div class="ladder">
+          <div class="ladder-row">
+            <div class="ladder-diamond">marks &gt;= 90 ?</div>
+            <span class="ladder-no">false → next</span>
+          </div>
+          <div class="ladder-down">↓</div>
+          <div class="ladder-row">
+            <div class="ladder-diamond" style="border-color:var(--green); color:var(--green);">marks &gt;= 80 ?</div>
+            <span class="ladder-result">TRUE → "A"</span>
+          </div>
+        </div>
+      </div>
+      <p class="diagram-caption">Java checks each condition <b>top to bottom</b> and stops at the very first one that's true. Since 85 fails the first check (&gt;= 90) but passes the second (&gt;= 80), it prints <code>"A"</code> and never even looks at the remaining branches.</p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>The order matters — always.</b> That's why I write these ladders from the highest threshold down to the lowest. If I'd written <code>marks &gt;= 40</code> first, every passing score would incorrectly print <code>"C"</code> before Java ever reached the higher checks.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 25 -->
+  <section class="module" id="m25">
+    <div class="module-head">
+      <div class="module-num">25</div>
+      <div>
+        <h2>Nested if</h2>
+        <p>An if living inside another if — for conditions that depend on each other</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🚗</span> Can They Drive?</h3>
+      <div class="code-block">
+        <div class="code-head"><span>NestedIfDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> age = <span class="num-lit">25</span>;
+<span class="kw">boolean</span> hasLicense = <span class="kw">true</span>;
+
+<span class="kw">if</span> (age &gt;= <span class="num-lit">18</span>) {
+
+    <span class="kw">if</span> (hasLicense) {
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Can drive"</span>);
+    }
+
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Can drive</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔀</span> Two Gates, Not One</h3>
+      <div class="diagram-box">
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <div class="flow-diamond">age &gt;= 18 ?</div>
+          <div class="flow-branch-row">
+            <div class="flow-branch">
+              <span class="tag yes">true</span>
+              <div class="flow-diamond" style="max-width:260px;">hasLicense ?</div>
+              <div class="flow-branch-row" style="margin-top:8px;">
+                <div class="flow-branch">
+                  <span class="tag yes">true</span>
+                  <div class="pipe-node accent-green">"Can drive"</div>
+                </div>
+                <div class="flow-branch">
+                  <span class="tag no">false</span>
+                  <div class="pipe-node accent-red">nothing printed</div>
+                </div>
+              </div>
+            </div>
+            <div class="flow-branch">
+              <span class="tag no">false</span>
+              <div class="pipe-node accent-red">outer block skipped entirely</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="diagram-caption">The inner <code>if</code> only ever gets evaluated once the outer condition has already passed — you have to clear both gates for the message to print.</p>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>When I reach for nesting versus <code>&amp;&amp;</code>:</b> <code>if (age &gt;= 18 &amp;&amp; hasLicense)</code> would give the exact same result here in one line. I nest when the inner condition should only be evaluated — or needs different handling — after the outer one passes; otherwise I combine with logical operators for readability.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 26 -->
+  <section class="module" id="m26">
+    <div class="module-head">
+      <div class="module-num">26</div>
+      <div>
+        <h2>for Loop</h2>
+        <p>Use this when I already know how many times I want to repeat something</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔁</span> Printing "Java" Five Times</h3>
+      <div class="code-block">
+        <div class="code-head"><span>ForDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="num-lit">1</span>; i &lt;= <span class="num-lit">5</span>; i++) {
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Java"</span>);
+
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Java
+Java
+Java
+Java
+Java</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧩</span> The Three Parts, One at a Time</h3>
+      <div class="line-explain">
+        <div class="lterm">int i = 1</div>
+        <div class="ldesc"><b>Initialization</b> — runs exactly once, before the loop starts.</div>
+        <div class="lterm">i &lt;= 5</div>
+        <div class="ldesc"><b>Condition</b> — checked before every single iteration; the loop keeps going while this is true.</div>
+        <div class="lterm">i++</div>
+        <div class="ldesc"><b>Update</b> — runs after every iteration, right before the condition is checked again.</div>
+      </div>
+
+      <p>Here's the step-by-step trace I want you able to redo on a whiteboard:</p>
+      <div class="steps">
+        <div class="step">
+          <h4>Step 1 — Initialize</h4>
+          <p><code>i = 1</code>. This happens once, only at the very beginning.</p>
+        </div>
+        <div class="step">
+          <h4>Step 2 — Check the condition</h4>
+          <p><code>i &lt;= 5</code> → <code>1 &lt;= 5</code> is true, so the body runs and prints <code>"Java"</code>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 3 — Update</h4>
+          <p><code>i++</code> makes <code>i</code> become <code>2</code>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 4 — Repeat until false</h4>
+          <p>This cycle — check, run, update — keeps repeating. Once <code>i</code> becomes <code>6</code>, <code>i &lt;= 5</code> is false, and the loop stops.</p>
+        </div>
+      </div>
+
+      <div class="cycle">
+        <div class="cycle-diamond">i &lt;= 5 ?</div>
+        <div class="cycle-loopback">↓ true</div>
+        <div class="cycle-body">print "Java", then i++</div>
+        <div class="cycle-loopback">↻ back to condition check</div>
+        <div class="cycle-exit">false → exit loop</div>
+      </div>
+      <p class="diagram-caption">This check → run → update → recheck cycle is the shape of every <code>for</code> loop you'll ever write.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 27 -->
+  <section class="module" id="m27">
+    <div class="module-head">
+      <div class="module-num">27</div>
+      <div>
+        <h2>Real-Life Loop Example</h2>
+        <p>Seeing a for loop do something practical</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧾</span> Processing a Batch of Bills</h3>
+      <div class="code-block">
+        <div class="code-head"><span>BillProcessor.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">for</span> (<span class="kw">int</span> bill = <span class="num-lit">1</span>; bill &lt;= <span class="num-lit">5</span>; bill++) {
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Processing bill "</span> + bill);
+
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Processing bill 1
+Processing bill 2
+Processing bill 3
+Processing bill 4
+Processing bill 5</div>
+      </div>
+      <p>Notice this is the exact same three-part structure as Module 26 — I've just renamed <code>i</code> to <code>bill</code> and concatenated it into the message. This is the pattern I want you recognizing instantly: <b>"repeat this action, n times, and use the counter each time."</b></p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>Where this shows up in real applications:</b> processing a batch of invoices, sending a set of notifications, generating report rows — any time you have a fixed, countable set of work items, a <code>for</code> loop like this is exactly the right tool.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 28 -->
+  <section class="module" id="m28">
+    <div class="module-head">
+      <div class="module-num">28</div>
+      <div>
+        <h2>while Loop</h2>
+        <p>Use this when the number of iterations depends on a condition, not a fixed count</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔢</span> Counting Up to 5</h3>
+      <div class="code-block">
+        <div class="code-head"><span>WhileDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> count = <span class="num-lit">1</span>;
+
+<span class="kw">while</span> (count &lt;= <span class="num-lit">5</span>) {
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>(count);
+
+    count++;
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>1
+2
+3
+4
+5</div>
+      </div>
+
+      <div class="timeline">
+        <div class="tstep"><div class="tval">1</div><div class="tlbl">print, then ++</div></div>
+        <div class="tarrow">→</div>
+        <div class="tstep"><div class="tval">2</div><div class="tlbl">print, then ++</div></div>
+        <div class="tarrow">→</div>
+        <div class="tstep"><div class="tval">3</div><div class="tlbl">print, then ++</div></div>
+        <div class="tarrow">→</div>
+        <div class="tstep"><div class="tval">4</div><div class="tlbl">print, then ++</div></div>
+        <div class="tarrow">→</div>
+        <div class="tstep"><div class="tval">5</div><div class="tlbl">print, then ++</div></div>
+        <div class="tarrow">→</div>
+        <div class="tstep exit"><div class="tval">6</div><div class="tlbl">6 &lt;= 5 is false, exit</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🆚</span> for vs while — When I Reach for Each</h3>
+      <div class="grid-2">
+        <div class="feat-card">
+          <h4>for</h4>
+          <p>I know the exact number of repetitions upfront — "do this 5 times," "loop through these 20 items."</p>
+        </div>
+        <div class="feat-card">
+          <h4>while</h4>
+          <p>The number of repetitions depends on something that can change unpredictably — "keep reading input until the user quits," "keep retrying until the connection succeeds."</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout avoid">
+      <div class="ico">🚫</div>
+      <div><b>The mistake that creates an infinite loop:</b> forgetting <code>count++;</code> inside the body. If <code>count</code> never changes, <code>count &lt;= 5</code> stays true forever and the loop never exits. Always double-check that a <code>while</code> loop has a way to eventually make its condition false.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 29 -->
+  <section class="module" id="m29">
+    <div class="module-head">
+      <div class="module-num">29</div>
+      <div>
+        <h2>do-while</h2>
+        <p>The loop that always runs its body at least once</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">1️⃣</span> The Important Difference</h3>
+      <p>I want this sentence memorized word for word: <b><code>do-while</code> executes at least once</b> — even if the condition is false from the very start.</p>
+      <div class="code-block">
+        <div class="code-head"><span>DoWhileDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> count = <span class="num-lit">10</span>;
+
+<span class="kw">do</span> {
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Executed"</span>);
+
+    count++;
+
+} <span class="kw">while</span> (count &lt; <span class="num-lit">5</span>);</pre>
+        <div class="code-output"><span class="lbl">Output</span>Executed</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔍</span> Why "Executed" Prints Even Though the Condition Is False</h3>
+      <div class="steps">
+        <div class="step">
+          <h4>Step 1 — The body runs first, no check yet</h4>
+          <p><code>count = 10</code>. Java enters the <code>do</code> block <b>before</b> ever looking at the condition, so <code>"Executed"</code> prints immediately.</p>
+        </div>
+        <div class="step">
+          <h4>Step 2 — count increments</h4>
+          <p><code>count++;</code> makes <code>count</code> become <code>11</code>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 3 — Now the condition is finally checked</h4>
+          <p><code>count &lt; 5</code> → <code>11 &lt; 5</code> is <code>false</code>, so the loop exits. It never runs a second time.</p>
+        </div>
+      </div>
+
+      <div class="pipe">
+        <div class="pipe-node accent-green">Run the body</div>
+        <div class="pipe-arrow">↓ THEN check</div>
+        <div class="pipe-node accent-red">count &lt; 5 ?  (false)</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-orange">exit — body ran exactly once</div>
+      </div>
+      <p class="diagram-caption">Compare this to a regular <code>while</code>, which checks <b>before</b> running the body at all — if the condition had started false there, the body would never run even a single time.</p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>When I actually use do-while:</b> anytime the task must happen at least once no matter what — like showing a menu to a user before asking whether they want to see it again, or making at least one connection attempt before checking if it succeeded.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 30 -->
+  <section class="module" id="m30">
+    <div class="module-head">
+      <div class="module-num">30</div>
+      <div>
+        <h2>switch</h2>
+        <p>A cleaner way to branch across many possible values of one variable</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">📅</span> Traditional switch</h3>
+      <div class="code-block">
+        <div class="code-head"><span>SwitchDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> day = <span class="num-lit">2</span>;
+
+<span class="kw">switch</span> (day) {
+
+    <span class="kw">case</span> <span class="num-lit">1</span>:
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Monday"</span>);
+        <span class="kw">break</span>;
+
+    <span class="kw">case</span> <span class="num-lit">2</span>:
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Tuesday"</span>);
+        <span class="kw">break</span>;
+
+    <span class="kw">case</span> <span class="num-lit">3</span>:
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Wednesday"</span>);
+        <span class="kw">break</span>;
+
+    <span class="kw">default</span>:
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Invalid day"</span>);
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Tuesday</div>
+      </div>
+
+      <div class="switch-grid">
+        <div class="switch-case"><div class="case-lbl">case 1</div><div class="case-out">"Monday"</div></div>
+        <div class="switch-case" style="border-color:var(--green);"><div class="case-lbl" style="color:var(--green);">case 2 ✓</div><div class="case-out">"Tuesday"</div></div>
+        <div class="switch-case"><div class="case-lbl">case 3</div><div class="case-out">"Wednesday"</div></div>
+        <div class="switch-case"><div class="case-lbl">default</div><div class="case-out">"Invalid day"</div></div>
+      </div>
+      <p class="diagram-caption">Java jumps straight to the matching <code>case</code> — no top-to-bottom checking like an else-if ladder. <code>day == 2</code> matches the second case directly.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">⚠️</span> Why <code>break</code> Matters</h3>
+      <div class="callout avoid">
+        <div class="ico">🚫</div>
+        <div><b>Forget a <code>break</code> and Java keeps going.</b> Without it, execution "falls through" into the next case's code too, running statements you didn't intend to run. This is one of the most common traditional-switch bugs — always pair each case with a <code>break</code> unless falling through is deliberate.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">✨</span> Modern switch Expressions</h3>
+      <p>Now let me show you the syntax I actually want you writing in new code:</p>
+      <div class="code-block">
+        <div class="code-head"><span>ModernSwitchDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> day = <span class="num-lit">2</span>;
+
+<span class="kw">switch</span> (day) {
+
+    <span class="kw">case</span> <span class="num-lit">1</span> -&gt; System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Monday"</span>);
+    <span class="kw">case</span> <span class="num-lit">2</span> -&gt; System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Tuesday"</span>);
+    <span class="kw">case</span> <span class="num-lit">3</span> -&gt; System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Wednesday"</span>);
+    <span class="kw">default</span> -&gt; System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Invalid day"</span>);
+
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Tuesday</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🆚</span> Old vs New, Side by Side</h3>
+      <table class="breakdown">
+        <thead><tr><th>Aspect</th><th>Traditional <code>switch</code></th><th>Modern <code>switch</code> (<code>-&gt;</code>)</th></tr></thead>
+        <tbody>
+          <tr><td>Syntax</td><td><code>case 1: ... break;</code></td><td><code>case 1 -&gt; ...</code></td></tr>
+          <tr><td>Fall-through risk</td><td>Yes — forgetting <code>break</code> is a real bug</td><td>No — each arrow case is self-contained</td></tr>
+          <tr><td>Can be an expression</td><td>No (statement only)</td><td>Yes — can directly produce/return a value</td></tr>
+          <tr><td>Verbosity</td><td>More lines, more punctuation</td><td>Shorter, more readable</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>Why this matters going forward:</b> switch expressions and pattern matching are an important part of contemporary Java — this is where the language's evolution is heading, and it's what you'll increasingly see in modern, actively maintained codebases. Learn the traditional form so you can read legacy code, but default to the arrow syntax in anything new you write.</div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="module" id="quiz">
+    <div class="module-head">
+      <div class="module-num">✓</div>
+      <div>
+        <h2>Quick Knowledge Check</h2>
+        <p>7 questions to reinforce this hour's concepts</p>
+      </div>
+    </div>
+
+    <div class="quiz-box" id="quizBox">
+      <div id="quizQuestionArea"></div>
+      <div class="quiz-nav">
+        <button id="prevBtn">← Previous</button>
+        <div class="quiz-dots" id="quizDots"></div>
+        <button id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Java Foundations Training Module — Hour 4 &middot; Prepared for IT Training Cohort &middot; Confidential Training Material</footer>
+
+<div class="scrolltop" id="scrollTop">↑</div>
+
+<script>
+  const progressFill = document.getElementById('progressFill');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  const sections = document.querySelectorAll('section.module');
+  const navLinks = document.querySelectorAll('#navLinks a');
+
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressFill.style.width = scrolled + '%';
+    scrollTopBtn.classList.toggle('show', h.scrollTop > 500);
+
+    let current = '';
+    sections.forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= 120 && rect.bottom >= 120) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  const questions = [
+    {
+      q: "What happens when the condition in a plain `if` statement is false?",
+      options: [
+        "The program throws an error",
+        "The block is skipped entirely and execution moves on",
+        "The block runs anyway",
+        "Java automatically retries the condition"
+      ],
+      correct: 1,
+      explain: "A plain if has no fallback — when the condition is false, the block simply doesn't execute, and the program continues after it.",
+      correctFeedback: "Exactly right!",
+      incorrectFeedback: "Not quite — a plain if has no else branch."
+    },
+    {
+      q: "In an else-if ladder, how does Java decide which branch to run?",
+      options: [
+        "It runs every branch whose condition is true",
+        "It checks conditions top to bottom and stops at the first one that's true",
+        "It always runs the last branch",
+        "It picks a branch at random"
+      ],
+      correct: 1,
+      explain: "Java evaluates each condition in order from top to bottom and executes only the first branch that evaluates to true, skipping the rest.",
+      correctFeedback: "Correct!",
+      incorrectFeedback: "Remember: order matters, and only the first true branch runs."
+    },
+    {
+      q: "In a nested if, when does the inner `if` get evaluated?",
+      options: [
+        "Always, regardless of the outer condition",
+        "Only after the outer condition has already evaluated to true",
+        "Before the outer condition",
+        "Never — nested ifs are not allowed in Java"
+      ],
+      correct: 1,
+      explain: "The inner if is only reached once the outer if's condition has already passed — both gates must be cleared for the innermost code to run.",
+      correctFeedback: "That's the rule!",
+      incorrectFeedback: "Think about which condition has to pass first for the inner block to even be reached."
+    },
+    {
+      q: "When should I prefer a `for` loop over a `while` loop?",
+      options: [
+        "When the number of repetitions is unknown and depends on unpredictable input",
+        "When I already know how many times I want to repeat something",
+        "for loops can only run once",
+        "There's no difference between them"
+      ],
+      correct: 1,
+      explain: "Use for when you generally know how many times you want to repeat something; use while when the number of iterations depends on a condition that may change unpredictably.",
+      correctFeedback: "Nailed it!",
+      incorrectFeedback: "Think about which loop fits a known, fixed repeat count."
+    },
+    {
+      q: "Given `int count = 10; do { ... count++; } while (count < 5);`, how many times does the body execute?",
+      options: [
+        "Zero times, because count < 5 is false from the start",
+        "Exactly once, because do-while always runs the body at least once before checking",
+        "Infinitely, since count never satisfies the condition",
+        "Five times"
+      ],
+      correct: 1,
+      explain: "do-while checks the condition AFTER running the body, so it always executes at least once — even though count < 5 is false from the very first check.",
+      correctFeedback: "Spot on!",
+      incorrectFeedback: "Remember the key trait of do-while: it runs the body before ever checking the condition."
+    },
+    {
+      q: "In a traditional switch statement, what happens if you forget a `break`?",
+      options: [
+        "Java throws a compile error",
+        "Execution 'falls through' into the next case's code as well",
+        "Nothing — break is purely optional and has no effect",
+        "The switch exits immediately"
+      ],
+      correct: 1,
+      explain: "Without break, execution falls through into subsequent cases, running code you likely didn't intend to run. This is a classic traditional-switch bug.",
+      correctFeedback: "Exactly!",
+      incorrectFeedback: "Think about what 'fall-through' means in a traditional switch."
+    },
+    {
+      q: "What's a key advantage of the modern arrow-based switch (`case 1 -> ...`) over the traditional form?",
+      options: [
+        "It requires more break statements",
+        "Each case is self-contained with no fall-through risk, and it can be used as an expression",
+        "It only works with String values",
+        "It removes the need for a default case"
+      ],
+      correct: 1,
+      explain: "Modern switch expressions eliminate fall-through risk since each arrow case is self-contained, and they can directly produce a value — part of Java's ongoing evolution toward switch expressions and pattern matching.",
+      correctFeedback: "That's right!",
+      incorrectFeedback: "Think about fall-through risk and whether switch can now be an expression."
+    }
+  ];
+
+  let current = 0;
+  const answered = new Array(questions.length).fill(null);
+
+  const qArea = document.getElementById('quizQuestionArea');
+  const dotsWrap = document.getElementById('quizDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function renderDots(){
+    dotsWrap.innerHTML = '';
+    questions.forEach((_, i) => {
+      const d = document.createElement('span');
+      if (i === current) d.classList.add('active');
+      else if (answered[i] !== null) d.classList.add('done');
+      dotsWrap.appendChild(d);
+    });
+  }
+
+  function renderQuestion(){
+    if (current >= questions.length){
+      const correctCount = answered.filter((a,i) => a === questions[i].correct).length;
+      qArea.innerHTML = `<div class="quiz-score">🎉 You scored ${correctCount} / ${questions.length}</div>`;
+      prevBtn.disabled = false;
+      nextBtn.disabled = true;
+      renderDots();
+      return;
+    }
+    const item = questions[current];
+    let optsHtml = item.options.map((opt, i) => {
+      let cls = 'quiz-opt';
+      if (answered[current] !== null){
+        if (i === item.correct) cls += ' correct';
+        else if (i === answered[current]) cls += ' wrong';
+      }
+      return `<div class="${cls}" data-idx="${i}">${opt}</div>`;
+    }).join('');
+
+    let feedbackHtml = '';
+    if (answered[current] !== null){
+      const wasCorrect = answered[current] === item.correct;
+      const verdict = wasCorrect ? (item.correctFeedback || "That's right.") : (item.incorrectFeedback || "Not quite.");
+      feedbackHtml = `<b>${verdict}</b> ${item.explain}`;
+    }
+
+    qArea.innerHTML = `
+      <div class="quiz-q">Q${current+1}. ${item.q}</div>
+      <div class="quiz-opts">${optsHtml}</div>
+      <div class="quiz-feedback">${feedbackHtml}</div>
+    `;
+
+    document.querySelectorAll('.quiz-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        if (answered[current] !== null) return;
+        answered[current] = parseInt(el.getAttribute('data-idx'));
+        renderQuestion();
+      });
+    });
+
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = false;
+    nextBtn.textContent = current === questions.length - 1 ? 'Finish →' : 'Next →';
+    renderDots();
+  }
+
+  prevBtn.addEventListener('click', () => { if (current > 0){ current--; renderQuestion(); } });
+  nextBtn.addEventListener('click', () => { current++; renderQuestion(); });
+
+  renderQuestion();
+</script>
+
+</body>
+</html>

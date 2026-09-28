@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Constructors, Access Specifiers &amp; Modifiers | IT Training Module — Hour 6</title>
+<style>
+  :root{
+    --bg:#282a36;
+    --bg-alt:#1e1f29;
+    --surface:#2f3140;
+    --surface-2:#363849;
+    --border:#44475a;
+    --text:#f8f8f2;
+    --text-dim:#b8bcd4;
+    --purple:#bd93f9;
+    --pink:#ff79c6;
+    --green:#50fa7b;
+    --cyan:#8be9fd;
+    --orange:#ffb86c;
+    --yellow:#f1fa8c;
+    --red:#ff5555;
+    --radius:14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(189,147,249,0.10), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(139,233,253,0.08), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    line-height:1.65;
+  }
+  a{color:var(--cyan);}
+  code, pre{ font-family:'Cascadia Code','Fira Code',Consolas,'Courier New',monospace; }
+
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(30,31,41,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:10px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+  }
+  .topbar .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px; }
+  .brand .logo{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px; color:#1e1f29; font-weight:900;
+  }
+  .progress-track{
+    flex:1; max-width:420px; height:8px; border-radius:20px;
+    background:var(--surface-2); overflow:hidden; border:1px solid var(--border);
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--green),var(--cyan));
+    transition:width .15s ease;
+  }
+  .nav-links{ display:flex; gap:6px; flex-wrap:wrap; font-size:12.5px; }
+  .nav-links a{
+    color:var(--text-dim); text-decoration:none; padding:6px 10px;
+    border-radius:20px; border:1px solid transparent; white-space:nowrap;
+  }
+  .nav-links a:hover, .nav-links a.active{
+    background:var(--surface-2); color:var(--text); border-color:var(--border);
+  }
+
+  .hero{
+    padding:70px 24px 50px; text-align:center; position:relative; overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:42px 42px; opacity:0.12;
+    mask-image:radial-gradient(circle at 50% 20%, black, transparent 70%);
+  }
+  .hero-inner{position:relative; z-index:1;}
+  .badge-pill{
+    display:inline-block; padding:6px 16px; border-radius:30px;
+    background:var(--surface-2); border:1px solid var(--border);
+    font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--green); font-weight:700; margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(24px,4.4vw,42px); margin:0 0 12px;
+    background:linear-gradient(90deg,var(--green),var(--cyan) 55%,var(--purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
+  }
+  .hero p.sub{ max-width:680px; margin:0 auto; color:var(--text-dim); font-size:16px; }
+  .hero-meta{ display:flex; justify-content:center; gap:28px; margin-top:28px; flex-wrap:wrap; }
+  .hero-meta div{font-size:13px; color:var(--text-dim);}
+  .hero-meta strong{display:block; font-size:20px; color:var(--text);}
+
+  .wrap{max-width:1080px; margin:0 auto; padding:10px 24px 100px;}
+  section.module{ padding:56px 0; border-bottom:1px dashed var(--border); scroll-margin-top:80px; }
+  section.module:last-child{border-bottom:none;}
+  .module-head{ display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .module-num{
+    flex:0 0 auto; width:52px;height:52px;border-radius:14px;
+    background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:20px; color:var(--green);
+  }
+  .module-head h2{ margin:0; font-size:26px; font-weight:800; }
+  .module-head p{margin:2px 0 0; color:var(--text-dim); font-size:14px;}
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:22px; box-shadow:var(--shadow);
+  }
+  .card h3{margin-top:0; font-size:17px; color:var(--cyan); display:flex; gap:8px; align-items:center;}
+  .card h3 .icon{font-size:18px;}
+  .card ul, .card ol{margin:10px 0; padding-left:22px;}
+  .card li{margin-bottom:6px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  .grid-5{display:grid; grid-template-columns:repeat(5,1fr); gap:12px;}
+  @media (max-width:760px){ .grid-2, .grid-3, .grid-4, .grid-5{grid-template-columns:1fr;} }
+
+  .callout{
+    border-radius:var(--radius); padding:16px 20px; margin:18px 0;
+    border:1px solid; display:flex; gap:14px; align-items:flex-start; font-size:14.5px;
+  }
+  .callout .ico{font-size:20px; line-height:1;}
+  .callout.teach{background:rgba(80,250,123,0.08); border-color:rgba(80,250,123,0.4);}
+  .callout.avoid{background:rgba(255,85,85,0.08); border-color:rgba(255,85,85,0.4);}
+  .callout.tip{background:rgba(139,233,253,0.08); border-color:rgba(139,233,253,0.4);}
+  .callout b{color:var(--text);}
+
+  .danger-list{
+    background:rgba(255,85,85,0.06); border:1px solid rgba(255,85,85,0.35);
+    border-radius:var(--radius); padding:18px 22px; margin:16px 0;
+  }
+  .danger-list h4{margin:0 0 10px; color:var(--red); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .danger-list ul{margin:0; padding-left:20px;}
+  .danger-list li{margin-bottom:6px; color:var(--text);}
+
+  .pipe{ display:flex; flex-direction:column; align-items:center; gap:0; margin:26px 0; }
+  .pipe-node{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px;
+    padding:12px 22px; font-weight:700; font-size:14.5px; text-align:center; min-width:200px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  }
+  .pipe-node.accent-purple{border-color:var(--purple); color:var(--purple);}
+  .pipe-node.accent-green{border-color:var(--green); color:var(--green);}
+  .pipe-node.accent-cyan{border-color:var(--cyan); color:var(--cyan);}
+  .pipe-node.accent-orange{border-color:var(--orange); color:var(--orange);}
+  .pipe-node.accent-pink{border-color:var(--pink); color:var(--pink);}
+  .pipe-node.accent-yellow{border-color:var(--yellow); color:var(--yellow);}
+  .pipe-node.accent-red{border-color:var(--red); color:var(--red);}
+  .pipe-arrow{ color:var(--text-dim); font-size:20px; margin:2px 0; line-height:1; }
+  .pipe-split{ display:flex; gap:60px; margin:6px 0 0; flex-wrap:wrap; justify-content:center; }
+  .pipe-split .branch{ display:flex; flex-direction:column; align-items:center; }
+  .pipe-split .branch .branch-label{ font-size:12px; color:var(--text-dim); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+  .pipe-hrow{ display:flex; align-items:stretch; gap:14px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+  .pipe-hrow .pipe-node{min-width:130px;}
+  .pipe-harrow{align-self:center; font-size:22px; color:var(--text-dim);}
+
+  .diagram-box{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin:20px 0; overflow-x:auto;
+  }
+  .diagram-caption{ text-align:center; font-size:12.5px; color:var(--text-dim); margin-top:8px; font-style:italic; }
+
+  .feat-card{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+    padding:16px; display:flex; flex-direction:column; gap:8px;
+  }
+  .feat-card .num{
+    width:30px;height:30px;border-radius:8px; background:var(--bg-alt);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--green); font-size:13px;
+  }
+  .feat-card h4{margin:0; font-size:15px;}
+  .feat-card p{margin:0; font-size:13px; color:var(--text-dim);}
+
+  .code-block{
+    background:#1a1b24; border:1px solid var(--border); border-radius:12px;
+    overflow:hidden; margin:16px 0;
+  }
+  .code-head{
+    display:flex; align-items:center; justify-content:space-between;
+    background:#20212c; padding:9px 16px; border-bottom:1px solid var(--border);
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .code-dots{display:flex; gap:6px;}
+  .code-dots span{width:10px;height:10px;border-radius:50%;}
+  .code-dots span:nth-child(1){background:#ff5f56;}
+  .code-dots span:nth-child(2){background:#ffbd2e;}
+  .code-dots span:nth-child(3){background:#27c93f;}
+  pre.code{ margin:0; padding:18px 20px; overflow-x:auto; font-size:14px; line-height:1.7; }
+  .kw{color:var(--pink);}
+  .cls{color:var(--cyan);}
+  .str{color:var(--yellow);}
+  .mth{color:var(--green);}
+  .cmt{color:#6272a4;}
+  .num-lit{color:var(--orange);}
+  .op{color:var(--red);}
+  .prm{color:var(--purple);}
+  .ths{color:var(--orange); font-weight:700;}
+
+  .code-output{
+    background:#151621; border-top:1px dashed var(--border);
+    padding:12px 20px; font-size:13.5px; color:var(--green); font-family:'Cascadia Code',monospace;
+  }
+  .code-output .lbl{color:var(--text-dim); font-size:11px; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;}
+
+  .line-explain{ display:grid; grid-template-columns:170px 1fr; gap:6px 16px; margin:14px 0; font-size:14px; }
+  .line-explain .lterm{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:8px;
+    padding:4px 10px; font-family:'Cascadia Code',monospace; color:var(--yellow); font-size:13px; align-self:start;
+  }
+  .line-explain .ldesc{color:var(--text-dim); align-self:center;}
+
+  .steps{counter-reset:stepnum; margin:20px 0;}
+  .step{
+    position:relative; padding:16px 20px 16px 56px; margin-bottom:14px;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+  }
+  .step::before{
+    counter-increment:stepnum; content:counter(stepnum);
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:28px; height:28px; border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; color:#1e1f29;
+  }
+  .step h4{margin:0 0 4px; font-size:15px;}
+  .step p{margin:0; font-size:13.5px; color:var(--text-dim);}
+  .step code{background:var(--bg-alt); padding:1px 6px; border-radius:5px; color:var(--cyan); border:1px solid var(--border);}
+
+  .analogy{
+    display:flex; gap:18px; align-items:center; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius); padding:20px; margin:16px 0;
+  }
+  .analogy .side{flex:1; min-width:220px;}
+  .analogy .side h4{margin:0 0 6px; color:var(--orange); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .analogy .arrow{font-size:26px; color:var(--pink);}
+
+  table.breakdown{ width:100%; border-collapse:collapse; margin:14px 0; font-size:14.5px; }
+  table.breakdown th, table.breakdown td{ padding:10px 14px; border-bottom:1px solid var(--border); text-align:left; }
+  table.breakdown th{color:var(--orange); font-size:12px; text-transform:uppercase; letter-spacing:.5px;}
+  table.breakdown td code{ color:var(--cyan); }
+  table.breakdown tr.highlight td{ background:rgba(80,250,123,0.06); }
+
+  .type-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0; }
+  @media (max-width:760px){ .type-grid{grid-template-columns:repeat(2,1fr);} }
+  .type-chip{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:12px; text-align:center; font-family:'Cascadia Code',monospace; color:var(--yellow); font-weight:700;
+  }
+
+  /* Object creation flow */
+  .callflow{ display:flex; flex-direction:column; align-items:center; margin:22px 0; }
+  .callflow-box{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px;
+    padding:12px 20px; font-family:'Cascadia Code',monospace; font-size:13.5px; text-align:center; min-width:220px;
+  }
+  .callflow-box.main{ border-color:var(--cyan); color:var(--cyan); }
+  .callflow-box.method{ border-color:var(--green); color:var(--green); }
+  .callflow-note{ font-size:11.5px; color:var(--text-dim); margin:4px 0; }
+
+  /* this.name = name breakdown */
+  .assign-box{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius);
+    padding:26px 20px 20px; margin:18px 0; overflow-x:auto;
+  }
+  .assign-line{ font-family:'Cascadia Code',monospace; font-size:19px; text-align:center; margin-bottom:22px; white-space:nowrap; }
+  .assign-tags{ display:flex; justify-content:center; gap:40px; flex-wrap:wrap; }
+  .assign-tag{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:12px 18px; font-size:12.5px; text-align:center; min-width:150px;
+  }
+  .assign-tag .aterm{ font-family:'Cascadia Code',monospace; font-weight:700; display:block; margin-bottom:4px; font-size:14px; }
+  .assign-tag .adesc{ color:var(--text-dim); }
+
+  /* Office analogy for access specifiers */
+  .office-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:18px 0; }
+  @media (max-width:760px){ .office-grid{grid-template-columns:repeat(2,1fr);} }
+  .office-card{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px;
+    padding:16px; text-align:center;
+  }
+  .office-card .oicon{ font-size:26px; margin-bottom:8px; }
+  .office-card .okw{ font-family:'Cascadia Code',monospace; font-weight:800; font-size:14px; margin-bottom:6px; }
+  .office-card .odesc{ font-size:12.5px; color:var(--text-dim); }
+  .office-card.pub{ border-color:var(--green); }
+  .office-card.pub .okw{ color:var(--green); }
+  .office-card.prot{ border-color:var(--cyan); }
+  .office-card.prot .okw{ color:var(--cyan); }
+  .office-card.def{ border-color:var(--orange); }
+  .office-card.def .okw{ color:var(--orange); }
+  .office-card.priv{ border-color:var(--red); }
+  .office-card.priv .okw{ color:var(--red); }
+
+  /* Encapsulation flow */
+  .encap-flow{ display:flex; align-items:center; justify-content:center; gap:14px; margin:22px 0; flex-wrap:wrap; }
+  .encap-box{
+    background:var(--bg-alt); border:1.5px solid var(--border); border-radius:12px;
+    padding:14px 18px; text-align:center; font-size:13px; min-width:150px;
+  }
+  .encap-box.locked{ border-color:var(--red); color:var(--red); }
+  .encap-box.gate{ border-color:var(--orange); color:var(--orange); }
+  .encap-box.safe{ border-color:var(--green); color:var(--green); }
+  .encap-arrow{ font-size:20px; color:var(--text-dim); }
+
+  /* Static counter diagram */
+  .counter-row{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+  .counter-obj{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; text-align:center; font-size:12.5px; min-width:110px;
+  }
+  .counter-obj .oname{ font-weight:700; color:var(--cyan); margin-bottom:4px; }
+  .shared-box{
+    background:var(--bg-alt); border:2px solid var(--yellow); border-radius:10px;
+    padding:12px 20px; text-align:center; font-family:'Cascadia Code',monospace; color:var(--yellow); font-weight:700;
+    margin:10px auto; max-width:260px;
+  }
+
+  .quiz-box{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-top:20px;
+  }
+  .quiz-q{font-weight:700; margin-bottom:14px; font-size:15.5px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:10px;}
+  .quiz-opt{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 16px; cursor:pointer; font-size:14px; transition:.15s;
+  }
+  .quiz-opt:hover{border-color:var(--green);}
+  .quiz-opt.correct{background:rgba(80,250,123,0.15); border-color:var(--green); color:var(--green);}
+  .quiz-opt.wrong{background:rgba(255,85,85,0.15); border-color:var(--red); color:var(--red);}
+  .quiz-feedback{margin-top:12px; font-size:13.5px; color:var(--text-dim); min-height:18px;}
+  .quiz-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+  .quiz-nav button{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:9px 18px; border-radius:20px; cursor:pointer; font-size:13.5px; font-weight:600;
+  }
+  .quiz-nav button:hover{border-color:var(--green);}
+  .quiz-nav button:disabled{opacity:.35; cursor:not-allowed;}
+  .quiz-dots{display:flex; gap:6px;}
+  .quiz-dots span{width:8px;height:8px;border-radius:50%; background:var(--border);}
+  .quiz-dots span.active{background:var(--cyan);}
+  .quiz-dots span.done{background:var(--green);}
+  .quiz-score{ text-align:center; padding:20px; font-size:18px; font-weight:800; }
+
+  footer{ text-align:center; padding:30px 20px; color:var(--text-dim); font-size:12.5px; border-top:1px solid var(--border); }
+  ::selection{background:var(--green); color:#1e1f29;}
+
+  .scrolltop{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    color:#1e1f29; font-weight:900; cursor:pointer; box-shadow:var(--shadow);
+    opacity:0; pointer-events:none; transition:.2s;
+  }
+  .scrolltop.show{opacity:1; pointer-events:auto;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="logo">J</div> Java Foundations · Hour 6</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#m37">37. Constructor</a>
+    <a href="#m38">38. Parameterized</a>
+    <a href="#m39">39. Overloading</a>
+    <a href="#m40">40. Ctor vs Method</a>
+    <a href="#m41">41. Access Specifiers</a>
+    <a href="#m42">42. Getter/Setter</a>
+    <a href="#m43">43. Modifiers</a>
+    <a href="#quiz">Quiz</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="badge-pill">IT Training &middot; Core Java Track &middot; Hour 6</span>
+    <h1>Constructors, Access Specifiers &amp; Modifiers</h1>
+    <p class="sub">In this hour, I'm showing you how an object actually gets initialized the moment it's created, how to control who can see and touch your data, and the handful of modifiers you'll run into constantly in real Java code.</p>
+    <div class="hero-meta">
+      <div><strong>7</strong>Modules</div>
+      <div><strong>~90 min</strong>Session Length</div>
+      <div><strong>Beginner</strong>Level</div>
+      <div><strong>6</strong>Code Walkthroughs</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- MODULE 37 -->
+  <section class="module" id="m37">
+    <div class="module-head">
+      <div class="module-num">37</div>
+      <div>
+        <h2>What is a Constructor?</h2>
+        <p>The special block that runs the moment an object is born</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🏢</span> A Real-Life Analogy First</h3>
+      <div class="analogy">
+        <div class="side">
+          <h4>In a company</h4>
+          <p>When a new employee joins, HR creates an employee profile and provides initial information — name, ID, department — before that employee does any actual work.</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="side">
+          <h4>In Java</h4>
+          <p>When an object is created, a <b>constructor</b> initializes the object — setting up its initial state before you ever call a method on it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧱</span> A Default Constructor</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Student.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">Student</span> {
+
+    <span class="cls">String</span> name;
+    <span class="kw">int</span> age;
+
+    <span class="mth">Student</span>() {
+
+        name = <span class="str">"Unknown"</span>;
+        age = <span class="num-lit">0</span>;
+
+    }
+
+}</pre>
+      </div>
+      <p>Creating the object:</p>
+      <div class="code-block">
+        <div class="code-head"><span>Main.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="cls">Student</span> student = <span class="kw">new</span> <span class="cls">Student</span>();</pre>
+      </div>
+
+      <div class="callflow">
+        <div class="callflow-box main">new Student() is executed</div>
+        <div class="callflow-note">↓ JVM allocates memory on the Heap</div>
+        <div class="callflow-box method">Student() constructor runs automatically</div>
+        <div class="callflow-note">↓ sets name = "Unknown", age = 0</div>
+        <div class="callflow-box main">fully-initialized object handed to student</div>
+      </div>
+      <p class="diagram-caption">You never call <code>Student()</code> like a normal method — the <code>new</code> keyword triggers it automatically, exactly once, right when the object is created.</p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>The core idea I want you keeping:</b> a constructor's job is to initialize an object. It shares its name with the class, has no return type at all — not even <code>void</code> — and Java calls it for you the instant you write <code>new ClassName()</code>.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 38 -->
+  <section class="module" id="m38">
+    <div class="module-head">
+      <div class="module-num">38</div>
+      <div>
+        <h2>Parameterized Constructor</h2>
+        <p>Initializing an object with real values right from the start</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🎓</span> Creating a Student With Real Data</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Student.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">Student</span> {
+
+    <span class="cls">String</span> name;
+    <span class="kw">int</span> age;
+
+    <span class="mth">Student</span>(<span class="cls">String</span> <span class="prm">name</span>, <span class="kw">int</span> <span class="prm">age</span>) {
+
+        <span class="ths">this</span>.name = <span class="prm">name</span>;
+        <span class="ths">this</span>.age = <span class="prm">age</span>;
+
+    }
+
+    <span class="kw">void</span> <span class="mth">display</span>() {
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(name);
+        System.<span class="mth">out</span>.<span class="mth">println</span>(age);
+
+    }
+}
+
+<span class="kw">public class</span> <span class="cls">Main</span> {
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="cls">Student</span> student = <span class="kw">new</span> <span class="cls">Student</span>(<span class="str">"Rahul"</span>, <span class="num-lit">22</span>);
+
+        student.<span class="mth">display</span>();
+
+    }
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Rahul
+22</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔍</span> Let's Break Down <code>this.name = name;</code></h3>
+      <p>This single line confuses almost every beginner the first time they see it, so let's dissect it fully:</p>
+      <div class="assign-box">
+        <div class="assign-line">
+          <span style="color:var(--orange);">this</span>.<span style="color:var(--cyan);">name</span> = <span style="color:var(--purple);">name</span>;
+        </div>
+        <div class="assign-tags">
+          <div class="assign-tag">
+            <span class="aterm" style="color:var(--cyan);">this.name</span>
+            <span class="adesc">LEFT SIDE — the object's own field (the box that stores data permanently on this object)</span>
+          </div>
+          <div class="assign-tag">
+            <span class="aterm" style="color:var(--purple);">name</span>
+            <span class="adesc">RIGHT SIDE — the parameter that was just passed in (a temporary value, only alive during this call)</span>
+          </div>
+        </div>
+      </div>
+      <p class="diagram-caption">Left = object variable. Right = parameter. <code>this</code> exists specifically to tell Java "the field belonging to me, the object" — separating it from the parameter that happens to share the same name.</p>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>Why not just name the parameter something else, like <code>n</code>?</b> You could — but industry convention is to reuse the same name as the field for clarity, and then use <code>this</code> to disambiguate. Get comfortable reading <code>this.field = parameter;</code> — you'll see it constantly.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 39 -->
+  <section class="module" id="m39">
+    <div class="module-head">
+      <div class="module-num">39</div>
+      <div>
+        <h2>Constructor Overloading</h2>
+        <p>Multiple ways to create the same kind of object</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">👤</span> Three Ways to Create an Employee</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Employee.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">Employee</span> {
+
+    <span class="cls">String</span> name;
+    <span class="kw">int</span> salary;
+
+    <span class="mth">Employee</span>() {
+
+        name = <span class="str">"Unknown"</span>;
+        salary = <span class="num-lit">0</span>;
+
+    }
+
+    <span class="mth">Employee</span>(<span class="cls">String</span> <span class="prm">name</span>) {
+
+        <span class="ths">this</span>.name = <span class="prm">name</span>;
+        salary = <span class="num-lit">0</span>;
+
+    }
+
+    <span class="mth">Employee</span>(<span class="cls">String</span> <span class="prm">name</span>, <span class="kw">int</span> <span class="prm">salary</span>) {
+
+        <span class="ths">this</span>.name = <span class="prm">name</span>;
+        <span class="ths">this</span>.salary = <span class="prm">salary</span>;
+
+    }
+
+}</pre>
+      </div>
+
+      <table class="breakdown">
+        <thead><tr><th>Call</th><th>Which constructor runs</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td><code>new Employee()</code></td><td>no-argument constructor</td><td>name = "Unknown", salary = 0</td></tr>
+          <tr><td><code>new Employee("Asha")</code></td><td>single-String constructor</td><td>name = "Asha", salary = 0</td></tr>
+          <tr><td><code>new Employee("Asha", 50000)</code></td><td>String + int constructor</td><td>name = "Asha", salary = 50000</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>This is the exact same idea as method overloading from last hour:</b> same name — here it's the class name, <code>Employee</code> — but different parameter lists. Java picks the right constructor based on what you pass to <code>new Employee(...)</code>.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 40 -->
+  <section class="module" id="m40">
+    <div class="module-head">
+      <div class="module-num">40</div>
+      <div>
+        <h2>Constructor vs Method</h2>
+        <p>Two things that look similar but do fundamentally different jobs</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🆚</span> The Comparison I Want You to Know Cold</h3>
+      <table class="breakdown">
+        <thead><tr><th>Constructor</th><th>Method</th></tr></thead>
+        <tbody>
+          <tr><td>Initializes object</td><td>Performs operation</td></tr>
+          <tr><td>Same name as class</td><td>Can have any valid name</td></tr>
+          <tr><td>No return type</td><td>Has return type or void</td></tr>
+          <tr><td>Called during object creation</td><td>Called explicitly</td></tr>
+          <tr><td>Cannot be inherited</td><td>Methods can be inherited</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>The line I use to keep this straight:</b> a constructor builds the object; a method makes an already-built object do something. You call a method whenever you want, as many times as you want — but a class's own constructor only runs once, automatically, at the exact moment <code>new</code> creates that object.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 41 -->
+  <section class="module" id="m41">
+    <div class="module-head">
+      <div class="module-num">41</div>
+      <div>
+        <h2>Access Specifiers</h2>
+        <p>Controlling exactly who can see and use your code</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🏬</span> Think About an Office Building</h3>
+      <p>This is the analogy I want stuck in your head every time you choose an access specifier:</p>
+      <div class="office-grid">
+        <div class="office-card pub">
+          <div class="oicon">🚪</div>
+          <div class="okw">public</div>
+          <div class="odesc">everyone can enter — the front lobby, open to all</div>
+        </div>
+        <div class="office-card prot">
+          <div class="oicon">🪪</div>
+          <div class="okw">protected</div>
+          <div class="odesc">a specific group — this team and related teams (subclasses)</div>
+        </div>
+        <div class="office-card def">
+          <div class="oicon">🏢</div>
+          <div class="okw">default</div>
+          <div class="odesc">same department/package — no keyword needed, just leave it blank</div>
+        </div>
+        <div class="office-card priv">
+          <div class="oicon">🔒</div>
+          <div class="okw">private</div>
+          <div class="odesc">only me — my own personal office, nobody else gets in</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">💻</span> All Four, on One Class</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Employee.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">Employee</span> {
+
+    <span class="kw">public</span> <span class="cls">String</span> name;
+
+    <span class="kw">private</span> <span class="kw">double</span> salary;
+
+    <span class="kw">protected</span> <span class="cls">String</span> department;
+
+    <span class="kw">int</span> employeeId;
+
+}</pre>
+      </div>
+      <p><code>employeeId</code> has no modifier at all — that absence of a keyword <i>is</i> the <b>default</b> access level: visible only within the same package.</p>
+    </div>
+
+    <div class="callout avoid">
+      <div class="ico">🚫</div>
+      <div><b>A common beginner assumption I want you to drop:</b> "no modifier" doesn't mean "no restriction" — it's not the same as <code>public</code>. Default access is genuinely more restrictive: it only opens the door to classes in the same package.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 42 -->
+  <section class="module" id="m42">
+    <div class="module-head">
+      <div class="module-num">42</div>
+      <div>
+        <h2>private + Getter/Setter</h2>
+        <p>Protecting a field while still allowing controlled access to it</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">💰</span> An Industry-Relevant Example</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Employee.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">Employee</span> {
+
+    <span class="kw">private</span> <span class="kw">double</span> salary;
+
+    <span class="kw">public</span> <span class="kw">void</span> <span class="mth">setSalary</span>(<span class="kw">double</span> <span class="prm">salary</span>) {
+
+        <span class="kw">if</span> (<span class="prm">salary</span> &gt;= <span class="num-lit">0</span>) {
+
+            <span class="ths">this</span>.salary = <span class="prm">salary</span>;
+
+        }
+
+    }
+
+    <span class="kw">public</span> <span class="kw">double</span> <span class="mth">getSalary</span>() {
+
+        <span class="kw">return</span> salary;
+
+    }
+
+}</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🛡️</span> Why Go Through a Method At All?</h3>
+      <div class="encap-flow">
+        <div class="encap-box locked">private double salary<br><span style="font-size:11px;">no direct outside access</span></div>
+        <div class="encap-arrow">→</div>
+        <div class="encap-box gate">setSalary(value)<br><span style="font-size:11px;">validates: value &gt;= 0 ?</span></div>
+        <div class="encap-arrow">→</div>
+        <div class="encap-box safe">salary safely updated<br><span style="font-size:11px;">only ever valid values stored</span></div>
+      </div>
+      <p class="diagram-caption">Because <code>salary</code> is <code>private</code>, outside code can't write <code>employee.salary = -500;</code> directly. It has to go through <code>setSalary()</code>, which gets a chance to reject bad data before it's ever stored.</p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>This pattern has a name: encapsulation.</b> Keep the field <code>private</code> so nothing outside the class can touch it directly, then expose controlled access through <code>public</code> getter and setter methods. The setter gives you a single, guaranteed choke point where you can validate every incoming value before it's stored.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 43 -->
+  <section class="module" id="m43">
+    <div class="module-head">
+      <div class="module-num">43</div>
+      <div>
+        <h2>Modifiers</h2>
+        <p>Keywords that change how a member of a class behaves</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧰</span> The Ones You'll Encounter</h3>
+      <div class="grid-3">
+        <div class="feat-card"><h4><code>static</code></h4><p>Belongs to the class itself, shared across every object.</p></div>
+        <div class="feat-card"><h4><code>final</code></h4><p>Value cannot be changed once assigned.</p></div>
+        <div class="feat-card"><h4><code>abstract</code></h4><p>No implementation here — subclasses must provide it.</p></div>
+        <div class="feat-card"><h4><code>synchronized</code></h4><p>Only one thread can run this at a time.</p></div>
+        <div class="feat-card"><h4><code>volatile</code></h4><p>Always read the latest value across threads.</p></div>
+        <div class="feat-card"><h4><code>transient</code></h4><p>Skip this field during serialization.</p></div>
+      </div>
+      <p style="margin-top:14px;">For this fundamentals session, I want you focused heavily on the first two: <code>static</code> and <code>final</code>. We'll cover the rest in depth later in the course.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔢</span> static — Shared Across Every Object</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Counter.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">Counter</span> {
+
+    <span class="kw">static</span> <span class="kw">int</span> count = <span class="num-lit">0</span>;
+
+    <span class="mth">Counter</span>() {
+
+        count++;
+
+    }
+
+}</pre>
+      </div>
+
+      <p>Watch what happens across three separate objects:</p>
+      <div class="counter-row">
+        <div class="counter-obj"><div class="oname">new Counter() #1</div>count becomes 1</div>
+        <div class="counter-obj"><div class="oname">new Counter() #2</div>count becomes 2</div>
+        <div class="counter-obj"><div class="oname">new Counter() #3</div>count becomes 3</div>
+      </div>
+      <div class="shared-box">static int count — ONE shared copy</div>
+      <p class="diagram-caption">Every <code>Counter</code> object shares the exact same <code>count</code> variable — it doesn't belong to any single object, it belongs to the class itself. Each constructor call increments that one shared value.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔒</span> final — Locked After Assignment</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Config.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">final</span> <span class="kw">int</span> MAX_USERS = <span class="num-lit">100</span>;</pre>
+      </div>
+      <p>Once <code>MAX_USERS</code> is assigned <code>100</code>, it can never be reassigned — attempting to do so is a compile-time error, exactly like the <code>PI</code> constant back in Module 13.</p>
+    </div>
+
+    <div class="callout avoid">
+      <div class="ico">🚫</div>
+      <div><b>Don't blur these two together.</b> <code>static</code> and <code>final</code> solve completely different problems: <code>static</code> is about <i>sharing</i> — one copy across every object of the class. <code>final</code> is about <i>immutability</i> — a value that can never change once set. A field can even be both at once (<code>static final</code>), which is exactly how you'd declare a true class-wide constant.</div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="module" id="quiz">
+    <div class="module-head">
+      <div class="module-num">✓</div>
+      <div>
+        <h2>Quick Knowledge Check</h2>
+        <p>7 questions to reinforce this hour's concepts</p>
+      </div>
+    </div>
+
+    <div class="quiz-box" id="quizBox">
+      <div id="quizQuestionArea"></div>
+      <div class="quiz-nav">
+        <button id="prevBtn">← Previous</button>
+        <div class="quiz-dots" id="quizDots"></div>
+        <button id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Java Foundations Training Module — Hour 6 &middot; Prepared for IT Training Cohort &middot; Confidential Training Material</footer>
+
+<div class="scrolltop" id="scrollTop">↑</div>
+
+<script>
+  const progressFill = document.getElementById('progressFill');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  const sections = document.querySelectorAll('section.module');
+  const navLinks = document.querySelectorAll('#navLinks a');
+
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressFill.style.width = scrolled + '%';
+    scrollTopBtn.classList.toggle('show', h.scrollTop > 500);
+
+    let current = '';
+    sections.forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= 120 && rect.bottom >= 120) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  const questions = [
+    {
+      q: "What is the core job of a constructor?",
+      options: [
+        "To perform a calculation and return a result",
+        "To initialize an object at the moment it's created",
+        "To delete an object from memory",
+        "To define the class name"
+      ],
+      correct: 1,
+      explain: "Just like HR sets up a new employee's profile, a constructor initializes an object's starting state the instant it's created with `new`.",
+      correctFeedback: "Exactly right!",
+      incorrectFeedback: "Think back to the HR onboarding analogy."
+    },
+    {
+      q: "In `this.name = name;` inside a constructor, what does `name` on the right side refer to?",
+      options: [
+        "The object's field",
+        "The parameter that was passed into the constructor",
+        "A static variable",
+        "Nothing — it's invalid syntax"
+      ],
+      correct: 1,
+      explain: "Left = this.name, the object's own field. Right = name, the parameter — a temporary value passed in for this call. `this` disambiguates the two.",
+      correctFeedback: "Correct!",
+      incorrectFeedback: "Remember: left side is the object variable, right side is the parameter."
+    },
+    {
+      q: "What determines which overloaded constructor runs when you call `new Employee(\"Asha\")`?",
+      options: [
+        "The order constructors were written in the file",
+        "The number and types of arguments passed at the call site",
+        "Java picks one at random",
+        "The return type of the constructor"
+      ],
+      correct: 1,
+      explain: "Just like method overloading, Java matches the call to the constructor whose parameter list fits the arguments provided — here, a single String matches Employee(String name).",
+      correctFeedback: "That's right!",
+      incorrectFeedback: "Think about how method overloading resolution worked last hour — constructors follow the same rule."
+    },
+    {
+      q: "Which of these is TRUE about constructors vs methods?",
+      options: [
+        "Constructors have a return type; methods never do",
+        "Constructors share the class's name and have no return type; methods can have any valid name and a return type or void",
+        "Methods are called automatically during object creation, constructors are not",
+        "Both can be inherited freely"
+      ],
+      correct: 1,
+      explain: "Constructors: same name as the class, no return type, called during object creation, cannot be inherited. Methods: any valid name, has a return type or void, called explicitly, and can be inherited.",
+      correctFeedback: "Nailed it!",
+      incorrectFeedback: "Review the comparison table — constructors and methods differ on name, return type, and when they're called."
+    },
+    {
+      q: "In the office analogy for access specifiers, what does `protected` correspond to?",
+      options: [
+        "Everyone can enter",
+        "Only me",
+        "A specific group — related teams (subclasses)",
+        "Same department/package only"
+      ],
+      correct: 2,
+      explain: "protected is like a specific group having access — in Java terms, the same package plus subclasses in other packages.",
+      correctFeedback: "Spot on!",
+      incorrectFeedback: "public = everyone, private = only me, default = same department — that leaves protected for the specific-group case."
+    },
+    {
+      q: "Why keep `salary` `private` and expose `getSalary()`/`setSalary()` instead of making the field `public`?",
+      options: [
+        "private fields run faster than public ones",
+        "It lets you validate incoming values (like rejecting negative salaries) at a single controlled entry point — this is encapsulation",
+        "Java requires all doubles to be private",
+        "public fields cannot have getters"
+      ],
+      correct: 1,
+      explain: "Encapsulation means hiding the field and forcing access through methods, so you get one guaranteed choke point to validate data before it's stored — exactly what the `if (salary >= 0)` check does.",
+      correctFeedback: "Exactly!",
+      incorrectFeedback: "Think about what the `if (salary >= 0)` check inside setSalary() is protecting against."
+    },
+    {
+      q: "What's the key difference between `static` and `final`?",
+      options: [
+        "They mean the same thing and are interchangeable",
+        "static means shared across all objects of a class; final means a value cannot be reassigned once set",
+        "static prevents reassignment; final means shared across objects",
+        "Neither can be used on a class field"
+      ],
+      correct: 1,
+      explain: "static is about sharing one copy of a field across every object of the class. final is about immutability — locking a value after its first assignment. A field can even be both (static final) for a true constant.",
+      correctFeedback: "That's the distinction!",
+      incorrectFeedback: "static = sharing across objects. final = locked after assignment. They solve different problems."
+    }
+  ];
+
+  let current = 0;
+  const answered = new Array(questions.length).fill(null);
+
+  const qArea = document.getElementById('quizQuestionArea');
+  const dotsWrap = document.getElementById('quizDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function renderDots(){
+    dotsWrap.innerHTML = '';
+    questions.forEach((_, i) => {
+      const d = document.createElement('span');
+      if (i === current) d.classList.add('active');
+      else if (answered[i] !== null) d.classList.add('done');
+      dotsWrap.appendChild(d);
+    });
+  }
+
+  function renderQuestion(){
+    if (current >= questions.length){
+      const correctCount = answered.filter((a,i) => a === questions[i].correct).length;
+      qArea.innerHTML = `<div class="quiz-score">🎉 You scored ${correctCount} / ${questions.length}</div>`;
+      prevBtn.disabled = false;
+      nextBtn.disabled = true;
+      renderDots();
+      return;
+    }
+    const item = questions[current];
+    let optsHtml = item.options.map((opt, i) => {
+      let cls = 'quiz-opt';
+      if (answered[current] !== null){
+        if (i === item.correct) cls += ' correct';
+        else if (i === answered[current]) cls += ' wrong';
+      }
+      return `<div class="${cls}" data-idx="${i}">${opt}</div>`;
+    }).join('');
+
+    let feedbackHtml = '';
+    if (answered[current] !== null){
+      const wasCorrect = answered[current] === item.correct;
+      const verdict = wasCorrect ? (item.correctFeedback || "That's right.") : (item.incorrectFeedback || "Not quite.");
+      feedbackHtml = `<b>${verdict}</b> ${item.explain}`;
+    }
+
+    qArea.innerHTML = `
+      <div class="quiz-q">Q${current+1}. ${item.q}</div>
+      <div class="quiz-opts">${optsHtml}</div>
+      <div class="quiz-feedback">${feedbackHtml}</div>
+    `;
+
+    document.querySelectorAll('.quiz-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        if (answered[current] !== null) return;
+        answered[current] = parseInt(el.getAttribute('data-idx'));
+        renderQuestion();
+      });
+    });
+
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = false;
+    nextBtn.textContent = current === questions.length - 1 ? 'Finish →' : 'Next →';
+    renderDots();
+  }
+
+  prevBtn.addEventListener('click', () => { if (current > 0){ current--; renderQuestion(); } });
+  nextBtn.addEventListener('click', () => { current++; renderQuestion(); });
+
+  renderQuestion();
+</script>
+
+</body>
+</html>

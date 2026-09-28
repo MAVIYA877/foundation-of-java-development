@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Methods | IT Training Module — Hour 5</title>
+<style>
+  :root{
+    --bg:#282a36;
+    --bg-alt:#1e1f29;
+    --surface:#2f3140;
+    --surface-2:#363849;
+    --border:#44475a;
+    --text:#f8f8f2;
+    --text-dim:#b8bcd4;
+    --purple:#bd93f9;
+    --pink:#ff79c6;
+    --green:#50fa7b;
+    --cyan:#8be9fd;
+    --orange:#ffb86c;
+    --yellow:#f1fa8c;
+    --red:#ff5555;
+    --radius:14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(189,147,249,0.10), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(139,233,253,0.08), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    line-height:1.65;
+  }
+  a{color:var(--cyan);}
+  code, pre{ font-family:'Cascadia Code','Fira Code',Consolas,'Courier New',monospace; }
+
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(30,31,41,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:10px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+  }
+  .topbar .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px; }
+  .brand .logo{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px; color:#1e1f29; font-weight:900;
+  }
+  .progress-track{
+    flex:1; max-width:420px; height:8px; border-radius:20px;
+    background:var(--surface-2); overflow:hidden; border:1px solid var(--border);
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--green),var(--cyan));
+    transition:width .15s ease;
+  }
+  .nav-links{ display:flex; gap:6px; flex-wrap:wrap; font-size:12.5px; }
+  .nav-links a{
+    color:var(--text-dim); text-decoration:none; padding:6px 10px;
+    border-radius:20px; border:1px solid transparent; white-space:nowrap;
+  }
+  .nav-links a:hover, .nav-links a.active{
+    background:var(--surface-2); color:var(--text); border-color:var(--border);
+  }
+
+  .hero{
+    padding:70px 24px 50px; text-align:center; position:relative; overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:42px 42px; opacity:0.12;
+    mask-image:radial-gradient(circle at 50% 20%, black, transparent 70%);
+  }
+  .hero-inner{position:relative; z-index:1;}
+  .badge-pill{
+    display:inline-block; padding:6px 16px; border-radius:30px;
+    background:var(--surface-2); border:1px solid var(--border);
+    font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--green); font-weight:700; margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(26px,4.6vw,44px); margin:0 0 12px;
+    background:linear-gradient(90deg,var(--green),var(--cyan) 55%,var(--purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
+  }
+  .hero p.sub{ max-width:680px; margin:0 auto; color:var(--text-dim); font-size:16px; }
+  .hero-meta{ display:flex; justify-content:center; gap:28px; margin-top:28px; flex-wrap:wrap; }
+  .hero-meta div{font-size:13px; color:var(--text-dim);}
+  .hero-meta strong{display:block; font-size:20px; color:var(--text);}
+
+  .wrap{max-width:1080px; margin:0 auto; padding:10px 24px 100px;}
+  section.module{ padding:56px 0; border-bottom:1px dashed var(--border); scroll-margin-top:80px; }
+  section.module:last-child{border-bottom:none;}
+  .module-head{ display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .module-num{
+    flex:0 0 auto; width:52px;height:52px;border-radius:14px;
+    background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:20px; color:var(--green);
+  }
+  .module-head h2{ margin:0; font-size:26px; font-weight:800; }
+  .module-head p{margin:2px 0 0; color:var(--text-dim); font-size:14px;}
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:22px; box-shadow:var(--shadow);
+  }
+  .card h3{margin-top:0; font-size:17px; color:var(--cyan); display:flex; gap:8px; align-items:center;}
+  .card h3 .icon{font-size:18px;}
+  .card ul, .card ol{margin:10px 0; padding-left:22px;}
+  .card li{margin-bottom:6px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  .grid-5{display:grid; grid-template-columns:repeat(5,1fr); gap:12px;}
+  @media (max-width:760px){ .grid-2, .grid-3, .grid-4, .grid-5{grid-template-columns:1fr;} }
+
+  .callout{
+    border-radius:var(--radius); padding:16px 20px; margin:18px 0;
+    border:1px solid; display:flex; gap:14px; align-items:flex-start; font-size:14.5px;
+  }
+  .callout .ico{font-size:20px; line-height:1;}
+  .callout.teach{background:rgba(80,250,123,0.08); border-color:rgba(80,250,123,0.4);}
+  .callout.avoid{background:rgba(255,85,85,0.08); border-color:rgba(255,85,85,0.4);}
+  .callout.tip{background:rgba(139,233,253,0.08); border-color:rgba(139,233,253,0.4);}
+  .callout b{color:var(--text);}
+
+  .danger-list{
+    background:rgba(255,85,85,0.06); border:1px solid rgba(255,85,85,0.35);
+    border-radius:var(--radius); padding:18px 22px; margin:16px 0;
+  }
+  .danger-list h4{margin:0 0 10px; color:var(--red); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .danger-list ul{margin:0; padding-left:20px;}
+  .danger-list li{margin-bottom:6px; color:var(--text);}
+
+  .pipe{ display:flex; flex-direction:column; align-items:center; gap:0; margin:26px 0; }
+  .pipe-node{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px;
+    padding:12px 22px; font-weight:700; font-size:14.5px; text-align:center; min-width:200px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  }
+  .pipe-node.accent-purple{border-color:var(--purple); color:var(--purple);}
+  .pipe-node.accent-green{border-color:var(--green); color:var(--green);}
+  .pipe-node.accent-cyan{border-color:var(--cyan); color:var(--cyan);}
+  .pipe-node.accent-orange{border-color:var(--orange); color:var(--orange);}
+  .pipe-node.accent-pink{border-color:var(--pink); color:var(--pink);}
+  .pipe-node.accent-yellow{border-color:var(--yellow); color:var(--yellow);}
+  .pipe-node.accent-red{border-color:var(--red); color:var(--red);}
+  .pipe-arrow{ color:var(--text-dim); font-size:20px; margin:2px 0; line-height:1; }
+  .pipe-split{ display:flex; gap:60px; margin:6px 0 0; flex-wrap:wrap; justify-content:center; }
+  .pipe-split .branch{ display:flex; flex-direction:column; align-items:center; }
+  .pipe-split .branch .branch-label{ font-size:12px; color:var(--text-dim); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+  .pipe-hrow{ display:flex; align-items:stretch; gap:14px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+  .pipe-hrow .pipe-node{min-width:130px;}
+  .pipe-harrow{align-self:center; font-size:22px; color:var(--text-dim);}
+
+  .diagram-box{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin:20px 0; overflow-x:auto;
+  }
+  .diagram-caption{ text-align:center; font-size:12.5px; color:var(--text-dim); margin-top:8px; font-style:italic; }
+
+  .feat-card{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+    padding:16px; display:flex; flex-direction:column; gap:8px;
+  }
+  .feat-card .num{
+    width:30px;height:30px;border-radius:8px; background:var(--bg-alt);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--green); font-size:13px;
+  }
+  .feat-card h4{margin:0; font-size:15px;}
+  .feat-card p{margin:0; font-size:13px; color:var(--text-dim);}
+
+  .code-block{
+    background:#1a1b24; border:1px solid var(--border); border-radius:12px;
+    overflow:hidden; margin:16px 0;
+  }
+  .code-head{
+    display:flex; align-items:center; justify-content:space-between;
+    background:#20212c; padding:9px 16px; border-bottom:1px solid var(--border);
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .code-dots{display:flex; gap:6px;}
+  .code-dots span{width:10px;height:10px;border-radius:50%;}
+  .code-dots span:nth-child(1){background:#ff5f56;}
+  .code-dots span:nth-child(2){background:#ffbd2e;}
+  .code-dots span:nth-child(3){background:#27c93f;}
+  pre.code{ margin:0; padding:18px 20px; overflow-x:auto; font-size:14px; line-height:1.7; }
+  .kw{color:var(--pink);}
+  .cls{color:var(--cyan);}
+  .str{color:var(--yellow);}
+  .mth{color:var(--green);}
+  .cmt{color:#6272a4;}
+  .num-lit{color:var(--orange);}
+  .op{color:var(--red);}
+  .prm{color:var(--purple);}
+
+  .code-output{
+    background:#151621; border-top:1px dashed var(--border);
+    padding:12px 20px; font-size:13.5px; color:var(--green); font-family:'Cascadia Code',monospace;
+  }
+  .code-output .lbl{color:var(--text-dim); font-size:11px; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;}
+
+  .line-explain{ display:grid; grid-template-columns:170px 1fr; gap:6px 16px; margin:14px 0; font-size:14px; }
+  .line-explain .lterm{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:8px;
+    padding:4px 10px; font-family:'Cascadia Code',monospace; color:var(--yellow); font-size:13px; align-self:start;
+  }
+  .line-explain .ldesc{color:var(--text-dim); align-self:center;}
+
+  .steps{counter-reset:stepnum; margin:20px 0;}
+  .step{
+    position:relative; padding:16px 20px 16px 56px; margin-bottom:14px;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+  }
+  .step::before{
+    counter-increment:stepnum; content:counter(stepnum);
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:28px; height:28px; border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; color:#1e1f29;
+  }
+  .step h4{margin:0 0 4px; font-size:15px;}
+  .step p{margin:0; font-size:13.5px; color:var(--text-dim);}
+  .step code{background:var(--bg-alt); padding:1px 6px; border-radius:5px; color:var(--cyan); border:1px solid var(--border);}
+
+  .analogy{
+    display:flex; gap:18px; align-items:center; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius); padding:20px; margin:16px 0;
+  }
+  .analogy .side{flex:1; min-width:220px;}
+  .analogy .side h4{margin:0 0 6px; color:var(--orange); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .analogy .arrow{font-size:26px; color:var(--pink);}
+
+  table.breakdown{ width:100%; border-collapse:collapse; margin:14px 0; font-size:14.5px; }
+  table.breakdown th, table.breakdown td{ padding:10px 14px; border-bottom:1px solid var(--border); text-align:left; }
+  table.breakdown th{color:var(--orange); font-size:12px; text-transform:uppercase; letter-spacing:.5px;}
+  table.breakdown td code{ color:var(--cyan); }
+  table.breakdown tr.highlight td{ background:rgba(80,250,123,0.06); }
+
+  .type-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0; }
+  @media (max-width:760px){ .type-grid{grid-template-columns:repeat(2,1fr);} }
+  .type-chip{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:12px; text-align:center; font-family:'Cascadia Code',monospace; color:var(--yellow); font-weight:700;
+  }
+
+  /* Method anatomy tagging */
+  .anatomy-box{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius);
+    padding:26px 20px 20px; margin:18px 0; overflow-x:auto;
+  }
+  .anatomy-line{ font-family:'Cascadia Code',monospace; font-size:16px; white-space:nowrap; text-align:center; margin-bottom:22px; }
+  .anatomy-line .seg{ padding:2px 4px; border-radius:4px; }
+  .anatomy-tags{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+  .anatomy-tag{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:10px 14px; font-size:12.5px; text-align:center; min-width:110px;
+  }
+  .anatomy-tag .aterm{ font-family:'Cascadia Code',monospace; font-weight:700; display:block; margin-bottom:4px; }
+  .anatomy-tag .adesc{ color:var(--text-dim); }
+
+  /* App feature grid for "why methods" */
+  .method-list{ display:flex; flex-direction:column; gap:10px; margin:16px 0; }
+  .method-list .mitem{
+    display:flex; align-items:center; gap:12px;
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px;
+  }
+  .method-list .mitem code{ color:var(--green); font-weight:700; font-size:14px; }
+  .method-list .mitem .mdesc{ color:var(--text-dim); font-size:13px; }
+
+  /* Call flow diagram */
+  .callflow{ display:flex; flex-direction:column; align-items:center; margin:22px 0; }
+  .callflow-box{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px;
+    padding:12px 20px; font-family:'Cascadia Code',monospace; font-size:13.5px; text-align:center; min-width:220px;
+  }
+  .callflow-box.main{ border-color:var(--cyan); color:var(--cyan); }
+  .callflow-box.method{ border-color:var(--green); color:var(--green); }
+  .callflow-note{ font-size:11.5px; color:var(--text-dim); margin:4px 0; }
+
+  /* Overload resolution table */
+  table.overload{ width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+  table.overload th, table.overload td{ padding:10px 12px; border:1px solid var(--border); text-align:left; }
+  table.overload th{ background:var(--surface-2); color:var(--orange); font-size:11.5px; text-transform:uppercase; }
+  table.overload td code{ color:var(--cyan); }
+  table.overload tr.match td{ background:rgba(80,250,123,0.08); }
+  table.overload tr.match td:first-child{ color:var(--green); font-weight:700; }
+
+  .quiz-box{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-top:20px;
+  }
+  .quiz-q{font-weight:700; margin-bottom:14px; font-size:15.5px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:10px;}
+  .quiz-opt{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 16px; cursor:pointer; font-size:14px; transition:.15s;
+  }
+  .quiz-opt:hover{border-color:var(--green);}
+  .quiz-opt.correct{background:rgba(80,250,123,0.15); border-color:var(--green); color:var(--green);}
+  .quiz-opt.wrong{background:rgba(255,85,85,0.15); border-color:var(--red); color:var(--red);}
+  .quiz-feedback{margin-top:12px; font-size:13.5px; color:var(--text-dim); min-height:18px;}
+  .quiz-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+  .quiz-nav button{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:9px 18px; border-radius:20px; cursor:pointer; font-size:13.5px; font-weight:600;
+  }
+  .quiz-nav button:hover{border-color:var(--green);}
+  .quiz-nav button:disabled{opacity:.35; cursor:not-allowed;}
+  .quiz-dots{display:flex; gap:6px;}
+  .quiz-dots span{width:8px;height:8px;border-radius:50%; background:var(--border);}
+  .quiz-dots span.active{background:var(--cyan);}
+  .quiz-dots span.done{background:var(--green);}
+  .quiz-score{ text-align:center; padding:20px; font-size:18px; font-weight:800; }
+
+  footer{ text-align:center; padding:30px 20px; color:var(--text-dim); font-size:12.5px; border-top:1px solid var(--border); }
+  ::selection{background:var(--green); color:#1e1f29;}
+
+  .scrolltop{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    color:#1e1f29; font-weight:900; cursor:pointer; box-shadow:var(--shadow);
+    opacity:0; pointer-events:none; transition:.2s;
+  }
+  .scrolltop.show{opacity:1; pointer-events:auto;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="logo">J</div> Java Foundations · Hour 5</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#m31">31. Why Methods?</a>
+    <a href="#m32">32. Basic Method</a>
+    <a href="#m33">33. Parameters</a>
+    <a href="#m34">34. Return Value</a>
+    <a href="#m35">35. Anatomy</a>
+    <a href="#m36">36. Overloading</a>
+    <a href="#quiz">Quiz</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="badge-pill">IT Training &middot; Core Java Track &middot; Hour 5</span>
+    <h1>Methods</h1>
+    <p class="sub">In this hour, I'm showing you how to stop cramming everything into <code>main()</code> and start organizing your program into small, reusable, well-named pieces — the single habit that separates beginner code from professional code.</p>
+    <div class="hero-meta">
+      <div><strong>6</strong>Modules</div>
+      <div><strong>~75 min</strong>Session Length</div>
+      <div><strong>Beginner</strong>Level</div>
+      <div><strong>5</strong>Code Walkthroughs</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- MODULE 31 -->
+  <section class="module" id="m31">
+    <div class="module-head">
+      <div class="module-num">31</div>
+      <div>
+        <h2>Why Methods?</h2>
+        <p>The problem methods exist to solve</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🛒</span> Picture an E-Commerce Application</h3>
+      <p>Think about everything a checkout flow has to do. If I tried to cram all of it directly inside <code>main()</code>, I'd end up with one enormous, unreadable block of code. Instead, I break the work into named, focused pieces:</p>
+      <div class="method-list">
+        <div class="mitem"><code>calculateTotal()</code><span class="mdesc">— add up everything in the cart</span></div>
+        <div class="mitem"><code>calculateDiscount()</code><span class="mdesc">— apply any coupon or promotional pricing</span></div>
+        <div class="mitem"><code>validateUser()</code><span class="mdesc">— confirm the customer is logged in and legitimate</span></div>
+        <div class="mitem"><code>sendEmail()</code><span class="mdesc">— notify the customer their order went through</span></div>
+        <div class="mitem"><code>processPayment()</code><span class="mdesc">— actually charge the card</span></div>
+      </div>
+    </div>
+
+    <div class="pipe">
+      <div class="pipe-node accent-red">Everything crammed into main()</div>
+      <div class="pipe-arrow">↓ instead, I do this</div>
+      <div class="pipe-node accent-green">Separate functionality into methods</div>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>The core habit I want you building starting today:</b> instead of writing everything inside <code>main()</code>, separate functionality into methods. Each method should do one clearly named thing — that alone makes your code easier to read, easier to test, and easier to reuse.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 32 -->
+  <section class="module" id="m32">
+    <div class="module-head">
+      <div class="module-num">32</div>
+      <div>
+        <h2>Basic Method</h2>
+        <p>The simplest possible method — no inputs, no output</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">👋</span> A Welcome Message</h3>
+      <div class="code-block">
+        <div class="code-head"><span>MethodDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">MethodDemo</span> {
+
+    <span class="kw">static void</span> <span class="mth">greet</span>() {
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Welcome to Java Training"</span>);
+
+    }
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="mth">greet</span>();
+
+    }
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Welcome to Java Training</div>
+      </div>
+
+      <p>Here's how I want you to trace execution the first time you see a method call:</p>
+      <div class="callflow">
+        <div class="callflow-box main">main() starts running</div>
+        <div class="callflow-note">↓ hits the line <code>greet();</code></div>
+        <div class="callflow-box method">control jumps into greet()</div>
+        <div class="callflow-note">↓ prints the message</div>
+        <div class="callflow-box main">control returns back to main()</div>
+      </div>
+      <p class="diagram-caption">Calling <code>greet();</code> pauses <code>main()</code>, runs everything inside <code>greet()</code>, then hands control right back to where it left off in <code>main()</code>.</p>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>Why <code>static</code> and why <code>void</code> here:</b> <code>static</code> lets <code>main()</code> call <code>greet()</code> directly without creating an object first. <code>void</code> means this method doesn't hand any value back — it just performs an action.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 33 -->
+  <section class="module" id="m33">
+    <div class="module-head">
+      <div class="module-num">33</div>
+      <div>
+        <h2>Method with Parameters</h2>
+        <p>Letting the caller feed information into the method</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🎓</span> Greeting Different Students</h3>
+      <div class="code-block">
+        <div class="code-head"><span>MethodDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">MethodDemo</span> {
+
+    <span class="kw">static void</span> <span class="mth">greetStudent</span>(<span class="cls">String</span> <span class="prm">name</span>) {
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Welcome "</span> + <span class="prm">name</span>);
+
+    }
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="mth">greetStudent</span>(<span class="str">"Rahul"</span>);
+        <span class="mth">greetStudent</span>(<span class="str">"Priya"</span>);
+
+    }
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Welcome Rahul
+Welcome Priya</div>
+      </div>
+
+      <p>I want you to notice exactly what changes between the two calls:</p>
+      <div class="steps">
+        <div class="step">
+          <h4>Step 1 — First call</h4>
+          <p><code>greetStudent("Rahul")</code> — the string <code>"Rahul"</code> is copied into the parameter <code>name</code> for this one call.</p>
+        </div>
+        <div class="step">
+          <h4>Step 2 — Method runs with that value</h4>
+          <p>Inside the method, <code>name</code> is <code>"Rahul"</code>, so it prints <code>"Welcome Rahul"</code>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 3 — Second call, brand new value</h4>
+          <p><code>greetStudent("Priya")</code> runs the exact same method body again, but this time <code>name</code> holds <code>"Priya"</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>The mental model I want you keeping:</b> a parameter is just a placeholder variable that gets filled in fresh with whatever value the caller passes in — same method body, different data, every single call.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 34 -->
+  <section class="module" id="m34">
+    <div class="module-head">
+      <div class="module-num">34</div>
+      <div>
+        <h2>Method Returning a Value</h2>
+        <p>Getting a result back out of a method, not just an action</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">➕</span> A Simple Calculator</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Calculator.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">Calculator</span> {
+
+    <span class="kw">static int</span> <span class="mth">add</span>(<span class="kw">int</span> <span class="prm">a</span>, <span class="kw">int</span> <span class="prm">b</span>) {
+
+        <span class="kw">return</span> <span class="prm">a</span> + <span class="prm">b</span>;
+
+    }
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="kw">int</span> result = <span class="mth">add</span>(<span class="num-lit">10</span>, <span class="num-lit">20</span>);
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(result);
+
+    }
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>30</div>
+      </div>
+
+      <div class="pipe">
+        <div class="pipe-node accent-yellow">add(10, 20) is called</div>
+        <div class="pipe-arrow">↓ a = 10, b = 20</div>
+        <div class="pipe-node accent-cyan">return a + b executes</div>
+        <div class="pipe-arrow">↓ hands 30 back to the caller</div>
+        <div class="pipe-node accent-green">int result = 30</div>
+      </div>
+      <p class="diagram-caption">Unlike <code>greet()</code>, this method's return type is <code>int</code>, not <code>void</code> — so it must use <code>return</code> to hand a value back, and that value can be stored in a variable at the call site.</p>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>void vs a real return type:</b> if a method says <code>void</code>, it performs an action and gives nothing back — you can't assign its call to a variable. If it declares a type like <code>int</code>, it must <code>return</code> a value of that exact type on every possible path through the method.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 35 -->
+  <section class="module" id="m35">
+    <div class="module-head">
+      <div class="module-num">35</div>
+      <div>
+        <h2>Method Anatomy</h2>
+        <p>Breaking a method signature down piece by piece</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔬</span> Dissecting a Signature</h3>
+      <p>I want you able to point at every single word in this line and name what it is:</p>
+      <div class="anatomy-box">
+        <div class="anatomy-line">
+          <span class="seg" style="color:var(--pink);">public</span>
+          <span class="seg" style="color:var(--pink);">static</span>
+          <span class="seg" style="color:var(--yellow);">int</span>
+          <span class="seg" style="color:var(--green);">calculateSalary</span>(<span class="seg" style="color:var(--yellow);">int</span> <span class="seg" style="color:var(--purple);">basicSalary</span>)
+        </div>
+        <div class="anatomy-tags">
+          <div class="anatomy-tag"><span class="aterm" style="color:var(--pink);">public</span><span class="adesc">access modifier</span></div>
+          <div class="anatomy-tag"><span class="aterm" style="color:var(--pink);">static</span><span class="adesc">modifier</span></div>
+          <div class="anatomy-tag"><span class="aterm" style="color:var(--yellow);">int</span><span class="adesc">return type</span></div>
+          <div class="anatomy-tag"><span class="aterm" style="color:var(--green);">calculateSalary</span><span class="adesc">method name</span></div>
+          <div class="anatomy-tag"><span class="aterm" style="color:var(--purple);">int basicSalary</span><span class="adesc">parameter</span></div>
+        </div>
+      </div>
+
+      <table class="breakdown">
+        <thead><tr><th>Part</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>public</code></td><td>access modifier</td></tr>
+          <tr><td><code>static</code></td><td>modifier</td></tr>
+          <tr><td><code>int</code></td><td>return type</td></tr>
+          <tr><td><code>calculateSalary</code></td><td>method name</td></tr>
+          <tr><td><code>int basicSalary</code></td><td>parameter</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>Read every method signature in this exact order</b> — access modifier, other modifiers, return type, name, then the parameter list. Once this reading order is automatic, unfamiliar code (yours or anyone else's) becomes far less intimidating.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 36 -->
+  <section class="module" id="m36">
+    <div class="module-head">
+      <div class="module-num">36</div>
+      <div>
+        <h2>Method Overloading</h2>
+        <p>Same name, different parameter list</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧮</span> Three Versions of add()</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Calculator.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">Calculator</span> {
+
+    <span class="kw">static int</span> <span class="mth">add</span>(<span class="kw">int</span> <span class="prm">a</span>, <span class="kw">int</span> <span class="prm">b</span>) {
+
+        <span class="kw">return</span> <span class="prm">a</span> + <span class="prm">b</span>;
+
+    }
+
+    <span class="kw">static int</span> <span class="mth">add</span>(<span class="kw">int</span> <span class="prm">a</span>, <span class="kw">int</span> <span class="prm">b</span>, <span class="kw">int</span> <span class="prm">c</span>) {
+
+        <span class="kw">return</span> <span class="prm">a</span> + <span class="prm">b</span> + <span class="prm">c</span>;
+
+    }
+
+    <span class="kw">static double</span> <span class="mth">add</span>(<span class="kw">double</span> <span class="prm">a</span>, <span class="kw">double</span> <span class="prm">b</span>) {
+
+        <span class="kw">return</span> <span class="prm">a</span> + <span class="prm">b</span>;
+
+    }
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="mth">add</span>(<span class="num-lit">10</span>, <span class="num-lit">20</span>));
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="mth">add</span>(<span class="num-lit">10</span>, <span class="num-lit">20</span>, <span class="num-lit">30</span>));
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="mth">add</span>(<span class="num-lit">10.5</span>, <span class="num-lit">20.5</span>));
+
+    }
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>30
+60
+31.0</div>
+      </div>
+
+      <p>Java picks which <code>add()</code> to run purely by matching the arguments you passed against each version's parameter list:</p>
+      <table class="overload">
+        <thead><tr><th>Call</th><th>Arguments passed</th><th>Version matched</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr class="match"><td>add(10, 20)</td><td>two ints</td><td><code>add(int a, int b)</code></td><td>30</td></tr>
+          <tr class="match"><td>add(10, 20, 30)</td><td>three ints</td><td><code>add(int a, int b, int c)</code></td><td>60</td></tr>
+          <tr class="match"><td>add(10.5, 20.5)</td><td>two doubles</td><td><code>add(double a, double b)</code></td><td>31.0</td></tr>
+        </tbody>
+      </table>
+      <p class="diagram-caption">This is called <b>method overloading</b> — the same method name, <code>add</code>, reused across multiple versions that differ in the number or type of their parameters.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🎯</span> Important Interview Point</h3>
+      <div class="danger-list">
+        <h4>⚠️ This is NOT method overloading</h4>
+        <div class="code-block" style="margin:8px 0 0;">
+          <pre class="code" style="padding:14px 18px;"><span class="kw">int</span> <span class="mth">add</span>(<span class="kw">int</span> <span class="prm">a</span>)
+<span class="kw">double</span> <span class="mth">add</span>(<span class="kw">int</span> <span class="prm">a</span>)</pre>
+        </div>
+      </div>
+      <p>Both methods here have the exact same name and the exact same parameter list — <code>(int a)</code>. Only the return type is different, and <b>that alone is not enough</b>. This won't even compile: Java would have no way to decide which one you meant when you call <code>add(5)</code>, since it can't tell them apart by looking at the call itself.</p>
+    </div>
+
+    <div class="callout avoid">
+      <div class="ico">🚫</div>
+      <div><b>Remember for interviews and exams:</b> changing only the return type is insufficient for overloading. Overloading is determined entirely by the parameter list — the number of parameters, their types, or their order. The return type is never part of that decision.</div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="module" id="quiz">
+    <div class="module-head">
+      <div class="module-num">✓</div>
+      <div>
+        <h2>Quick Knowledge Check</h2>
+        <p>6 questions to reinforce this hour's concepts</p>
+      </div>
+    </div>
+
+    <div class="quiz-box" id="quizBox">
+      <div id="quizQuestionArea"></div>
+      <div class="quiz-nav">
+        <button id="prevBtn">← Previous</button>
+        <div class="quiz-dots" id="quizDots"></div>
+        <button id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Java Foundations Training Module — Hour 5 &middot; Prepared for IT Training Cohort &middot; Confidential Training Material</footer>
+
+<div class="scrolltop" id="scrollTop">↑</div>
+
+<script>
+  const progressFill = document.getElementById('progressFill');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  const sections = document.querySelectorAll('section.module');
+  const navLinks = document.querySelectorAll('#navLinks a');
+
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressFill.style.width = scrolled + '%';
+    scrollTopBtn.classList.toggle('show', h.scrollTop > 500);
+
+    let current = '';
+    sections.forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= 120 && rect.bottom >= 120) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  const questions = [
+    {
+      q: "Why do I split e-commerce logic into methods like calculateTotal() and validateUser() instead of writing it all in main()?",
+      options: [
+        "Because main() cannot contain any code at all",
+        "To separate functionality into focused, reusable, readable pieces",
+        "Because Java requires at least five methods per program",
+        "It has no real benefit, it's just a style preference"
+      ],
+      correct: 1,
+      explain: "Breaking work into named methods instead of cramming everything into main() makes the program easier to read, test, and reuse.",
+      correctFeedback: "Exactly right!",
+      incorrectFeedback: "Think about what problem breaking code into pieces actually solves."
+    },
+    {
+      q: "In `static void greet() { ... }`, what does the `void` mean?",
+      options: [
+        "The method takes no parameters",
+        "The method doesn't return any value — it just performs an action",
+        "The method is empty",
+        "The method can only be called once"
+      ],
+      correct: 1,
+      explain: "void means this method performs an action but hands nothing back to the caller — you can't assign its call to a variable.",
+      correctFeedback: "Correct!",
+      incorrectFeedback: "void refers to what comes back from the method, not its parameters."
+    },
+    {
+      q: "In `greetStudent(String name)`, what happens differently between `greetStudent(\"Rahul\")` and `greetStudent(\"Priya\")`?",
+      options: [
+        "Two entirely different methods are compiled",
+        "The same method body runs each time, with `name` holding a different value on each call",
+        "Nothing — both calls print the exact same output",
+        "Java throws an error because the method was already called once"
+      ],
+      correct: 1,
+      explain: "A parameter is a placeholder variable filled fresh with whatever value the caller passes — the method body is reused, only the data changes.",
+      correctFeedback: "That's the idea!",
+      incorrectFeedback: "Think about what a parameter actually is: a placeholder for incoming data."
+    },
+    {
+      q: "In `static int add(int a, int b) { return a + b; }`, what is required for this method to compile correctly?",
+      options: [
+        "It must return an int on every possible path, since its return type is int",
+        "It should never use the return keyword",
+        "It must always return exactly 0",
+        "The parameters must be named a and b specifically"
+      ],
+      correct: 0,
+      explain: "Since the declared return type is int (not void), the method must return an int value — return a + b satisfies that.",
+      correctFeedback: "Exactly!",
+      incorrectFeedback: "Focus on the declared return type, int, and what that obligates the method to do."
+    },
+    {
+      q: "In `public static int calculateSalary(int basicSalary)`, what is `int basicSalary`?",
+      options: [
+        "The return type",
+        "The access modifier",
+        "The parameter",
+        "The method name"
+      ],
+      correct: 2,
+      explain: "int basicSalary is the parameter — the piece of data the method accepts as input. The return type is the first int, and calculateSalary is the method name.",
+      correctFeedback: "Nailed it!",
+      incorrectFeedback: "Look at where it sits — inside the parentheses of the method signature."
+    },
+    {
+      q: "Is this pair valid method overloading? `int add(int a)` and `double add(int a)`",
+      options: [
+        "Yes, because the return types differ",
+        "No — changing only the return type is not enough; the parameter list is identical",
+        "Yes, because the method names are different",
+        "It depends on which one is called first"
+      ],
+      correct: 1,
+      explain: "Overloading is determined by the parameter list, not the return type. Since both methods take (int a), this is not valid overloading and won't compile.",
+      correctFeedback: "That's the key interview point!",
+      incorrectFeedback: "Remember: overloading is decided by parameters, never by return type alone."
+    }
+  ];
+
+  let current = 0;
+  const answered = new Array(questions.length).fill(null);
+
+  const qArea = document.getElementById('quizQuestionArea');
+  const dotsWrap = document.getElementById('quizDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function renderDots(){
+    dotsWrap.innerHTML = '';
+    questions.forEach((_, i) => {
+      const d = document.createElement('span');
+      if (i === current) d.classList.add('active');
+      else if (answered[i] !== null) d.classList.add('done');
+      dotsWrap.appendChild(d);
+    });
+  }
+
+  function renderQuestion(){
+    if (current >= questions.length){
+      const correctCount = answered.filter((a,i) => a === questions[i].correct).length;
+      qArea.innerHTML = `<div class="quiz-score">🎉 You scored ${correctCount} / ${questions.length}</div>`;
+      prevBtn.disabled = false;
+      nextBtn.disabled = true;
+      renderDots();
+      return;
+    }
+    const item = questions[current];
+    let optsHtml = item.options.map((opt, i) => {
+      let cls = 'quiz-opt';
+      if (answered[current] !== null){
+        if (i === item.correct) cls += ' correct';
+        else if (i === answered[current]) cls += ' wrong';
+      }
+      return `<div class="${cls}" data-idx="${i}">${opt}</div>`;
+    }).join('');
+
+    let feedbackHtml = '';
+    if (answered[current] !== null){
+      const wasCorrect = answered[current] === item.correct;
+      const verdict = wasCorrect ? (item.correctFeedback || "That's right.") : (item.incorrectFeedback || "Not quite.");
+      feedbackHtml = `<b>${verdict}</b> ${item.explain}`;
+    }
+
+    qArea.innerHTML = `
+      <div class="quiz-q">Q${current+1}. ${item.q}</div>
+      <div class="quiz-opts">${optsHtml}</div>
+      <div class="quiz-feedback">${feedbackHtml}</div>
+    `;
+
+    document.querySelectorAll('.quiz-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        if (answered[current] !== null) return;
+        answered[current] = parseInt(el.getAttribute('data-idx'));
+        renderQuestion();
+      });
+    });
+
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = false;
+    nextBtn.textContent = current === questions.length - 1 ? 'Finish →' : 'Next →';
+    renderDots();
+  }
+
+  prevBtn.addEventListener('click', () => { if (current > 0){ current--; renderQuestion(); } });
+  nextBtn.addEventListener('click', () => { current++; renderQuestion(); });
+
+  renderQuestion();
+</script>
+
+</body>
+</html>

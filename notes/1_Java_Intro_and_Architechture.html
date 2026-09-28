@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Introduction &amp; Architecture | IT Training Module</title>
+<style>
+  :root{
+    --bg:#282a36;
+    --bg-alt:#1e1f29;
+    --surface:#2f3140;
+    --surface-2:#363849;
+    --border:#44475a;
+    --text:#f8f8f2;
+    --text-dim:#b8bcd4;
+    --purple:#bd93f9;
+    --pink:#ff79c6;
+    --green:#50fa7b;
+    --cyan:#8be9fd;
+    --orange:#ffb86c;
+    --yellow:#f1fa8c;
+    --red:#ff5555;
+    --radius:14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(189,147,249,0.10), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(139,233,253,0.08), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    line-height:1.65;
+  }
+  a{color:var(--cyan);}
+  code, pre{
+    font-family:'Cascadia Code','Fira Code',Consolas,'Courier New',monospace;
+  }
+
+  /* ---------- top bar / progress ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(30,31,41,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:10px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+  }
+  .topbar .brand{
+    display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px;
+  }
+  .brand .logo{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(135deg,var(--orange),var(--red));
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px; color:#1e1f29; font-weight:900;
+  }
+  .progress-track{
+    flex:1; max-width:420px; height:8px; border-radius:20px;
+    background:var(--surface-2); overflow:hidden; border:1px solid var(--border);
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--purple),var(--pink));
+    transition:width .15s ease;
+  }
+  .nav-links{
+    display:flex; gap:6px; flex-wrap:wrap; font-size:12.5px;
+  }
+  .nav-links a{
+    color:var(--text-dim); text-decoration:none; padding:6px 10px;
+    border-radius:20px; border:1px solid transparent; white-space:nowrap;
+  }
+  .nav-links a:hover, .nav-links a.active{
+    background:var(--surface-2); color:var(--text); border-color:var(--border);
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:70px 24px 50px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:42px 42px;
+    opacity:0.12;
+    mask-image:radial-gradient(circle at 50% 20%, black, transparent 70%);
+  }
+  .hero-inner{position:relative; z-index:1;}
+  .badge-pill{
+    display:inline-block; padding:6px 16px; border-radius:30px;
+    background:var(--surface-2); border:1px solid var(--border);
+    font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--orange); font-weight:700; margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(28px,5vw,48px);
+    margin:0 0 12px;
+    background:linear-gradient(90deg,var(--orange),var(--pink) 60%,var(--purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    font-weight:800;
+  }
+  .hero p.sub{
+    max-width:680px; margin:0 auto; color:var(--text-dim); font-size:16px;
+  }
+  .hero-meta{
+    display:flex; justify-content:center; gap:28px; margin-top:28px; flex-wrap:wrap;
+  }
+  .hero-meta div{font-size:13px; color:var(--text-dim);}
+  .hero-meta strong{display:block; font-size:20px; color:var(--text);}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:1080px; margin:0 auto; padding:10px 24px 100px;}
+  section.module{
+    padding:56px 0;
+    border-bottom:1px dashed var(--border);
+    scroll-margin-top:80px;
+  }
+  section.module:last-child{border-bottom:none;}
+  .module-head{
+    display:flex; align-items:center; gap:16px; margin-bottom:28px;
+  }
+  .module-num{
+    flex:0 0 auto;
+    width:52px;height:52px;border-radius:14px;
+    background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:20px; color:var(--pink);
+  }
+  .module-head h2{
+    margin:0; font-size:26px; font-weight:800;
+  }
+  .module-head p{margin:2px 0 0; color:var(--text-dim); font-size:14px;}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    margin-bottom:22px;
+    box-shadow:var(--shadow);
+  }
+  .card h3{margin-top:0; font-size:17px; color:var(--cyan); display:flex; gap:8px; align-items:center;}
+  .card h3 .icon{font-size:18px;}
+  .card ul, .card ol{margin:10px 0; padding-left:22px;}
+  .card li{margin-bottom:6px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:760px){
+    .grid-2, .grid-3{grid-template-columns:1fr;}
+  }
+
+  /* ---------- callouts ---------- */
+  .callout{
+    border-radius:var(--radius); padding:16px 20px; margin:18px 0;
+    border:1px solid; display:flex; gap:14px; align-items:flex-start;
+    font-size:14.5px;
+  }
+  .callout .ico{font-size:20px; line-height:1;}
+  .callout.teach{background:rgba(80,250,123,0.08); border-color:rgba(80,250,123,0.4);}
+  .callout.avoid{background:rgba(255,85,85,0.08); border-color:rgba(255,85,85,0.4);}
+  .callout.tip{background:rgba(139,233,253,0.08); border-color:rgba(139,233,253,0.4);}
+  .callout b{color:var(--text);}
+
+  /* ---------- analogy box ---------- */
+  .analogy{
+    display:flex; gap:18px; align-items:center; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius); padding:20px; margin:16px 0;
+  }
+  .analogy .side{flex:1; min-width:220px;}
+  .analogy .side h4{margin:0 0 6px; color:var(--orange); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .analogy .arrow{font-size:26px; color:var(--pink);}
+
+  /* ---------- pipe / flow diagram ---------- */
+  .pipe{
+    display:flex; flex-direction:column; align-items:center; gap:0;
+    margin:26px 0;
+  }
+  .pipe-node{
+    background:var(--surface-2); border:1.5px solid var(--border);
+    border-radius:12px; padding:12px 22px; font-weight:700; font-size:14.5px;
+    text-align:center; min-width:200px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  }
+  .pipe-node.accent-purple{border-color:var(--purple); color:var(--purple);}
+  .pipe-node.accent-green{border-color:var(--green); color:var(--green);}
+  .pipe-node.accent-cyan{border-color:var(--cyan); color:var(--cyan);}
+  .pipe-node.accent-orange{border-color:var(--orange); color:var(--orange);}
+  .pipe-node.accent-pink{border-color:var(--pink); color:var(--pink);}
+  .pipe-arrow{
+    color:var(--text-dim); font-size:20px; margin:2px 0; line-height:1;
+  }
+  .pipe-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center;}
+  .pipe-hrow{
+    display:flex; align-items:stretch; gap:14px; justify-content:center; flex-wrap:wrap; margin:20px 0;
+  }
+  .pipe-hrow .pipe-node{min-width:130px;}
+  .pipe-harrow{align-self:center; font-size:22px; color:var(--text-dim);}
+
+  /* ---------- diagram svg wrapper ---------- */
+  .diagram-box{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin:20px 0; overflow-x:auto;
+  }
+  .diagram-caption{
+    text-align:center; font-size:12.5px; color:var(--text-dim); margin-top:8px; font-style:italic;
+  }
+
+  /* ---------- table ---------- */
+  table.tl{
+    width:100%; border-collapse:collapse; margin:14px 0; font-size:14px;
+  }
+  table.tl th, table.tl td{
+    padding:10px 14px; border-bottom:1px solid var(--border); text-align:left;
+  }
+  table.tl th{color:var(--orange); font-size:12.5px; text-transform:uppercase; letter-spacing:.5px;}
+  table.tl tr:hover td{background:var(--surface-2);}
+  .tl-year{color:var(--cyan); font-weight:700; white-space:nowrap;}
+  .tag-lts{
+    display:inline-block; margin-left:8px; font-size:10.5px; padding:2px 7px;
+    border-radius:20px; background:rgba(80,250,123,0.15); color:var(--green);
+    border:1px solid rgba(80,250,123,0.4); font-weight:700;
+  }
+
+  /* ---------- feature grid ---------- */
+  .feat-card{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+    padding:16px; display:flex; flex-direction:column; gap:8px;
+  }
+  .feat-card .num{
+    width:30px;height:30px;border-radius:8px; background:var(--bg-alt);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--pink); font-size:13px;
+  }
+  .feat-card h4{margin:0; font-size:15px;}
+  .feat-card p{margin:0; font-size:13px; color:var(--text-dim);}
+  .feat-card code.inline-tag{
+    display:inline-block; background:var(--bg-alt); padding:2px 8px; border-radius:6px;
+    font-size:12px; color:var(--yellow); margin:2px 4px 0 0; border:1px solid var(--border);
+  }
+
+  /* ---------- code block ---------- */
+  .code-block{
+    background:#1a1b24; border:1px solid var(--border); border-radius:12px;
+    overflow:hidden; margin:16px 0;
+  }
+  .code-head{
+    display:flex; align-items:center; justify-content:space-between;
+    background:#20212c; padding:9px 16px; border-bottom:1px solid var(--border);
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .code-dots{display:flex; gap:6px;}
+  .code-dots span{width:10px;height:10px;border-radius:50%;}
+  .code-dots span:nth-child(1){background:#ff5f56;}
+  .code-dots span:nth-child(2){background:#ffbd2e;}
+  .code-dots span:nth-child(3){background:#27c93f;}
+  pre.code{
+    margin:0; padding:18px 20px; overflow-x:auto; font-size:14px; line-height:1.7;
+  }
+  .kw{color:var(--pink);}
+  .cls{color:var(--cyan);}
+  .str{color:var(--yellow);}
+  .mth{color:var(--green);}
+  .cmt{color:#6272a4;}
+  .out{color:var(--orange);}
+
+  .code-output{
+    background:#151621; border-top:1px dashed var(--border);
+    padding:12px 20px; font-size:13.5px; color:var(--green); font-family:'Cascadia Code',monospace;
+  }
+  .code-output .lbl{color:var(--text-dim); font-size:11px; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;}
+
+  /* line-by-line explain */
+  .line-explain{
+    display:grid; grid-template-columns:120px 1fr; gap:6px 16px; margin:14px 0; font-size:14px;
+  }
+  .line-explain .lterm{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:8px;
+    padding:4px 10px; font-family:'Cascadia Code',monospace; color:var(--yellow); font-size:13px;
+    align-self:start;
+  }
+  .line-explain .ldesc{color:var(--text-dim); align-self:center;}
+
+  /* ---------- step cards (implementation steps) ---------- */
+  .steps{counter-reset:stepnum; margin:20px 0;}
+  .step{
+    position:relative; padding:16px 20px 16px 56px; margin-bottom:14px;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+  }
+  .step::before{
+    counter-increment:stepnum; content:counter(stepnum);
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:28px; height:28px; border-radius:50%;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; color:#1e1f29;
+  }
+  .step h4{margin:0 0 4px; font-size:15px;}
+  .step p{margin:0; font-size:13.5px; color:var(--text-dim);}
+  .step code{background:var(--bg-alt); padding:1px 6px; border-radius:5px; color:var(--cyan); border:1px solid var(--border);}
+
+  /* ---------- analogy: restaurant nested boxes ---------- */
+  .nest-wrap{display:flex; justify-content:center; margin:24px 0;}
+  .nest-outer{
+    border:2px solid var(--orange); border-radius:16px; padding:24px;
+    text-align:center; width:100%; max-width:520px; position:relative;
+  }
+  .nest-outer .tag{position:absolute; top:-13px; left:20px; background:var(--bg); padding:0 8px; color:var(--orange); font-weight:800; font-size:13px;}
+  .nest-mid{
+    border:2px solid var(--cyan); border-radius:14px; padding:22px; margin-top:14px; position:relative;
+  }
+  .nest-mid .tag{position:absolute; top:-13px; left:20px; background:var(--bg); padding:0 8px; color:var(--cyan); font-weight:800; font-size:13px;}
+  .nest-inner{
+    border:2px solid var(--pink); border-radius:12px; padding:18px; margin-top:14px; position:relative;
+    background:rgba(255,121,198,0.06);
+  }
+  .nest-inner .tag{position:absolute; top:-13px; left:20px; background:var(--bg); padding:0 8px; color:var(--pink); font-weight:800; font-size:13px;}
+  .nest-label{font-size:13px; color:var(--text-dim); margin-top:6px;}
+
+  /* ---------- quiz ---------- */
+  .quiz-box{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-top:20px;
+  }
+  .quiz-q{font-weight:700; margin-bottom:14px; font-size:15.5px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:10px;}
+  .quiz-opt{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 16px; cursor:pointer; font-size:14px; transition:.15s;
+  }
+  .quiz-opt:hover{border-color:var(--purple);}
+  .quiz-opt.correct{background:rgba(80,250,123,0.15); border-color:var(--green); color:var(--green);}
+  .quiz-opt.wrong{background:rgba(255,85,85,0.15); border-color:var(--red); color:var(--red);}
+  .quiz-feedback{margin-top:12px; font-size:13.5px; color:var(--text-dim); min-height:18px;}
+  .quiz-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+  .quiz-nav button{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:9px 18px; border-radius:20px; cursor:pointer; font-size:13.5px; font-weight:600;
+  }
+  .quiz-nav button:hover{border-color:var(--purple);}
+  .quiz-nav button:disabled{opacity:.35; cursor:not-allowed;}
+  .quiz-dots{display:flex; gap:6px;}
+  .quiz-dots span{width:8px;height:8px;border-radius:50%; background:var(--border);}
+  .quiz-dots span.active{background:var(--pink);}
+  .quiz-dots span.done{background:var(--green);}
+  .quiz-score{
+    text-align:center; padding:20px; font-size:18px; font-weight:800;
+  }
+
+  /* jvm component diagram cards */
+  .jvm-comp{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+    padding:16px; margin-bottom:12px;
+  }
+  .jvm-comp h4{margin:0 0 6px; color:var(--purple); font-size:15px;}
+  .jvm-comp ul{margin:6px 0 0; padding-left:20px; font-size:13.5px; color:var(--text-dim);}
+
+  footer{
+    text-align:center; padding:30px 20px; color:var(--text-dim); font-size:12.5px;
+    border-top:1px solid var(--border);
+  }
+
+  ::selection{background:var(--purple); color:#1e1f29;}
+
+  /* scroll-top btn */
+  .scrolltop{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    display:flex; align-items:center; justify-content:center;
+    color:#1e1f29; font-weight:900; cursor:pointer; box-shadow:var(--shadow);
+    opacity:0; pointer-events:none; transition:.2s;
+  }
+  .scrolltop.show{opacity:1; pointer-events:auto;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="logo">J</div> Java Foundations</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#m1">1. What is Java</a>
+    <a href="#m2">2. History</a>
+    <a href="#m3">3. Why Popular</a>
+    <a href="#m4">4. First Program</a>
+    <a href="#m5">5. JDK/JRE/JVM</a>
+    <a href="#m6">6. Architecture</a>
+    <a href="#m7">7. JVM Components</a>
+    <a href="#quiz">Quiz</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="badge-pill">IT Training &middot; Core Java Track</span>
+    <h1>Java Introduction &amp; Architecture</h1>
+    <p class="sub">A complete, visual walkthrough of what Java is, how it evolved, why it became an industry standard, and exactly how your code travels from a text file to running machine instructions.</p>
+    <div class="hero-meta">
+      <div><strong>7</strong>Modules</div>
+      <div><strong>~90 min</strong>Session Length</div>
+      <div><strong>Beginner</strong>Level</div>
+      <div><strong>1</strong>Hands-on Program</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- MODULE 1 -->
+  <section class="module" id="m1">
+    <div class="module-head">
+      <div class="module-num">1</div>
+      <div>
+        <h2>What is Java?</h2>
+        <p>Building the mental model before the definition</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">📘</span> Formal Definition</h3>
+      <p>Java is a <b style="color:var(--yellow)">high-level, object-oriented, class-based</b> programming language designed to be <b style="color:var(--green)">portable, robust, secure</b>, and suitable for building applications ranging from backend services to enterprise systems.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">✉️</span> Real-Life Analogy: Writing a Letter</h3>
+      <div class="analogy">
+        <div class="side">
+          <h4>What a computer understands</h4>
+          <code style="color:var(--text-dim)">01001010 11010101 00110101 ...</code>
+        </div>
+        <div class="arrow">≠</div>
+        <div class="side">
+          <h4>What a human writes</h4>
+          <code style="color:var(--cyan)">"Hello, how are you?"</code>
+        </div>
+      </div>
+      <p>The computer ultimately understands only machine instructions. <b>Java provides a layer between human-readable programming and machine execution</b> — so developers write in a readable language, and Java handles the translation down to the machine.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔀</span> The Translation Layer, Visualized</h3>
+      <div class="pipe">
+        <div class="pipe-node accent-cyan">🧑 Human</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-yellow" style="border-color:var(--yellow); color:var(--yellow);">Java Code</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-purple">Java Compiler</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-pink">Bytecode</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-green">JVM</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-orange">Machine Code</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node">💻 Computer</div>
+      </div>
+      <p class="diagram-caption">Every layer exists to move human intent closer to something the processor can execute.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 2 -->
+  <section class="module" id="m2">
+    <div class="module-head">
+      <div class="module-num">2</div>
+      <div>
+        <h2>History of Java</h2>
+        <p>Key milestones every developer should recognize</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🕰️</span> Timeline</h3>
+      <table class="tl">
+        <thead><tr><th>Year</th><th>Event</th></tr></thead>
+        <tbody>
+          <tr><td class="tl-year">1991</td><td>Green Project started at Sun Microsystems</td></tr>
+          <tr><td class="tl-year">1995</td><td>Java publicly introduced</td></tr>
+          <tr><td class="tl-year">1996</td><td>JDK 1.0 released</td></tr>
+          <tr><td class="tl-year">2004</td><td>Java 5 introduced major language improvements</td></tr>
+          <tr><td class="tl-year">2010</td><td>Oracle acquired Sun Microsystems</td></tr>
+          <tr><td class="tl-year">2014</td><td>Java 8</td></tr>
+          <tr><td class="tl-year">2017</td><td>Java 9 / modular platform</td></tr>
+          <tr><td class="tl-year">2021</td><td>Java 17 <span class="tag-lts">LTS</span></td></tr>
+          <tr><td class="tl-year">2023</td><td>Java 21 <span class="tag-lts">LTS</span></td></tr>
+          <tr><td class="tl-year">2025</td><td>Java 25 <span class="tag-lts">LTS</span></td></tr>
+          <tr><td class="tl-year">2026</td><td>Java 26 — latest feature release</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:13.5px; color:var(--text-dim);">Java continues to evolve through regular releases — Java 25 shipped in September 2025 as an LTS (Long-Term Support) release.</p>
+    </div>
+
+    <div class="callout avoid">
+      <div class="ico">🚫</div>
+      <div><b>A common misconception I want to clear up:</b> people often say "Java means Write Once, Run Anywhere — so it just runs directly everywhere." That's not quite accurate, and I don't want you carrying that half-truth forward.</div>
+    </div>
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>Here's how I want you to actually understand it:</b> Java source code is compiled into bytecode, and a <i>compatible JVM</i> executes that bytecode on the target platform. Portability comes from the JVM layer, not magic — remember that distinction.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 3 -->
+  <section class="module" id="m3">
+    <div class="module-head">
+      <div class="module-num">3</div>
+      <div>
+        <h2>Why Java Became Popular</h2>
+        <p>Eight features that made Java an industry default</p>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="feat-card">
+        <div class="num">1</div>
+        <h4>Platform Independent</h4>
+        <p>Same bytecode runs on any device with a compatible JVM.</p>
+      </div>
+      <div class="feat-card">
+        <div class="num">2</div>
+        <h4>Object-Oriented</h4>
+        <p>Programs modeled around real-world objects.</p>
+        <div><code class="inline-tag">Student</code><code class="inline-tag">Employee</code><code class="inline-tag">Order</code></div>
+      </div>
+      <div class="feat-card">
+        <div class="num">3</div>
+        <h4>Robust</h4>
+        <p>Strong type checking, exception handling, garbage collection, runtime checks.</p>
+      </div>
+      <div class="feat-card">
+        <div class="num">4</div>
+        <h4>Secure</h4>
+        <p>Multiple built-in security mechanisms — though modern app security extends well beyond the JVM itself.</p>
+      </div>
+      <div class="feat-card">
+        <div class="num">5</div>
+        <h4>Automatic Memory Management</h4>
+        <p>Developers generally don't manually free ordinary Java objects — the garbage collector handles it.</p>
+      </div>
+      <div class="feat-card">
+        <div class="num">6</div>
+        <h4>Multithreaded</h4>
+        <p>Built-in concurrency capabilities for parallel task execution.</p>
+      </div>
+      <div class="feat-card">
+        <div class="num">7</div>
+        <h4>Rich Standard Library</h4>
+        <p>Batteries-included APIs for everyday tasks.</p>
+        <div><code class="inline-tag">String</code><code class="inline-tag">ArrayList</code><code class="inline-tag">HashMap</code><code class="inline-tag">LocalDate</code><code class="inline-tag">Files</code><code class="inline-tag">HttpClient</code></div>
+      </div>
+      <div class="feat-card">
+        <div class="num">8</div>
+        <h4>High Performance</h4>
+        <p>JIT (Just-In-Time) compilation and runtime optimizations narrow the gap with native code.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:22px;">
+      <h3><span class="icon">🖥️</span> Platform Independence, Visualized</h3>
+      <div class="pipe">
+        <div class="pipe-node accent-yellow" style="border-color:var(--yellow); color:var(--yellow);">Java Program</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-pink">Bytecode</div>
+        <div class="pipe-arrow">↓</div>
+      </div>
+      <div class="pipe-hrow">
+        <div class="pipe-node accent-green">JVM<br><span style="font-weight:400; font-size:12px; color:var(--text-dim);">Windows</span></div>
+        <div class="pipe-node accent-green">JVM<br><span style="font-weight:400; font-size:12px; color:var(--text-dim);">Linux</span></div>
+        <div class="pipe-node accent-green">JVM<br><span style="font-weight:400; font-size:12px; color:var(--text-dim);">macOS</span></div>
+      </div>
+      <p class="diagram-caption">One bytecode artifact, three different JVM implementations, three different operating systems — no recompilation needed.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 4 -->
+  <section class="module" id="m4">
+    <div class="module-head">
+      <div class="module-num">4</div>
+      <div>
+        <h2>First Java Program</h2>
+        <p>Starting from absolute zero — write, compile, run</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-head">
+        <span>HelloWorld.java</span>
+        <div class="code-dots"><span></span><span></span><span></span></div>
+      </div>
+      <pre class="code"><span class="kw">public class</span> <span class="cls">HelloWorld</span> {
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="cls">System</span>.out.<span class="mth">println</span>(<span class="str">"Hello, Java!"</span>);
+
+    }
+}</pre>
+      <div class="code-output"><span class="lbl">Console Output</span>Hello, Java!</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔍</span> Line-by-Line Explanation</h3>
+      <div class="line-explain">
+        <div class="lterm">public</div><div class="ldesc">Access modifier — controls visibility of the class.</div>
+        <div class="lterm">class</div><div class="ldesc">Keyword that defines a class — the basic building block of a Java program.</div>
+        <div class="lterm">HelloWorld</div><div class="ldesc">The class name — must match the file name (<code>HelloWorld.java</code>).</div>
+        <div class="lterm">main()</div><div class="ldesc">The starting point of a traditional Java application. Execution begins here.</div>
+        <div class="lterm">System.out.println()</div><div class="ldesc">Prints information to the console.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🛠️</span> Step-by-Step: Compile &amp; Run</h3>
+      <div class="steps">
+        <div class="step">
+          <h4>Create the source file</h4>
+          <p>Save the code above in a file named exactly <code>HelloWorld.java</code>. The file name must match the public class name.</p>
+        </div>
+        <div class="step">
+          <h4>Compile with <code>javac</code></h4>
+          <p>Run <code>javac HelloWorld.java</code> in the terminal. This invokes the Java compiler.</p>
+        </div>
+        <div class="step">
+          <h4>Bytecode file is generated</h4>
+          <p>The compiler produces <code>HelloWorld.class</code> — the bytecode version of your program.</p>
+        </div>
+        <div class="step">
+          <h4>Run with <code>java</code></h4>
+          <p>Run <code>java HelloWorld</code> (no <code>.class</code> extension). The JVM loads and executes the bytecode.</p>
+        </div>
+        <div class="step">
+          <h4>Observe the output</h4>
+          <p>The console prints <code>Hello, Java!</code> — confirming the full source → bytecode → execution pipeline worked.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULE 5 -->
+  <section class="module" id="m5">
+    <div class="module-head">
+      <div class="module-num">5</div>
+      <div>
+        <h2>JDK vs JRE vs JVM</h2>
+        <p>The most commonly asked interview distinction</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🍽️</span> Restaurant Analogy</h3>
+      <div class="nest-wrap">
+        <div class="nest-outer">
+          <span class="tag">JDK — Complete Restaurant</span>
+          <div class="nest-label">Includes everything: kitchen, dining area, AND the chefs / tools to prepare new dishes (development tools).</div>
+          <div class="nest-mid">
+            <span class="tag">JRE — Kitchen + Dining Facilities</span>
+            <div class="nest-label">Everything needed to serve an already-prepared dish (run an app) — but no tools to create new recipes.</div>
+            <div class="nest-inner">
+              <span class="tag">JVM — The Kitchen</span>
+              <div class="nest-label">Where the actual cooking (execution) happens — bytecode goes in, running behavior comes out.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="jvm-comp">
+        <h4>JVM</h4>
+        <ul><li>Runs Java bytecode</li><li>Provides the execution environment</li></ul>
+      </div>
+      <div class="jvm-comp">
+        <h4>JRE (historically)</h4>
+        <ul><li>JRE = JVM + Runtime Libraries</li><li>Enough to <i>run</i> a compiled Java app</li></ul>
+      </div>
+      <div class="jvm-comp">
+        <h4>JDK</h4>
+        <ul><li>JDK = Development Tools + Runtime</li><li>Everything needed to <i>write, compile, and run</i> Java</li></ul>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>A quick modern note:</b> in practice, you won't usually install a JRE separately anymore. That standalone-JRE model I described above is mostly historical — today you'll simply install a JDK and it covers both development and running your programs.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 6 -->
+  <section class="module" id="m6">
+    <div class="module-head">
+      <div class="module-num">6</div>
+      <div>
+        <h2>Java Architecture</h2>
+        <p>From source code to machine code, in full detail</p>
+      </div>
+    </div>
+
+    <div class="diagram-box">
+      <svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:640px; display:block; margin:0 auto;">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#b8bcd4"/>
+          </marker>
+        </defs>
+        <!-- Source -->
+        <rect x="230" y="10" width="300" height="46" rx="10" fill="#363849" stroke="#f1fa8c" stroke-width="2"/>
+        <text x="380" y="38" fill="#f1fa8c" font-size="16" font-weight="700" text-anchor="middle" font-family="Segoe UI">JAVA SOURCE CODE</text>
+
+        <line x1="380" y1="56" x2="380" y2="90" stroke="#b8bcd4" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <rect x="255" y="92" width="250" height="42" rx="10" fill="#363849" stroke="#bd93f9" stroke-width="2"/>
+        <text x="380" y="118" fill="#bd93f9" font-size="14.5" font-weight="700" text-anchor="middle" font-family="Segoe UI">javac Compiler</text>
+
+        <line x1="380" y1="134" x2="380" y2="168" stroke="#b8bcd4" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <rect x="270" y="170" width="220" height="46" rx="10" fill="#363849" stroke="#ff79c6" stroke-width="2"/>
+        <text x="380" y="192" fill="#ff79c6" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI">BYTECODE</text>
+        <text x="380" y="208" fill="#b8bcd4" font-size="11.5" text-anchor="middle" font-family="Segoe UI">.class</text>
+
+        <line x1="380" y1="216" x2="380" y2="250" stroke="#b8bcd4" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <!-- JVM container -->
+        <rect x="70" y="252" width="620" height="200" rx="14" fill="#1e1f29" stroke="#50fa7b" stroke-width="2"/>
+        <text x="380" y="278" fill="#50fa7b" font-size="16" font-weight="800" text-anchor="middle" font-family="Segoe UI">JVM</text>
+
+        <!-- three children -->
+        <rect x="90" y="296" width="180" height="60" rx="10" fill="#2f3140" stroke="#8be9fd" stroke-width="1.6"/>
+        <text x="180" y="320" fill="#8be9fd" font-size="12.5" font-weight="700" text-anchor="middle" font-family="Segoe UI">Class Loader</text>
+        <text x="180" y="338" fill="#b8bcd4" font-size="10.5" text-anchor="middle" font-family="Segoe UI">Loads .class files</text>
+
+        <rect x="290" y="296" width="180" height="60" rx="10" fill="#2f3140" stroke="#8be9fd" stroke-width="1.6"/>
+        <text x="380" y="316" fill="#8be9fd" font-size="12.5" font-weight="700" text-anchor="middle" font-family="Segoe UI">Runtime Data</text>
+        <text x="380" y="332" fill="#8be9fd" font-size="12.5" font-weight="700" text-anchor="middle" font-family="Segoe UI">Areas</text>
+        <text x="380" y="348" fill="#b8bcd4" font-size="10" text-anchor="middle" font-family="Segoe UI">Heap · Stack · Method Area</text>
+
+        <rect x="490" y="296" width="180" height="60" rx="10" fill="#2f3140" stroke="#8be9fd" stroke-width="1.6"/>
+        <text x="580" y="320" fill="#8be9fd" font-size="12.5" font-weight="700" text-anchor="middle" font-family="Segoe UI">Execution Engine</text>
+        <text x="580" y="338" fill="#b8bcd4" font-size="10.5" text-anchor="middle" font-family="Segoe UI">Interpreter · JIT</text>
+
+        <line x1="180" y1="278" x2="180" y2="296" stroke="#b8bcd4" stroke-width="1.6"/>
+        <line x1="380" y1="278" x2="380" y2="296" stroke="#b8bcd4" stroke-width="1.6"/>
+        <line x1="580" y1="278" x2="580" y2="296" stroke="#b8bcd4" stroke-width="1.6"/>
+        <line x1="180" y1="278" x2="580" y2="278" stroke="#b8bcd4" stroke-width="1.6"/>
+
+        <!-- execution engine detail chain -->
+        <line x1="580" y1="356" x2="580" y2="384" stroke="#b8bcd4" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <rect x="500" y="386" width="160" height="34" rx="8" fill="#20212c" stroke="#44475a" stroke-width="1.4"/>
+        <text x="580" y="407" fill="#f8f8f2" font-size="12" text-anchor="middle" font-family="Segoe UI">Interpreter</text>
+
+        <line x1="580" y1="420" x2="580" y2="438" stroke="#b8bcd4" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+        <line x1="380" y1="452" x2="380" y2="486" stroke="#b8bcd4" stroke-width="2" marker-end="url(#arrow)"/>
+        <rect x="255" y="464" width="250" height="42" rx="10" fill="#363849" stroke="#ffb86c" stroke-width="2"/>
+        <text x="380" y="490" fill="#ffb86c" font-size="14" font-weight="700" text-anchor="middle" font-family="Segoe UI">MACHINE CODE</text>
+      </svg>
+      <div class="diagram-caption">Source code is compiled once into bytecode; the JVM's Class Loader, Runtime Data Areas, and Execution Engine cooperate to turn that bytecode into machine code.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">⚙️</span> Compile &amp; Run Reference</h3>
+      <div class="steps">
+        <div class="step">
+          <h4>Source file</h4>
+          <p><code>HelloWorld.java</code></p>
+        </div>
+        <div class="step">
+          <h4>Compile</h4>
+          <p><code>javac HelloWorld.java</code></p>
+        </div>
+        <div class="step">
+          <h4>Output</h4>
+          <p>Creates <code>HelloWorld.class</code></p>
+        </div>
+        <div class="step">
+          <h4>Run</h4>
+          <p><code>java HelloWorld</code></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULE 7 -->
+  <section class="module" id="m7">
+    <div class="module-head">
+      <div class="module-num">7</div>
+      <div>
+        <h2>JVM Components</h2>
+        <p>What's actually inside the "kitchen"</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="jvm-comp">
+        <h4>🧩 Class Loader</h4>
+        <ul><li>Loads <code>.class</code> files into JVM memory</li></ul>
+      </div>
+      <div class="jvm-comp">
+        <h4>🗄️ Runtime Data Areas</h4>
+        <ul>
+          <li>Heap</li>
+          <li>Stack</li>
+          <li>Method Area</li>
+          <li>PC Register</li>
+          <li>Native Method Stack</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3><span class="icon">🚀</span> Execution Engine</h3>
+      <div class="pipe-hrow">
+        <div class="pipe-node accent-green">Interpreter</div>
+        <div class="pipe-harrow">+</div>
+        <div class="pipe-node accent-orange">JIT Compiler</div>
+        <div class="pipe-harrow">+</div>
+        <div class="pipe-node accent-cyan">JNI</div>
+      </div>
+      <p style="font-size:13.5px; color:var(--text-dim); text-align:center;">JNI (Java Native Interface) allows interaction with native code. <i>Since you're just starting out, I won't go deep into JNI right now — just know it exists.</i></p>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="module" id="quiz">
+    <div class="module-head">
+      <div class="module-num">✓</div>
+      <div>
+        <h2>Quick Knowledge Check</h2>
+        <p>5 questions to reinforce today's concepts</p>
+      </div>
+    </div>
+
+    <div class="quiz-box" id="quizBox">
+      <div id="quizQuestionArea"></div>
+      <div class="quiz-nav">
+        <button id="prevBtn">← Previous</button>
+        <div class="quiz-dots" id="quizDots"></div>
+        <button id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Java Foundations Training Module &middot; Prepared for IT Training Cohort &middot; Confidential Training Material</footer>
+
+<div class="scrolltop" id="scrollTop">↑</div>
+
+<script>
+  // ---- scroll progress + active nav ----
+  const progressFill = document.getElementById('progressFill');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  const sections = document.querySelectorAll('section.module');
+  const navLinks = document.querySelectorAll('#navLinks a');
+
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressFill.style.width = scrolled + '%';
+    scrollTopBtn.classList.toggle('show', h.scrollTop > 500);
+
+    let current = '';
+    sections.forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= 120 && rect.bottom >= 120) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  // ---- quiz ----
+  const questions = [
+    {
+      q: "What does the JVM primarily do?",
+      options: [
+        "Compiles Java source code into bytecode",
+        "Executes Java bytecode on the target platform",
+        "Stores Java source files",
+        "Writes machine code directly without any execution engine"
+      ],
+      correct: 1,
+      explain: "The JVM's job is to execute bytecode — the compiler (javac) is what produces bytecode from source code."
+    },
+    {
+      q: "Which statement correctly explains Java's portability?",
+      options: [
+        "Java runs directly on every machine with no translation layer",
+        "Java source code is compiled into bytecode, and a compatible JVM executes that bytecode on the target platform",
+        "Portability means Java never needs to be compiled",
+        "Portability only applies to Windows systems"
+      ],
+      correct: 1,
+      explain: "Portability comes from bytecode + a platform-specific JVM — not from Java skipping compilation."
+    },
+    {
+      q: "In the restaurant analogy, what does the JDK represent?",
+      options: [
+        "Just the kitchen",
+        "Just the dining area",
+        "The complete restaurant (kitchen + dining + tools to create new dishes)",
+        "Only the delivery service"
+      ],
+      correct: 2,
+      explain: "JDK = Development Tools + Runtime — the full restaurant, including the ability to create (develop) new dishes (programs)."
+    },
+    {
+      q: "What command compiles HelloWorld.java?",
+      options: [
+        "java HelloWorld.java",
+        "javac HelloWorld.java",
+        "run HelloWorld.class",
+        "compile HelloWorld"
+      ],
+      correct: 1,
+      explain: "javac is the Java compiler; it turns HelloWorld.java into HelloWorld.class (bytecode)."
+    },
+    {
+      q: "Which JVM component is responsible for loading .class files into memory?",
+      options: [
+        "Execution Engine",
+        "Runtime Data Areas",
+        "Class Loader",
+        "JIT Compiler"
+      ],
+      correct: 2,
+      explain: "The Class Loader specifically handles loading compiled .class files into JVM memory before execution."
+    }
+  ];
+
+  let current = 0;
+  const answered = new Array(questions.length).fill(null);
+
+  const qArea = document.getElementById('quizQuestionArea');
+  const dotsWrap = document.getElementById('quizDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function renderDots(){
+    dotsWrap.innerHTML = '';
+    questions.forEach((_, i) => {
+      const d = document.createElement('span');
+      if (i === current) d.classList.add('active');
+      else if (answered[i] !== null) d.classList.add('done');
+      dotsWrap.appendChild(d);
+    });
+  }
+
+  function renderQuestion(){
+    if (current >= questions.length){
+      const correctCount = answered.filter((a,i) => a === questions[i].correct).length;
+      qArea.innerHTML = `<div class="quiz-score">🎉 You scored ${correctCount} / ${questions.length}</div>`;
+      prevBtn.disabled = false;
+      nextBtn.disabled = true;
+      renderDots();
+      return;
+    }
+    const item = questions[current];
+    let optsHtml = item.options.map((opt, i) => {
+      let cls = 'quiz-opt';
+      if (answered[current] !== null){
+        if (i === item.correct) cls += ' correct';
+        else if (i === answered[current]) cls += ' wrong';
+      }
+      return `<div class="${cls}" data-idx="${i}">${opt}</div>`;
+    }).join('');
+
+    qArea.innerHTML = `
+      <div class="quiz-q">Q${current+1}. ${item.q}</div>
+      <div class="quiz-opts">${optsHtml}</div>
+      <div class="quiz-feedback">${answered[current] !== null ? item.explain : ''}</div>
+    `;
+
+    document.querySelectorAll('.quiz-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        if (answered[current] !== null) return;
+        answered[current] = parseInt(el.getAttribute('data-idx'));
+        renderQuestion();
+      });
+    });
+
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = false;
+    nextBtn.textContent = current === questions.length - 1 ? 'Finish →' : 'Next →';
+    renderDots();
+  }
+
+  prevBtn.addEventListener('click', () => { if (current > 0){ current--; renderQuestion(); } });
+  nextBtn.addEventListener('click', () => { current++; renderQuestion(); });
+
+  renderQuestion();
+</script>
+
+</body>
+</html>

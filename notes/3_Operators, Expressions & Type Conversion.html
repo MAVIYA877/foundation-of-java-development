@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Operators &amp; Type Conversion | IT Training Module — Hour 3</title>
+<style>
+  :root{
+    --bg:#282a36;
+    --bg-alt:#1e1f29;
+    --surface:#2f3140;
+    --surface-2:#363849;
+    --border:#44475a;
+    --text:#f8f8f2;
+    --text-dim:#b8bcd4;
+    --purple:#bd93f9;
+    --pink:#ff79c6;
+    --green:#50fa7b;
+    --cyan:#8be9fd;
+    --orange:#ffb86c;
+    --yellow:#f1fa8c;
+    --red:#ff5555;
+    --radius:14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(189,147,249,0.10), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(139,233,253,0.08), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    line-height:1.65;
+  }
+  a{color:var(--cyan);}
+  code, pre{ font-family:'Cascadia Code','Fira Code',Consolas,'Courier New',monospace; }
+
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(30,31,41,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:10px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+  }
+  .topbar .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px; }
+  .brand .logo{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px; color:#1e1f29; font-weight:900;
+  }
+  .progress-track{
+    flex:1; max-width:420px; height:8px; border-radius:20px;
+    background:var(--surface-2); overflow:hidden; border:1px solid var(--border);
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--green),var(--cyan));
+    transition:width .15s ease;
+  }
+  .nav-links{ display:flex; gap:6px; flex-wrap:wrap; font-size:12.5px; }
+  .nav-links a{
+    color:var(--text-dim); text-decoration:none; padding:6px 10px;
+    border-radius:20px; border:1px solid transparent; white-space:nowrap;
+  }
+  .nav-links a:hover, .nav-links a.active{
+    background:var(--surface-2); color:var(--text); border-color:var(--border);
+  }
+
+  .hero{
+    padding:70px 24px 50px; text-align:center; position:relative; overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:42px 42px; opacity:0.12;
+    mask-image:radial-gradient(circle at 50% 20%, black, transparent 70%);
+  }
+  .hero-inner{position:relative; z-index:1;}
+  .badge-pill{
+    display:inline-block; padding:6px 16px; border-radius:30px;
+    background:var(--surface-2); border:1px solid var(--border);
+    font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--green); font-weight:700; margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(26px,4.6vw,44px); margin:0 0 12px;
+    background:linear-gradient(90deg,var(--green),var(--cyan) 55%,var(--purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
+  }
+  .hero p.sub{ max-width:680px; margin:0 auto; color:var(--text-dim); font-size:16px; }
+  .hero-meta{ display:flex; justify-content:center; gap:28px; margin-top:28px; flex-wrap:wrap; }
+  .hero-meta div{font-size:13px; color:var(--text-dim);}
+  .hero-meta strong{display:block; font-size:20px; color:var(--text);}
+
+  .wrap{max-width:1080px; margin:0 auto; padding:10px 24px 100px;}
+  section.module{ padding:56px 0; border-bottom:1px dashed var(--border); scroll-margin-top:80px; }
+  section.module:last-child{border-bottom:none;}
+  .module-head{ display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .module-num{
+    flex:0 0 auto; width:52px;height:52px;border-radius:14px;
+    background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:20px; color:var(--green);
+  }
+  .module-head h2{ margin:0; font-size:26px; font-weight:800; }
+  .module-head p{margin:2px 0 0; color:var(--text-dim); font-size:14px;}
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:22px; box-shadow:var(--shadow);
+  }
+  .card h3{margin-top:0; font-size:17px; color:var(--cyan); display:flex; gap:8px; align-items:center;}
+  .card h3 .icon{font-size:18px;}
+  .card ul, .card ol{margin:10px 0; padding-left:22px;}
+  .card li{margin-bottom:6px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  .grid-5{display:grid; grid-template-columns:repeat(5,1fr); gap:12px;}
+  @media (max-width:760px){ .grid-2, .grid-3, .grid-4, .grid-5{grid-template-columns:1fr;} }
+
+  .callout{
+    border-radius:var(--radius); padding:16px 20px; margin:18px 0;
+    border:1px solid; display:flex; gap:14px; align-items:flex-start; font-size:14.5px;
+  }
+  .callout .ico{font-size:20px; line-height:1;}
+  .callout.teach{background:rgba(80,250,123,0.08); border-color:rgba(80,250,123,0.4);}
+  .callout.avoid{background:rgba(255,85,85,0.08); border-color:rgba(255,85,85,0.4);}
+  .callout.tip{background:rgba(139,233,253,0.08); border-color:rgba(139,233,253,0.4);}
+  .callout b{color:var(--text);}
+
+  .danger-list{
+    background:rgba(255,85,85,0.06); border:1px solid rgba(255,85,85,0.35);
+    border-radius:var(--radius); padding:18px 22px; margin:16px 0;
+  }
+  .danger-list h4{margin:0 0 10px; color:var(--red); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .danger-list ul{margin:0; padding-left:20px;}
+  .danger-list li{margin-bottom:6px; color:var(--text);}
+
+  .pipe{ display:flex; flex-direction:column; align-items:center; gap:0; margin:26px 0; }
+  .pipe-node{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px;
+    padding:12px 22px; font-weight:700; font-size:14.5px; text-align:center; min-width:200px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  }
+  .pipe-node.accent-purple{border-color:var(--purple); color:var(--purple);}
+  .pipe-node.accent-green{border-color:var(--green); color:var(--green);}
+  .pipe-node.accent-cyan{border-color:var(--cyan); color:var(--cyan);}
+  .pipe-node.accent-orange{border-color:var(--orange); color:var(--orange);}
+  .pipe-node.accent-pink{border-color:var(--pink); color:var(--pink);}
+  .pipe-node.accent-yellow{border-color:var(--yellow); color:var(--yellow);}
+  .pipe-node.accent-red{border-color:var(--red); color:var(--red);}
+  .pipe-arrow{ color:var(--text-dim); font-size:20px; margin:2px 0; line-height:1; }
+  .pipe-split{ display:flex; gap:60px; margin:6px 0 0; flex-wrap:wrap; justify-content:center; }
+  .pipe-split .branch{ display:flex; flex-direction:column; align-items:center; }
+  .pipe-split .branch .branch-label{ font-size:12px; color:var(--text-dim); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+  .pipe-hrow{ display:flex; align-items:stretch; gap:14px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+  .pipe-hrow .pipe-node{min-width:130px;}
+  .pipe-harrow{align-self:center; font-size:22px; color:var(--text-dim);}
+
+  .diagram-box{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin:20px 0; overflow-x:auto;
+  }
+  .diagram-caption{ text-align:center; font-size:12.5px; color:var(--text-dim); margin-top:8px; font-style:italic; }
+
+  .feat-card{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+    padding:16px; display:flex; flex-direction:column; gap:8px;
+  }
+  .feat-card .num{
+    width:30px;height:30px;border-radius:8px; background:var(--bg-alt);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--green); font-size:13px;
+  }
+  .feat-card h4{margin:0; font-size:15px;}
+  .feat-card p{margin:0; font-size:13px; color:var(--text-dim);}
+
+  .code-block{
+    background:#1a1b24; border:1px solid var(--border); border-radius:12px;
+    overflow:hidden; margin:16px 0;
+  }
+  .code-head{
+    display:flex; align-items:center; justify-content:space-between;
+    background:#20212c; padding:9px 16px; border-bottom:1px solid var(--border);
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .code-dots{display:flex; gap:6px;}
+  .code-dots span{width:10px;height:10px;border-radius:50%;}
+  .code-dots span:nth-child(1){background:#ff5f56;}
+  .code-dots span:nth-child(2){background:#ffbd2e;}
+  .code-dots span:nth-child(3){background:#27c93f;}
+  pre.code{ margin:0; padding:18px 20px; overflow-x:auto; font-size:14px; line-height:1.7; }
+  .kw{color:var(--pink);}
+  .cls{color:var(--cyan);}
+  .str{color:var(--yellow);}
+  .mth{color:var(--green);}
+  .cmt{color:#6272a4;}
+  .num-lit{color:var(--orange);}
+  .op{color:var(--red);}
+
+  .code-output{
+    background:#151621; border-top:1px dashed var(--border);
+    padding:12px 20px; font-size:13.5px; color:var(--green); font-family:'Cascadia Code',monospace;
+  }
+  .code-output .lbl{color:var(--text-dim); font-size:11px; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;}
+
+  .line-explain{ display:grid; grid-template-columns:120px 1fr; gap:6px 16px; margin:14px 0; font-size:14px; }
+  .line-explain .lterm{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:8px;
+    padding:4px 10px; font-family:'Cascadia Code',monospace; color:var(--yellow); font-size:13px; align-self:start;
+  }
+  .line-explain .ldesc{color:var(--text-dim); align-self:center;}
+
+  .steps{counter-reset:stepnum; margin:20px 0;}
+  .step{
+    position:relative; padding:16px 20px 16px 56px; margin-bottom:14px;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+  }
+  .step::before{
+    counter-increment:stepnum; content:counter(stepnum);
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:28px; height:28px; border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; color:#1e1f29;
+  }
+  .step h4{margin:0 0 4px; font-size:15px;}
+  .step p{margin:0; font-size:13.5px; color:var(--text-dim);}
+  .step code{background:var(--bg-alt); padding:1px 6px; border-radius:5px; color:var(--cyan); border:1px solid var(--border);}
+
+  .analogy{
+    display:flex; gap:18px; align-items:center; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius); padding:20px; margin:16px 0;
+  }
+  .analogy .side{flex:1; min-width:220px;}
+  .analogy .side h4{margin:0 0 6px; color:var(--orange); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .analogy .arrow{font-size:26px; color:var(--pink);}
+
+  table.breakdown{ width:100%; border-collapse:collapse; margin:14px 0; font-size:14.5px; }
+  table.breakdown th, table.breakdown td{ padding:10px 14px; border-bottom:1px solid var(--border); text-align:left; }
+  table.breakdown th{color:var(--orange); font-size:12px; text-transform:uppercase; letter-spacing:.5px;}
+  table.breakdown td code{ color:var(--cyan); }
+  table.breakdown tr.highlight td{ background:rgba(80,250,123,0.06); }
+
+  .type-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0; }
+  @media (max-width:760px){ .type-grid{grid-template-columns:repeat(2,1fr);} }
+  .type-chip{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:12px; text-align:center; font-family:'Cascadia Code',monospace; color:var(--yellow); font-weight:700;
+  }
+
+  /* Flowchart / decision diagram */
+  .flow-diamond{
+    background:var(--surface-2); border:2px solid var(--purple); color:var(--purple);
+    padding:16px 26px; border-radius:12px; font-weight:700; font-size:14.5px; text-align:center;
+    position:relative; max-width:320px;
+  }
+  .flow-branch-row{ display:flex; gap:50px; justify-content:center; margin-top:8px; flex-wrap:wrap; }
+  .flow-branch{ display:flex; flex-direction:column; align-items:center; }
+  .flow-branch .tag{
+    font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.6px;
+    padding:3px 12px; border-radius:20px; margin-bottom:6px;
+  }
+  .flow-branch .tag.yes{ color:var(--green); background:rgba(80,250,123,0.12); border:1px solid rgba(80,250,123,0.4); }
+  .flow-branch .tag.no{ color:var(--red); background:rgba(255,85,85,0.12); border:1px solid rgba(255,85,85,0.4); }
+
+  /* Truth table */
+  table.truth{ width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; text-align:center; }
+  table.truth th, table.truth td{ padding:9px 10px; border:1px solid var(--border); }
+  table.truth th{ background:var(--surface-2); color:var(--orange); font-size:11.5px; text-transform:uppercase; }
+  table.truth td.true-cell{ color:var(--green); font-weight:700; }
+  table.truth td.false-cell{ color:var(--red); font-weight:700; }
+
+  /* Timeline for increment/decrement */
+  .timeline{ display:flex; align-items:center; gap:0; margin:20px 0; overflow-x:auto; padding-bottom:8px; }
+  .timeline .tstep{
+    flex:0 0 auto; background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; text-align:center; min-width:110px;
+  }
+  .timeline .tstep .tval{ font-size:20px; font-weight:800; color:var(--cyan); }
+  .timeline .tstep .tlbl{ font-size:11px; color:var(--text-dim); margin-top:4px; }
+  .timeline .tarrow{ flex:0 0 auto; font-size:20px; color:var(--text-dim); padding:0 10px; }
+
+  .quiz-box{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-top:20px;
+  }
+  .quiz-q{font-weight:700; margin-bottom:14px; font-size:15.5px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:10px;}
+  .quiz-opt{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 16px; cursor:pointer; font-size:14px; transition:.15s;
+  }
+  .quiz-opt:hover{border-color:var(--green);}
+  .quiz-opt.correct{background:rgba(80,250,123,0.15); border-color:var(--green); color:var(--green);}
+  .quiz-opt.wrong{background:rgba(255,85,85,0.15); border-color:var(--red); color:var(--red);}
+  .quiz-feedback{margin-top:12px; font-size:13.5px; color:var(--text-dim); min-height:18px;}
+  .quiz-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+  .quiz-nav button{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:9px 18px; border-radius:20px; cursor:pointer; font-size:13.5px; font-weight:600;
+  }
+  .quiz-nav button:hover{border-color:var(--green);}
+  .quiz-nav button:disabled{opacity:.35; cursor:not-allowed;}
+  .quiz-dots{display:flex; gap:6px;}
+  .quiz-dots span{width:8px;height:8px;border-radius:50%; background:var(--border);}
+  .quiz-dots span.active{background:var(--cyan);}
+  .quiz-dots span.done{background:var(--green);}
+  .quiz-score{ text-align:center; padding:20px; font-size:18px; font-weight:800; }
+
+  footer{ text-align:center; padding:30px 20px; color:var(--text-dim); font-size:12.5px; border-top:1px solid var(--border); }
+  ::selection{background:var(--green); color:#1e1f29;}
+
+  .scrolltop{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    color:#1e1f29; font-weight:900; cursor:pointer; box-shadow:var(--shadow);
+    opacity:0; pointer-events:none; transition:.2s;
+  }
+  .scrolltop.show{opacity:1; pointer-events:auto;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="logo">J</div> Java Foundations · Hour 3</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#m15">15. Arithmetic</a>
+    <a href="#m16">16. Relational</a>
+    <a href="#m17">17. Logical</a>
+    <a href="#m18">18. Assignment</a>
+    <a href="#m19">19. Inc/Dec</a>
+    <a href="#m20">20. Ternary</a>
+    <a href="#m21">21. Type Conversion</a>
+    <a href="#quiz">Quiz</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="badge-pill">IT Training &middot; Core Java Track &middot; Hour 3</span>
+    <h1>Operators &amp; Type Conversion</h1>
+    <p class="sub">In this hour, I'm walking you through how Java actually computes, compares, and combines values — every operator you'll use daily — and then showing you exactly what happens when data moves between types.</p>
+    <div class="hero-meta">
+      <div><strong>7</strong>Modules</div>
+      <div><strong>~90 min</strong>Session Length</div>
+      <div><strong>Beginner</strong>Level</div>
+      <div><strong>6</strong>Code Walkthroughs</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- MODULE 15 -->
+  <section class="module" id="m15">
+    <div class="module-head">
+      <div class="module-num">15</div>
+      <div>
+        <h2>Arithmetic Operators</h2>
+        <p>The five operators that do all your math</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">➗</span> The Five I Want You Fluent In</h3>
+      <div class="grid-5">
+        <div class="feat-card"><div class="num">+</div><h4>Addition</h4><p>Adds two operands together.</p></div>
+        <div class="feat-card"><div class="num">−</div><h4>Subtraction</h4><p>Subtracts the right operand from the left.</p></div>
+        <div class="feat-card"><div class="num">×</div><h4>Multiplication</h4><p>Multiplies both operands.</p></div>
+        <div class="feat-card"><div class="num">÷</div><h4>Division</h4><p>Divides left by right.</p></div>
+        <div class="feat-card"><div class="num">%</div><h4>Modulus</h4><p>Gives you the remainder after division.</p></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">💻</span> Let's Run All Five Together</h3>
+      <div class="code-block">
+        <div class="code-head"><span>OperatorsDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">OperatorsDemo</span> {
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="kw">int</span> a = <span class="num-lit">20</span>;
+        <span class="kw">int</span> b = <span class="num-lit">6</span>;
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(a + b);
+        System.<span class="mth">out</span>.<span class="mth">println</span>(a - b);
+        System.<span class="mth">out</span>.<span class="mth">println</span>(a * b);
+        System.<span class="mth">out</span>.<span class="mth">println</span>(a / b);
+        System.<span class="mth">out</span>.<span class="mth">println</span>(a % b);
+
+    }
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>26
+14
+120
+3
+2</div>
+      </div>
+
+      <p>Here's exactly how I want you to trace each line, step by step:</p>
+      <div class="steps">
+        <div class="step">
+          <h4>Step 1 — Set up the operands</h4>
+          <p><code>a = 20</code> and <code>b = 6</code> are both declared as <code>int</code>. Remember that — it matters for the division result coming up.</p>
+        </div>
+        <div class="step">
+          <h4>Step 2 — Addition &amp; Subtraction</h4>
+          <p><code>a + b</code> gives <code>26</code>, and <code>a - b</code> gives <code>14</code>. Nothing surprising yet.</p>
+        </div>
+        <div class="step">
+          <h4>Step 3 — Multiplication</h4>
+          <p><code>a * b</code> gives <code>120</code>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 4 — Division (the one I always pause on)</h4>
+          <p><code>a / b</code> is <code>20 / 6</code>, which mathematically is <code>3.333...</code>, but Java prints <code>3</code>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 5 — Modulus</h4>
+          <p><code>a % b</code> gives <code>2</code> — that's the remainder left over after <code>6</code> goes into <code>20</code> three whole times.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔍</span> Why Does <code>20 / 6</code> Give <code>3</code>?</h3>
+      <div class="pipe">
+        <div class="pipe-node accent-yellow">20 / 6</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-cyan">Both operands are int</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-pink">Java performs integer division</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-green">Decimal portion is dropped, not rounded</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-orange">Result: 3</div>
+      </div>
+      <p class="diagram-caption">This isn't rounding — it's truncation. Java never looks at the decimal at all when both operands are integer types.</p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>The rule I want burned into your memory:</b> when both operands of <code>/</code> are integer types (<code>int</code>, <code>long</code>, etc.), the result is <b>always</b> an integer — the fractional part is thrown away, not rounded. If you want a decimal result, at least one operand must be a <code>double</code> or <code>float</code>, e.g. <code>20 / 6.0</code> gives <code>3.333...</code>.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 16 -->
+  <section class="module" id="m16">
+    <div class="module-head">
+      <div class="module-num">16</div>
+      <div>
+        <h2>Relational Operators</h2>
+        <p>How I compare two values and always get a boolean back</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">⚖️</span> Comparing an Age</h3>
+      <div class="code-block">
+        <div class="code-head"><span>RelationalDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> age = <span class="num-lit">20</span>;
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(age &gt; <span class="num-lit">18</span>);
+System.<span class="mth">out</span>.<span class="mth">println</span>(age &lt; <span class="num-lit">18</span>);
+System.<span class="mth">out</span>.<span class="mth">println</span>(age == <span class="num-lit">20</span>);
+System.<span class="mth">out</span>.<span class="mth">println</span>(age != <span class="num-lit">20</span>);</pre>
+        <div class="code-output"><span class="lbl">Output</span>true
+false
+true
+false</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧾</span> The Six Relational Operators</h3>
+      <table class="breakdown">
+        <thead><tr><th>Operator</th><th>Meaning</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>&gt;</code></td><td>Greater than</td><td><code>age &gt; 18</code></td></tr>
+          <tr><td><code>&lt;</code></td><td>Less than</td><td><code>age &lt; 18</code></td></tr>
+          <tr><td><code>&gt;=</code></td><td>Greater than or equal to</td><td><code>age &gt;= 18</code></td></tr>
+          <tr><td><code>&lt;=</code></td><td>Less than or equal to</td><td><code>age &lt;= 18</code></td></tr>
+          <tr><td><code>==</code></td><td>Equal to</td><td><code>age == 20</code></td></tr>
+          <tr><td><code>!=</code></td><td>Not equal to</td><td><code>age != 20</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>A distinction I always catch beginners on:</b> <code>=</code> assigns a value, <code>==</code> compares two values. Mixing these up is one of the most common early bugs — and every relational operator always evaluates to a <code>boolean</code> (<code>true</code> or <code>false</code>), never a number.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 17 -->
+  <section class="module" id="m17">
+    <div class="module-head">
+      <div class="module-num">17</div>
+      <div>
+        <h2>Logical Operators</h2>
+        <p>How I combine multiple conditions into one decision</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🚪</span> Can They Enter?</h3>
+      <div class="code-block">
+        <div class="code-head"><span>LogicalDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> age = <span class="num-lit">25</span>;
+<span class="kw">boolean</span> hasId = <span class="kw">true</span>;
+
+<span class="kw">boolean</span> canEnter = age &gt;= <span class="num-lit">18</span> &amp;&amp; hasId;
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(canEnter);</pre>
+        <div class="code-output"><span class="lbl">Output</span>true</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔣</span> The Three Logical Operators</h3>
+      <div class="grid-3">
+        <div class="feat-card"><div class="num">&amp;&amp;</div><h4>AND</h4><p>True only when <b>both</b> sides are true.</p></div>
+        <div class="feat-card"><div class="num">||</div><h4>OR</h4><p>True when <b>at least one</b> side is true.</p></div>
+        <div class="feat-card"><div class="num">!</div><h4>NOT</h4><p>Flips a boolean — true becomes false, and vice versa.</p></div>
+      </div>
+
+      <p>Here's the truth table I want you able to reproduce for <code>&amp;&amp;</code> and <code>||</code>:</p>
+      <table class="truth">
+        <thead><tr><th>A</th><th>B</th><th>A &amp;&amp; B</th><th>A || B</th></tr></thead>
+        <tbody>
+          <tr><td class="true-cell">true</td><td class="true-cell">true</td><td class="true-cell">true</td><td class="true-cell">true</td></tr>
+          <tr><td class="true-cell">true</td><td class="false-cell">false</td><td class="false-cell">false</td><td class="true-cell">true</td></tr>
+          <tr><td class="false-cell">false</td><td class="true-cell">true</td><td class="false-cell">false</td><td class="true-cell">true</td></tr>
+          <tr><td class="false-cell">false</td><td class="false-cell">false</td><td class="false-cell">false</td><td class="false-cell">false</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🏛️</span> Real-Life Example</h3>
+      <div class="analogy">
+        <div class="side">
+          <h4>The rule</h4>
+          <p>Age &gt;= 18 <b>AND</b> Has ID</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="side">
+          <h4>What I want you to notice</h4>
+          <p>Both conditions must be true at the same time before entry is allowed — that's <code>&amp;&amp;</code> in action.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULE 18 -->
+  <section class="module" id="m18">
+    <div class="module-head">
+      <div class="module-num">18</div>
+      <div>
+        <h2>Assignment Operators</h2>
+        <p>Shortcuts for "update this variable based on itself"</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧮</span> Watching a Score Change Step by Step</h3>
+      <div class="code-block">
+        <div class="code-head"><span>AssignmentDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> score = <span class="num-lit">10</span>;
+
+score += <span class="num-lit">5</span>;
+score -= <span class="num-lit">2</span>;
+score *= <span class="num-lit">2</span>;
+score /= <span class="num-lit">2</span>;</pre>
+      </div>
+
+      <p>I want you to trace <code>score</code> after every single line — this is exactly how I expect you to reason through compound assignment:</p>
+      <div class="steps">
+        <div class="step">
+          <h4>Step 1 — Start</h4>
+          <p><code>int score = 10;</code> → <code>score</code> is <b>10</b>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 2 — <code>score += 5;</code></h4>
+          <p>Same as <code>score = score + 5;</code> → <b>10 + 5 = 15</b>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 3 — <code>score -= 2;</code></h4>
+          <p>Same as <code>score = score - 2;</code> → <b>15 - 2 = 13</b>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 4 — <code>score *= 2;</code></h4>
+          <p>Same as <code>score = score * 2;</code> → <b>13 * 2 = 26</b>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 5 — <code>score /= 2;</code></h4>
+          <p>Same as <code>score = score / 2;</code> → <b>26 / 2 = 13</b>. Final value of <code>score</code> is <b>13</b>.</p>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <div class="tstep"><div class="tval">10</div><div class="tlbl">start</div></div>
+        <div class="tarrow">→</div>
+        <div class="tstep"><div class="tval">15</div><div class="tlbl">+= 5</div></div>
+        <div class="tarrow">→</div>
+        <div class="tstep"><div class="tval">13</div><div class="tlbl">-= 2</div></div>
+        <div class="tarrow">→</div>
+        <div class="tstep"><div class="tval">26</div><div class="tlbl">*= 2</div></div>
+        <div class="tarrow">→</div>
+        <div class="tstep"><div class="tval">13</div><div class="tlbl">/= 2</div></div>
+      </div>
+      <p class="diagram-caption">Each compound operator reads the current value of the variable, applies the operation, then writes the result straight back into the same variable.</p>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>Why I use these instead of writing it out longhand:</b> <code>score += 5;</code> is shorter, less error-prone, and it's what you'll see in every real codebase. Know both forms, but default to the compound version.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 19 -->
+  <section class="module" id="m19">
+    <div class="module-head">
+      <div class="module-num">19</div>
+      <div>
+        <h2>Increment / Decrement</h2>
+        <p>The one-character shortcuts that trip up almost everyone at first</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">➕</span> Post-Increment: <code>x++</code></h3>
+      <div class="code-block">
+        <div class="code-head"><span>PostIncrement.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> x = <span class="num-lit">10</span>;
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(x++);
+System.<span class="mth">out</span>.<span class="mth">println</span>(x);</pre>
+        <div class="code-output"><span class="lbl">Output</span>10
+11</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">➕</span> Pre-Increment: <code>++y</code></h3>
+      <div class="code-block">
+        <div class="code-head"><span>PreIncrement.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> y = <span class="num-lit">10</span>;
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(++y);</pre>
+        <div class="code-output"><span class="lbl">Output</span>11</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🆚</span> Pre vs Post — Side by Side</h3>
+      <div class="grid-2">
+        <div class="feat-card">
+          <h4><code>x++</code> (post-increment)</h4>
+          <p><b>Uses the current value first</b>, then increments it afterward. That's why <code>println(x++)</code> printed <code>10</code> — the old value — before <code>x</code> became <code>11</code>.</p>
+        </div>
+        <div class="feat-card">
+          <h4><code>++y</code> (pre-increment)</h4>
+          <p><b>Increments first</b>, then uses the new value. That's why <code>println(++y)</code> printed <code>11</code> directly.</p>
+        </div>
+      </div>
+
+      <div class="pipe" style="margin-top:22px;">
+        <div class="pipe-node accent-yellow">x = 10</div>
+        <div class="pipe-arrow">↓ evaluate x++</div>
+        <div class="pipe-split">
+          <div class="branch">
+            <div class="branch-label">Value used in print</div>
+            <div class="pipe-node accent-cyan">10 (old value)</div>
+          </div>
+          <div class="branch">
+            <div class="branch-label">Value stored in x</div>
+            <div class="pipe-node accent-green">11 (after increment)</div>
+          </div>
+        </div>
+      </div>
+      <p class="diagram-caption">Post-increment hands off the old value first, then quietly updates the variable behind the scenes.</p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>The one-line rule I want you repeating back to me:</b> post (<code>x++</code>) = "use it, then change it." Pre (<code>++x</code>) = "change it, then use it."</div>
+    </div>
+  </section>
+
+  <!-- MODULE 20 -->
+  <section class="module" id="m20">
+    <div class="module-head">
+      <div class="module-num">20</div>
+      <div>
+        <h2>Ternary Operator</h2>
+        <p>A compact if-else that fits in a single expression</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🎯</span> Adult or Minor?</h3>
+      <div class="code-block">
+        <div class="code-head"><span>TernaryDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> age = <span class="num-lit">20</span>;
+
+<span class="cls">String</span> result = age &gt;= <span class="num-lit">18</span> ? <span class="str">"Adult"</span> : <span class="str">"Minor"</span>;
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(result);</pre>
+        <div class="code-output"><span class="lbl">Output</span>Adult</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔀</span> Reading a Ternary Like a Flowchart</h3>
+      <div class="diagram-box">
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <div class="flow-diamond">condition<br>age &gt;= 18 ?</div>
+          <div class="flow-branch-row">
+            <div class="flow-branch">
+              <span class="tag yes">true</span>
+              <div class="pipe-node accent-green">"Adult"</div>
+            </div>
+            <div class="flow-branch">
+              <span class="tag no">false</span>
+              <div class="pipe-node accent-red">"Minor"</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="diagram-caption">Every ternary follows this exact shape: <code>condition ? valueIfTrue : valueIfFalse</code> — it's a full if-else compressed into one expression that produces a value.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🏦</span> A Real-World Example</h3>
+      <div class="code-block">
+        <div class="code-head"><span>AccountStatus.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">double</span> balance = <span class="num-lit">5000</span>;
+
+<span class="cls">String</span> status = balance &gt;= <span class="num-lit">1000</span>
+        ? <span class="str">"Account Active"</span>
+        : <span class="str">"Low Balance"</span>;</pre>
+      </div>
+      <p>Since <code>5000 &gt;= 1000</code> is <code>true</code>, <code>status</code> becomes <code>"Account Active"</code>.</p>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>When I reach for a ternary versus a full if-else:</b> ternary shines when I'm assigning one of two simple values to a variable in a single line. The moment the logic needs more than that one decision, I switch back to a regular if-else for readability.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 21 -->
+  <section class="module" id="m21">
+    <div class="module-head">
+      <div class="module-num">21</div>
+      <div>
+        <h2>Type Conversion</h2>
+        <p>What actually happens when data crosses between types</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🗺️</span> The Big Picture — Two Directions</h3>
+      <div class="pipe-hrow">
+        <div class="pipe-node accent-green">Widening<br><span style="font-weight:400;font-size:12px;color:var(--text-dim);">small → large</span></div>
+        <div class="pipe-harrow">⇄</div>
+        <div class="pipe-node accent-red">Narrowing<br><span style="font-weight:400;font-size:12px;color:var(--text-dim);">large → small</span></div>
+      </div>
+      <p class="diagram-caption">Widening is safe and automatic. Narrowing is risky and requires you to explicitly ask for it — I'll show you exactly why in a moment.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">📈</span> Widening — Smaller Type → Larger Compatible Type</h3>
+      <div class="code-block">
+        <div class="code-head"><span>WideningDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> number = <span class="num-lit">100</span>;
+
+<span class="kw">long</span> result = number;
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(result);</pre>
+        <div class="code-output"><span class="lbl">Output</span>100</div>
+      </div>
+
+      <div class="pipe">
+        <div class="pipe-node accent-cyan">int number = 100</div>
+        <div class="pipe-arrow">↓ assigned directly, no cast</div>
+        <div class="pipe-node accent-green">long result = 100</div>
+      </div>
+      <p class="diagram-caption"><code>long</code> can hold every value an <code>int</code> can, and more — so the compiler lets this happen automatically. <b>No explicit cast required.</b></p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">📉</span> Narrowing — Larger Type → Smaller Type</h3>
+      <div class="code-block">
+        <div class="code-head"><span>NarrowingDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">double</span> price = <span class="num-lit">99.99</span>;
+
+<span class="kw">int</span> roundedPrice = (<span class="kw">int</span>) price;
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(roundedPrice);</pre>
+        <div class="code-output"><span class="lbl">Output</span>99</div>
+      </div>
+
+      <p>Here's the step-by-step I want you tracing every time you see a narrowing cast:</p>
+      <div class="steps">
+        <div class="step">
+          <h4>Step 1 — Start with the larger type</h4>
+          <p><code>double price = 99.99;</code> — this can hold decimals, and <code>int</code> cannot.</p>
+        </div>
+        <div class="step">
+          <h4>Step 2 — Explicitly cast with <code>(int)</code></h4>
+          <p>Because this move can lose data, Java <b>forces</b> you to write <code>(int)</code> — it will not do this silently.</p>
+        </div>
+        <div class="step">
+          <h4>Step 3 — The decimal is dropped, not rounded</h4>
+          <p><code>99.99</code> truncates down to <code>99</code> — the <code>.99</code> is simply discarded.</p>
+        </div>
+      </div>
+
+      <div class="pipe">
+        <div class="pipe-node accent-orange">double price = 99.99</div>
+        <div class="pipe-arrow">↓ (int) — explicit cast required</div>
+        <div class="pipe-node accent-red">int roundedPrice = 99</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-pink">0.99 permanently lost</div>
+      </div>
+    </div>
+
+    <div class="callout avoid">
+      <div class="ico">🚫</div>
+      <div><b>Don't say "narrowing rounds the number."</b> It doesn't. <code>(int) 99.99</code> gives <code>99</code>, not <code>100</code> — the fractional part is truncated, exactly like integer division earlier this hour.</div>
+    </div>
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>What I want you to walk away with:</b> widening happens automatically because no data can be lost. Narrowing always needs an explicit cast, like <code>(int)</code>, because it <i>can</i> lose data — and once that data is gone, it's gone. Explicit casting can cause data loss, so use it deliberately.</div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="module" id="quiz">
+    <div class="module-head">
+      <div class="module-num">✓</div>
+      <div>
+        <h2>Quick Knowledge Check</h2>
+        <p>6 questions to reinforce this hour's concepts</p>
+      </div>
+    </div>
+
+    <div class="quiz-box" id="quizBox">
+      <div id="quizQuestionArea"></div>
+      <div class="quiz-nav">
+        <button id="prevBtn">← Previous</button>
+        <div class="quiz-dots" id="quizDots"></div>
+        <button id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Java Foundations Training Module — Hour 3 &middot; Prepared for IT Training Cohort &middot; Confidential Training Material</footer>
+
+<div class="scrolltop" id="scrollTop">↑</div>
+
+<script>
+  const progressFill = document.getElementById('progressFill');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  const sections = document.querySelectorAll('section.module');
+  const navLinks = document.querySelectorAll('#navLinks a');
+
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressFill.style.width = scrolled + '%';
+    scrollTopBtn.classList.toggle('show', h.scrollTop > 500);
+
+    let current = '';
+    sections.forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= 120 && rect.bottom >= 120) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  const questions = [
+    {
+      q: "Why does `20 / 6` give `3` instead of `3.33`?",
+      options: [
+        "Java rounds down every division result",
+        "Both operands are int, so Java performs integer division and truncates the decimal",
+        "The % operator was used instead of /",
+        "This is a compiler bug"
+      ],
+      correct: 1,
+      explain: "When both operands are integer types, Java performs integer division: the fractional part is truncated (dropped), not rounded.",
+      correctFeedback: "Exactly right!",
+      incorrectFeedback: "Not quite — think about what type both operands are."
+    },
+    {
+      q: "What does the modulus operator `%` return?",
+      options: [
+        "The result of the division rounded up",
+        "The remainder left over after division",
+        "A percentage of the left operand",
+        "Always zero for integers"
+      ],
+      correct: 1,
+      explain: "`a % b` gives the remainder after dividing a by b — for 20 % 6, that's 2.",
+      correctFeedback: "Correct!",
+      incorrectFeedback: "Close — remember what 'modulus' means mathematically."
+    },
+    {
+      q: "In `boolean canEnter = age >= 18 && hasId;`, when is `canEnter` true?",
+      options: [
+        "When either condition is true",
+        "Only when both age >= 18 AND hasId are true",
+        "Only when hasId is false",
+        "Always true regardless of age"
+      ],
+      correct: 1,
+      explain: "&& is logical AND — both sides of the expression must evaluate to true for the whole expression to be true.",
+      correctFeedback: "Nailed it!",
+      incorrectFeedback: "Remember: && requires both sides to hold."
+    },
+    {
+      q: "Given `int x = 10;`, what does `System.out.println(x++);` print, and what is x afterward?",
+      options: [
+        "Prints 11, x becomes 11",
+        "Prints 10, x becomes 11",
+        "Prints 10, x stays 10",
+        "Prints 11, x stays 10"
+      ],
+      correct: 1,
+      explain: "Post-increment (x++) uses the current value first (prints 10), then increments the variable afterward (x becomes 11).",
+      correctFeedback: "That's the rule!",
+      incorrectFeedback: "Remember: post-increment uses the OLD value first."
+    },
+    {
+      q: "Which statement correctly describes the ternary operator `condition ? a : b`?",
+      options: [
+        "It's a loop that repeats until condition is false",
+        "It's a compact if-else expression: if condition is true it evaluates to a, otherwise to b",
+        "It only works with boolean return types",
+        "It assigns both a and b to the variable"
+      ],
+      correct: 1,
+      explain: "The ternary operator is a single expression equivalent to a full if-else: true gives the first value, false gives the second.",
+      correctFeedback: "Spot on!",
+      incorrectFeedback: "Think of it as if-else squeezed into one line."
+    },
+    {
+      q: "Why does `(int) price` require an explicit cast when `price` is a `double`?",
+      options: [
+        "Because double and int are unrelated types",
+        "Because narrowing from a larger type to a smaller type can lose data, so Java forces you to opt in explicitly",
+        "Because int is always larger than double",
+        "Casting is never actually required in Java"
+      ],
+      correct: 1,
+      explain: "Narrowing conversions can lose information (like the decimal portion), so the compiler requires an explicit cast to make sure you intended it. Widening, by contrast, is automatic since no data can be lost.",
+      correctFeedback: "Exactly!",
+      incorrectFeedback: "Think about which direction risks losing data."
+    }
+  ];
+
+  let current = 0;
+  const answered = new Array(questions.length).fill(null);
+
+  const qArea = document.getElementById('quizQuestionArea');
+  const dotsWrap = document.getElementById('quizDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function renderDots(){
+    dotsWrap.innerHTML = '';
+    questions.forEach((_, i) => {
+      const d = document.createElement('span');
+      if (i === current) d.classList.add('active');
+      else if (answered[i] !== null) d.classList.add('done');
+      dotsWrap.appendChild(d);
+    });
+  }
+
+  function renderQuestion(){
+    if (current >= questions.length){
+      const correctCount = answered.filter((a,i) => a === questions[i].correct).length;
+      qArea.innerHTML = `<div class="quiz-score">🎉 You scored ${correctCount} / ${questions.length}</div>`;
+      prevBtn.disabled = false;
+      nextBtn.disabled = true;
+      renderDots();
+      return;
+    }
+    const item = questions[current];
+    let optsHtml = item.options.map((opt, i) => {
+      let cls = 'quiz-opt';
+      if (answered[current] !== null){
+        if (i === item.correct) cls += ' correct';
+        else if (i === answered[current]) cls += ' wrong';
+      }
+      return `<div class="${cls}" data-idx="${i}">${opt}</div>`;
+    }).join('');
+
+    let feedbackHtml = '';
+    if (answered[current] !== null){
+      const wasCorrect = answered[current] === item.correct;
+      const verdict = wasCorrect ? (item.correctFeedback || "That's right.") : (item.incorrectFeedback || "Not quite.");
+      feedbackHtml = `<b>${verdict}</b> ${item.explain}`;
+    }
+
+    qArea.innerHTML = `
+      <div class="quiz-q">Q${current+1}. ${item.q}</div>
+      <div class="quiz-opts">${optsHtml}</div>
+      <div class="quiz-feedback">${feedbackHtml}</div>
+    `;
+
+    document.querySelectorAll('.quiz-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        if (answered[current] !== null) return;
+        answered[current] = parseInt(el.getAttribute('data-idx'));
+        renderQuestion();
+      });
+    });
+
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = false;
+    nextBtn.textContent = current === questions.length - 1 ? 'Finish →' : 'Next →';
+    renderDots();
+  }
+
+  prevBtn.addEventListener('click', () => { if (current > 0){ current--; renderQuestion(); } });
+  nextBtn.addEventListener('click', () => { current++; renderQuestion(); });
+
+  renderQuestion();
+</script>
+
+</body>
+</html>
