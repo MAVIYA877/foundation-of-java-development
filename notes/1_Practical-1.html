@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practical 1 — Employee Payroll &amp; Performance Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#111119;
+    --bg-panel:#191925;
+    --bg-elevated:#20202f;
+    --bg-inset:#0c0c13;
+    --border:#2e2e42;
+    --border-soft:#25253a;
+    --text:#e7e7f2;
+    --text-dim:#9494b0;
+    --text-faint:#5f5f7a;
+    --orange:#ff8a3d;
+    --orange-soft:#ffb47a;
+    --blue:#6ab7ff;
+    --green:#7ee8a8;
+    --purple:#c9a6ff;
+    --yellow:#ffd479;
+    --red:#ff7a7a;
+    --gutter-w:52px;
+  }
+
+  *{box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Sora',sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  code, .mono, .tag, .badge, .gutter, .concept-chip, .filetab, .crumb, .kbd{
+    font-family:'JetBrains Mono',monospace;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; gap:14px;
+    padding:12px 20px;
+    background:var(--bg-panel);
+    border-bottom:1px solid var(--border);
+  }
+  .topbar .dots{display:flex; gap:6px;}
+  .topbar .dots span{width:11px; height:11px; border-radius:50%; display:block;}
+  .dots span:nth-child(1){background:#ff6b6b;}
+  .dots span:nth-child(2){background:#ffd479;}
+  .dots span:nth-child(3){background:#7ee8a8;}
+  .topbar .title{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--text-dim);
+  }
+  .topbar .title b{color:var(--text); font-weight:600;}
+
+  /* ---------- Layout ---------- */
+  .shell{
+    display:grid;
+    grid-template-columns:270px 1fr;
+    max-width:1400px;
+    margin:0 auto;
+  }
+
+  /* ---------- Sidebar / explorer ---------- */
+  .explorer{
+    position:sticky;
+    top:49px;
+    align-self:start;
+    height:calc(100vh - 49px);
+    overflow-y:auto;
+    padding:22px 14px 40px;
+    border-right:1px solid var(--border);
+    background:var(--bg-panel);
+  }
+  .explorer::-webkit-scrollbar{width:8px;}
+  .explorer::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+
+  .explorer-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    color:var(--text-faint);
+    padding:0 10px 10px;
+  }
+
+  .tree-root{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    color:var(--text-dim);
+    padding:6px 10px 4px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .tree-root svg{flex:none;}
+
+  .explorer nav{display:flex; flex-direction:column;}
+  .explorer a{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    text-decoration:none;
+    color:var(--text-dim);
+    padding:6px 10px 6px 26px;
+    border-radius:6px;
+    font-size:13px;
+    border-left:2px solid transparent;
+    transition:background .12s ease, color .12s ease;
+  }
+  .explorer a .part-letter{
+    color:var(--orange);
+    font-weight:600;
+    font-size:11.5px;
+  }
+  .explorer a:hover{background:var(--bg-elevated); color:var(--text);}
+  .explorer a.active{
+    background:var(--bg-elevated);
+    color:var(--text);
+    border-left-color:var(--orange);
+  }
+
+  /* ---------- Main content ---------- */
+  main{padding:36px 44px 120px; min-width:0;}
+
+  .hero{
+    padding-bottom:28px;
+    margin-bottom:34px;
+    border-bottom:1px solid var(--border);
+  }
+  .hero .eyebrow-line{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--orange-soft);
+    margin-bottom:10px;
+  }
+  .hero h1{
+    font-size:2.3rem;
+    font-weight:800;
+    margin:0 0 12px;
+    line-height:1.15;
+    max-width:20ch;
+  }
+  .hero p.lede{
+    color:var(--text-dim);
+    max-width:62ch;
+    font-size:1rem;
+    margin:0 0 20px;
+  }
+  .hero-meta{
+    display:flex; flex-wrap:wrap; gap:10px;
+  }
+  .hero-meta span{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--text-dim);
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    padding:5px 10px;
+    border-radius:6px;
+  }
+
+  /* ---------- Section (a "file") ---------- */
+  section.part{
+    margin-bottom:46px;
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    scroll-margin-top:64px;
+  }
+  .filetab{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px;
+    padding:12px 18px;
+    background:var(--bg-elevated);
+    border-bottom:1px solid var(--border);
+  }
+  .filetab .fname{
+    font-size:12.5px;
+    color:var(--text-dim);
+    display:flex; align-items:center; gap:8px;
+  }
+  .filetab .fname b{color:var(--orange-soft); font-weight:600;}
+  .filetab .part-badge{
+    font-size:11px;
+    color:var(--bg);
+    background:var(--orange);
+    padding:2px 8px;
+    border-radius:20px;
+    font-weight:700;
+    letter-spacing:.02em;
+  }
+
+  .part-body{padding:26px 26px 28px;}
+
+  .part-body h2{
+    font-size:1.4rem;
+    margin:0 0 6px;
+    font-weight:700;
+  }
+  .part-body .part-sub{
+    color:var(--text-dim);
+    font-size:.92rem;
+    margin:0 0 20px;
+  }
+
+  .part-body h3{
+    font-size:.95rem;
+    text-transform:none;
+    color:var(--orange-soft);
+    margin:26px 0 10px;
+    font-weight:600;
+  }
+  .part-body h3:first-of-type{margin-top:4px;}
+
+  .part-body p{color:var(--text); font-size:.96rem; max-width:70ch;}
+  .part-body ul{margin:6px 0 0; padding-left:20px; color:var(--text);}
+  .part-body li{margin-bottom:4px; font-size:.95rem;}
+
+  /* ---------- Code / terminal blocks ---------- */
+  .codeblock{
+    display:flex;
+    background:var(--bg-inset);
+    border:1px solid var(--border-soft);
+    border-radius:8px;
+    overflow:hidden;
+    margin:14px 0;
+  }
+  .codeblock .gutter{
+    flex:none;
+    width:var(--gutter-w);
+    padding:14px 0;
+    background:#0a0a10;
+    color:var(--text-faint);
+    font-size:12.5px;
+    line-height:1.65;
+    text-align:right;
+    user-select:none;
+  }
+  .codeblock .gutter div{padding-right:14px;}
+  .codeblock pre{
+    margin:0;
+    padding:14px 18px;
+    overflow-x:auto;
+    font-size:12.8px;
+    line-height:1.65;
+    color:var(--text);
+    flex:1;
+  }
+  .codeblock code{white-space:pre;}
+
+  .kw{color:var(--purple);}
+  .cls{color:var(--yellow);}
+  .str{color:var(--green);}
+  .cmt{color:var(--text-faint); font-style:italic;}
+  .num{color:var(--blue);}
+  .fn{color:var(--orange-soft);}
+
+  .terminal{
+    background:#0a0a10;
+    border:1px solid var(--border-soft);
+    border-radius:8px;
+    padding:14px 18px;
+    margin:14px 0;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.8px;
+    line-height:1.7;
+    color:#c9f7d6;
+    overflow-x:auto;
+  }
+  .terminal .prompt-in{color:var(--blue);}
+  .terminal .dim{color:var(--text-faint);}
+  .terminal .ok{color:var(--green);}
+  .terminal .warn{color:var(--red);}
+  .terminal-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--text-faint);
+    letter-spacing:.04em;
+    margin:16px 0 0;
+  }
+
+  /* ---------- Tables ---------- */
+  table.spec{
+    width:100%;
+    border-collapse:collapse;
+    margin:12px 0 4px;
+    font-size:.9rem;
+  }
+  table.spec th, table.spec td{
+    text-align:left;
+    padding:9px 14px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  table.spec th{
+    color:var(--text-faint);
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.03em;
+    font-weight:500;
+  }
+  table.spec td{color:var(--text);}
+  table.spec tr:last-child td{border-bottom:none;}
+  table.spec td.rate-excellent{color:var(--green);}
+  table.spec td.rate-good{color:var(--blue);}
+  table.spec td.rate-average{color:var(--yellow);}
+  table.spec td.rate-low{color:var(--red);}
+
+  /* ---------- Concept chips ---------- */
+  .concepts{
+    display:flex; flex-wrap:wrap; gap:8px;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px dashed var(--border);
+  }
+  .concepts-label{
+    width:100%;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--text-faint);
+    letter-spacing:.04em;
+    margin-bottom:2px;
+  }
+  .concept-chip{
+    font-size:11.5px;
+    color:var(--orange-soft);
+    background:rgba(255,138,61,0.08);
+    border:1px solid rgba(255,138,61,0.25);
+    padding:4px 9px;
+    border-radius:5px;
+  }
+
+  /* ---------- Method / structure diagram ---------- */
+  .structure{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    line-height:1.85;
+    background:var(--bg-inset);
+    border:1px solid var(--border-soft);
+    border-radius:8px;
+    padding:16px 20px;
+    color:var(--text-dim);
+    margin:14px 0;
+  }
+  .structure .root{color:var(--orange-soft); font-weight:600;}
+  .structure .leaf{color:var(--blue);}
+
+  /* ---------- Callouts ---------- */
+  .note{
+    display:flex; gap:10px;
+    background:rgba(106,183,255,0.06);
+    border:1px solid rgba(106,183,255,0.22);
+    border-radius:8px;
+    padding:12px 16px;
+    margin:16px 0;
+    font-size:.88rem;
+    color:var(--text-dim);
+  }
+  .note b{color:var(--blue); font-weight:600;}
+  .note.warn{
+    background:rgba(255,122,122,0.06);
+    border-color:rgba(255,122,122,0.22);
+  }
+  .note.warn b{color:var(--red);}
+
+  /* ---------- Discussion / short-answer blocks (Q, R) ---------- */
+  .discuss-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+    margin-top:6px;
+  }
+  .discuss-card{
+    background:var(--bg-inset);
+    border:1px solid var(--border-soft);
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .discuss-card h4{
+    margin:0 0 8px;
+    font-size:.85rem;
+    color:var(--orange-soft);
+    font-weight:600;
+  }
+  .discuss-card ul{margin:0; padding-left:18px;}
+  .discuss-card li{font-size:.87rem; color:var(--text-dim); margin-bottom:5px;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    padding:30px 44px 60px;
+    color:var(--text-faint);
+    font-size:12.5px;
+    font-family:'JetBrains Mono',monospace;
+    border-top:1px solid var(--border);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:900px){
+    .shell{grid-template-columns:1fr;}
+    .explorer{
+      position:relative; top:0; height:auto;
+      border-right:none; border-bottom:1px solid var(--border);
+    }
+    main{padding:28px 20px 90px;}
+    .discuss-grid{grid-template-columns:1fr;}
+    .codeblock pre{font-size:12px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="dots"><span></span><span></span><span></span></div>
+  <div class="title"><b>EmployeeManagementSystem.java</b> — Practical 1 · Java Fundamentals &amp; Core Programming Assessment</div>
+</div>
+
+<div class="shell">
+
+  <!-- ===================== SIDEBAR / EXPLORER ===================== -->
+  <aside class="explorer">
+    <div class="explorer-label">PROJECT EXPLORER</div>
+    <div class="tree-root">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke="#ff8a3d" stroke-width="1.6"/></svg>
+      EmployeeManagementSystem
+    </div>
+    <nav>
+      <a href="#part-a"><span class="part-letter">A</span> Employee Registration</a>
+      <a href="#part-b"><span class="part-letter">B</span> Salary Calculation</a>
+      <a href="#part-c"><span class="part-letter">C</span> Performance Evaluation</a>
+      <a href="#part-d"><span class="part-letter">D</span> Experience Classification</a>
+      <a href="#part-e"><span class="part-letter">E</span> Department Selection</a>
+      <a href="#part-f"><span class="part-letter">F</span> ID Verification</a>
+      <a href="#part-g"><span class="part-letter">G</span> Menu-Driven App</a>
+      <a href="#part-h"><span class="part-letter">H</span> Methods</a>
+      <a href="#part-i"><span class="part-letter">I</span> Constructor &amp; Class</a>
+      <a href="#part-j"><span class="part-letter">J</span> Constructor Overloading</a>
+      <a href="#part-k"><span class="part-letter">K</span> Method Overloading</a>
+      <a href="#part-l"><span class="part-letter">L</span> String Handling</a>
+      <a href="#part-m"><span class="part-letter">M</span> Building the Report</a>
+      <a href="#part-n"><span class="part-letter">N</span> Recursion</a>
+      <a href="#part-o"><span class="part-letter">O</span> For Loop Practice</a>
+      <a href="#part-p"><span class="part-letter">P</span> Type Casting Exercise</a>
+      <a href="#part-q"><span class="part-letter">Q</span> Memory &amp; GC</a>
+      <a href="#part-r"><span class="part-letter">R</span> Architecture &amp; Security</a>
+    </nav>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main>
+
+    <div class="hero">
+      <div class="eyebrow-line">practical 1 // java fundamentals &amp; core programming assessment</div>
+      <h1>Employee Payroll &amp; Performance Management System</h1>
+      <p class="lede">
+        A console-based prototype for an HR technology team, built in Core Java with no external
+        frameworks or database. Across eighteen parts, it moves from variables and control flow
+        to classes, overloading, recursion, and a short observation on memory and JVM architecture.
+      </p>
+      <div class="hero-meta">
+        <span>Role: Junior Java Developer</span>
+        <span>Class name: EmployeeManagementSystem</span>
+        <span>Language: Core Java</span>
+        <span>Parts: A–R</span>
+      </div>
+    </div>
+
+    <!-- ===================== PART A ===================== -->
+    <section class="part" id="part-a">
+      <div class="filetab">
+        <div class="fname"><b>Part A</b> — Registration.java</div>
+        <div class="part-badge">CORE I/O</div>
+      </div>
+      <div class="part-body">
+        <h2>Employee Registration</h2>
+        <p class="part-sub">Accept and store the employee's core details, then display them in a structured format.</p>
+
+        <p>Collect the following fields from the user and store each in an appropriately typed variable:</p>
+        <ul>
+          <li>Employee ID</li>
+          <li>Employee Name</li>
+          <li>Department</li>
+          <li>Designation</li>
+          <li>Basic Salary</li>
+          <li>Years of Experience</li>
+        </ul>
+
+        <p class="terminal-label">EXPECTED OUTPUT</p>
+        <div class="terminal">=========================================
+       EMPLOYEE REGISTRATION
+=========================================
+
+Employee ID       : EMP1025
+Employee Name     : Rahul Sharma
+Department        : IT
+Designation       : Software Developer
+Basic Salary      : 45000
+Experience        : 2 Years
+
+Employee registered successfully.</div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">Variables</span>
+          <span class="concept-chip">Data types</span>
+          <span class="concept-chip">Console input</span>
+          <span class="concept-chip">Formatted output</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART B ===================== -->
+    <section class="part" id="part-b">
+      <div class="filetab">
+        <div class="fname"><b>Part B</b> — Salary.java</div>
+        <div class="part-badge">CALCULATION</div>
+      </div>
+      <div class="part-body">
+        <h2>Salary Calculation</h2>
+        <p class="part-sub">Derive HRA, DA, and Bonus from Basic Salary, then compute Gross Salary.</p>
+
+        <table class="spec">
+          <tr><th>Component</th><th>Formula</th></tr>
+          <tr><td>HRA</td><td>20% of Basic Salary</td></tr>
+          <tr><td>DA</td><td>10% of Basic Salary</td></tr>
+          <tr><td>Bonus</td><td>5% of Basic Salary</td></tr>
+          <tr><td>Gross Salary</td><td>Basic Salary + HRA + DA + Bonus</td></tr>
+        </table>
+
+        <p class="terminal-label">EXPECTED OUTPUT</p>
+        <div class="terminal">=========================================
+          SALARY DETAILS
+=========================================
+
+Basic Salary : Rs. 45000.00
+HRA          : Rs. 9000.00
+DA           : Rs. 4500.00
+Bonus        : Rs. 2250.00
+-----------------------------------------
+Gross Salary : Rs. 60750.00</div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">Variables</span>
+          <span class="concept-chip">Constants</span>
+          <span class="concept-chip">int</span>
+          <span class="concept-chip">double</span>
+          <span class="concept-chip">Arithmetic operators</span>
+          <span class="concept-chip">Assignment operators</span>
+          <span class="concept-chip">Expressions</span>
+          <span class="concept-chip">Type conversion</span>
+          <span class="concept-chip">Type casting</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART C ===================== -->
+    <section class="part" id="part-c">
+      <div class="filetab">
+        <div class="fname"><b>Part C</b> — Performance.java</div>
+        <div class="part-badge">ARRAYS · LOOPS</div>
+      </div>
+      <div class="part-body">
+        <h2>Employee Performance Evaluation</h2>
+        <p class="part-sub">Record three performance scores in an array and compute the average with a loop.</p>
+
+        <p>Scores to accept:</p>
+        <ul>
+          <li>Technical Skills</li>
+          <li>Communication Skills</li>
+          <li>Teamwork</li>
+        </ul>
+
+        <p class="terminal-label">EXAMPLE</p>
+        <div class="terminal">Technical Skills     : 80
+Communication Skills : 75
+Teamwork             : 85
+
+Average Performance Score : 80.0</div>
+
+        <h3>Rating criteria</h3>
+        <table class="spec">
+          <tr><th>Average score</th><th>Rating</th></tr>
+          <tr><td>90–100</td><td class="rate-excellent">Excellent</td></tr>
+          <tr><td>75–89</td><td class="rate-good">Good</td></tr>
+          <tr><td>60–74</td><td class="rate-average">Average</td></tr>
+          <tr><td>Below 60</td><td class="rate-low">Needs Improvement</td></tr>
+        </table>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">Arrays</span>
+          <span class="concept-chip">for loop</span>
+          <span class="concept-chip">Variables</span>
+          <span class="concept-chip">Arithmetic operators</span>
+          <span class="concept-chip">if-else</span>
+          <span class="concept-chip">Type conversion/casting</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART D ===================== -->
+    <section class="part" id="part-d">
+      <div class="filetab">
+        <div class="fname"><b>Part D</b> — ExperienceClassifier.java</div>
+        <div class="part-badge">CONDITIONALS</div>
+      </div>
+      <div class="part-body">
+        <h2>Employee Experience Classification</h2>
+        <p class="part-sub">Classify the employee's experience band using if-else.</p>
+
+        <table class="spec">
+          <tr><th>Experience</th><th>Category</th></tr>
+          <tr><td>0–1 years</td><td>Fresher</td></tr>
+          <tr><td>2–4 years</td><td>Junior</td></tr>
+          <tr><td>5–9 years</td><td>Experienced</td></tr>
+          <tr><td>10+ years</td><td>Senior</td></tr>
+        </table>
+
+        <p class="terminal-label">EXAMPLE</p>
+        <div class="terminal">Experience : 2 Years
+Category   : Junior</div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">if</span>
+          <span class="concept-chip">if-else</span>
+          <span class="concept-chip">else-if</span>
+          <span class="concept-chip">Relational operators</span>
+          <span class="concept-chip">Logical operators</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART E ===================== -->
+    <section class="part" id="part-e">
+      <div class="filetab">
+        <div class="fname"><b>Part E</b> — DepartmentMenu.java</div>
+        <div class="part-badge">SWITCH</div>
+      </div>
+      <div class="part-body">
+        <h2>Department Selection</h2>
+        <p class="part-sub">Present a department menu and resolve the choice with a switch statement.</p>
+
+        <p class="terminal-label">MENU</p>
+        <div class="terminal">Select Department:
+
+1. IT
+2. HR
+3. Finance
+4. Marketing
+5. Operations
+
+Enter your choice: <span class="prompt-in">1</span>
+
+Selected Department: IT</div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">switch</span>
+          <span class="concept-chip">case</span>
+          <span class="concept-chip">break</span>
+          <span class="concept-chip">default</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART F ===================== -->
+    <section class="part" id="part-f">
+      <div class="filetab">
+        <div class="fname"><b>Part F</b> — VerifyId.java</div>
+        <div class="part-badge">WHILE LOOP</div>
+      </div>
+      <div class="part-body">
+        <h2>Employee ID Verification</h2>
+        <p class="part-sub">Re-enter the employee ID; retry with a while loop until it matches the registered ID.</p>
+
+        <p class="terminal-label">EXAMPLE</p>
+        <div class="terminal">Enter Employee ID for verification: <span class="prompt-in">EMP1002</span>
+
+<span class="warn">Invalid Employee ID.
+Please try again.</span>
+
+Enter Employee ID for verification: <span class="prompt-in">EMP1025</span>
+
+<span class="ok">Employee verified successfully.</span></div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">while loop</span>
+          <span class="concept-chip">Comparison operators</span>
+          <span class="concept-chip">Strings</span>
+          <span class="concept-chip">equals()</span>
+          <span class="concept-chip">Basic validation</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART G ===================== -->
+    <section class="part" id="part-g">
+      <div class="filetab">
+        <div class="fname"><b>Part G</b> — MainMenu.java</div>
+        <div class="part-badge">DO-WHILE</div>
+      </div>
+      <div class="part-body">
+        <h2>Menu-Driven Employee Application</h2>
+        <p class="part-sub">After registration, loop the main menu with do-while until the user exits.</p>
+
+        <p class="terminal-label">MENU</p>
+        <div class="terminal">=========================================
+          EMPLOYEE MANAGEMENT
+=========================================
+
+1. View Employee Details
+2. View Salary Details
+3. View Performance
+4. View Employee Rating
+5. Exit
+
+Enter your choice: </div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">do-while</span>
+          <span class="concept-chip">switch</span>
+          <span class="concept-chip">Methods</span>
+          <span class="concept-chip">Control flow</span>
+          <span class="concept-chip">User interaction</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART H ===================== -->
+    <section class="part" id="part-h">
+      <div class="filetab">
+        <div class="fname"><b>Part H</b> — Methods.java</div>
+        <div class="part-badge">STRUCTURE</div>
+      </div>
+      <div class="part-body">
+        <h2>Methods</h2>
+        <p class="part-sub">Split functionality into separate methods instead of writing everything inside main().</p>
+
+        <div class="structure">
+<span class="root">main()</span>
+   |
+   +-- <span class="leaf">displayEmployeeDetails()</span>
+   |
+   +-- <span class="leaf">calculateSalary()</span>
+   |
+   +-- <span class="leaf">calculatePerformance()</span>
+   |
+   +-- <span class="leaf">displayRating()</span>
+        </div>
+
+        <div class="note">
+          <b>Industry practice —</b> do not put the entire application logic inside the main() method.
+        </div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">Methods</span>
+          <span class="concept-chip">Modular design</span>
+          <span class="concept-chip">main()</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART I ===================== -->
+    <section class="part" id="part-i">
+      <div class="filetab">
+        <div class="fname"><b>Part I</b> — Employee.java</div>
+        <div class="part-badge">CLASS · OBJECT</div>
+      </div>
+      <div class="part-body">
+        <h2>Constructor and Class</h2>
+        <p class="part-sub">Create an Employee class with a constructor to initialize its fields.</p>
+
+        <p>Fields:</p>
+        <ul>
+          <li>employeeId</li>
+          <li>employeeName</li>
+          <li>department</li>
+          <li>designation</li>
+          <li>basicSalary</li>
+          <li>experience</li>
+        </ul>
+
+        <div class="codeblock">
+          <div class="gutter"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div></div>
+          <pre><code><span class="cls">Employee</span> employee = <span class="kw">new</span> <span class="cls">Employee</span>(
+    <span class="str">"EMP1025"</span>,
+    <span class="str">"Rahul Sharma"</span>,
+    <span class="str">"IT"</span>,
+    <span class="str">"Software Developer"</span>,
+    <span class="num">45000</span>,
+    <span class="num">2</span>
+);</code></pre>
+        </div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">Class</span>
+          <span class="concept-chip">Object</span>
+          <span class="concept-chip">Constructor</span>
+          <span class="concept-chip">Instance variables</span>
+          <span class="concept-chip">this keyword</span>
+          <span class="concept-chip">Object creation</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART J ===================== -->
+    <section class="part" id="part-j">
+      <div class="filetab">
+        <div class="fname"><b>Part J</b> — Employee.java</div>
+        <div class="part-badge">OVERLOADING</div>
+      </div>
+      <div class="part-body">
+        <h2>Constructor Overloading</h2>
+        <p class="part-sub">Add a second constructor that accepts only the basic employee information, defaulting the rest.</p>
+
+        <div class="codeblock">
+          <div class="gutter"><div>1</div><div>2</div><div>3</div><div>4</div></div>
+          <pre><code><span class="cls">Employee</span> employee = <span class="kw">new</span> <span class="cls">Employee</span>(
+    <span class="str">"EMP1025"</span>,
+    <span class="str">"Rahul Sharma"</span>
+);</code></pre>
+        </div>
+
+        <p>Remaining fields (department, designation, basic salary, experience) are set to appropriate default values.</p>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">Constructor overloading</span>
+          <span class="concept-chip">Default values</span>
+          <span class="concept-chip">Object initialization</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART K ===================== -->
+    <section class="part" id="part-k">
+      <div class="filetab">
+        <div class="fname"><b>Part K</b> — Employee.java</div>
+        <div class="part-badge">OVERLOADING</div>
+      </div>
+      <div class="part-body">
+        <h2>Method Overloading</h2>
+        <p class="part-sub">Two calculateSalary() signatures — one with a standard bonus, one with a custom bonus.</p>
+
+        <div class="codeblock">
+          <div class="gutter"><div>1</div><div>2</div><div>3</div></div>
+          <pre><code><span class="kw">double</span> <span class="fn">calculateSalary</span>(<span class="kw">double</span> basicSalary)
+
+<span class="kw">double</span> <span class="fn">calculateSalary</span>(<span class="kw">double</span> basicSalary, <span class="kw">double</span> bonus)</code></pre>
+        </div>
+
+        <p>The first method applies the standard bonus rate. The second accepts a custom bonus amount.</p>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">Method overloading</span>
+          <span class="concept-chip">Parameters</span>
+          <span class="concept-chip">Return values</span>
+          <span class="concept-chip">Compile-time polymorphism</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART L ===================== -->
+    <section class="part" id="part-l">
+      <div class="filetab">
+        <div class="fname"><b>Part L</b> — StringOps.java</div>
+        <div class="part-badge">STRING</div>
+      </div>
+      <div class="part-body">
+        <h2>String Handling</h2>
+        <p class="part-sub">Process the employee name using Java's String class.</p>
+
+        <p class="terminal-label">EXAMPLE</p>
+        <div class="terminal">Employee Name : Rahul Sharma
+Name Length   : 13
+Uppercase     : RAHUL SHARMA
+Lowercase     : rahul sharma</div>
+
+        <div class="codeblock">
+          <div class="gutter"><div>1</div></div>
+          <pre><code>employeeName.<span class="fn">contains</span>(<span class="str">"Rahul"</span>)</code></pre>
+        </div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">String</span>
+          <span class="concept-chip">length()</span>
+          <span class="concept-chip">toUpperCase()</span>
+          <span class="concept-chip">toLowerCase()</span>
+          <span class="concept-chip">contains()</span>
+          <span class="concept-chip">equals()</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART M ===================== -->
+    <section class="part" id="part-m">
+      <div class="filetab">
+        <div class="fname"><b>Part M</b> — ReportBuilder.java</div>
+        <div class="part-badge">STRINGBUILDER</div>
+      </div>
+      <div class="part-body">
+        <h2>Building the Employee Report</h2>
+        <p class="part-sub">Use StringBuilder instead of repeated + concatenation to assemble the final report.</p>
+
+        <p class="terminal-label">EXPECTED OUTPUT</p>
+        <div class="terminal">=========================================
+          EMPLOYEE FINAL REPORT
+=========================================
+
+Employee ID       : EMP1025
+Employee Name     : Rahul Sharma
+Department        : IT
+Designation       : Software Developer
+Experience        : 2 Years
+
+Gross Salary      : Rs. 60750.00
+
+Performance Score : 80.0
+Performance Rating: Good
+Experience Level  : Junior
+
+=========================================</div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">StringBuilder</span>
+          <span class="concept-chip">append()</span>
+          <span class="concept-chip">toString()</span>
+          <span class="concept-chip">Building strings</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART N ===================== -->
+    <section class="part" id="part-n">
+      <div class="filetab">
+        <div class="fname"><b>Part N</b> — Recursion.java</div>
+        <div class="part-badge">RECURSION</div>
+      </div>
+      <div class="part-body">
+        <h2>Recursion</h2>
+        <p class="part-sub">Sum the numbers from 1 to the employee's years of experience, recursively.</p>
+
+        <div class="codeblock">
+          <div class="gutter"><div>1</div><div>2</div></div>
+          <pre><code><span class="fn">calculateExperienceScore</span>(<span class="num">4</span>)
+<span class="cmt">// returns 10   (1 + 2 + 3 + 4)</span></code></pre>
+        </div>
+
+        <div class="note warn">
+          <b>Keep it small —</b> recursion here is limited to this one calculation, to demonstrate the concept without adding unnecessary complexity.
+        </div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">Recursive method</span>
+          <span class="concept-chip">Base condition</span>
+          <span class="concept-chip">Recursive call</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART O ===================== -->
+    <section class="part" id="part-o">
+      <div class="filetab">
+        <div class="fname"><b>Part O</b> — Performance.java</div>
+        <div class="part-badge">FOR LOOP</div>
+      </div>
+      <div class="part-body">
+        <h2>For Loop Practice</h2>
+        <p class="part-sub">Traverse the performance-score array with a for loop and display each entry.</p>
+
+        <p class="terminal-label">EXPECTED OUTPUT</p>
+        <div class="terminal">Performance Scores
+-------------------------
+Technical Skills     : 80
+Communication Skills : 75
+Teamwork             : 85</div>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">for loop</span>
+          <span class="concept-chip">Array traversal</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART P ===================== -->
+    <section class="part" id="part-p">
+      <div class="filetab">
+        <div class="fname"><b>Part P</b> — Casting.java</div>
+        <div class="part-badge">DATA TYPES</div>
+      </div>
+      <div class="part-body">
+        <h2>Data Type and Type Casting Exercise</h2>
+        <p class="part-sub">Compare implicit integer division against explicit casting when averaging scores.</p>
+
+        <div class="codeblock">
+          <div class="gutter"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div></div>
+          <pre><code><span class="kw">int</span> totalScore = <span class="num">240</span>;
+<span class="kw">int</span> numberOfSkills = <span class="num">3</span>;
+
+<span class="kw">double</span> average = totalScore / numberOfSkills;              <span class="cmt">// no cast</span>
+<span class="kw">double</span> average = (<span class="kw">double</span>) totalScore / numberOfSkills;    <span class="cmt">// explicit cast</span></code></pre>
+        </div>
+
+        <p>Students should be able to explain why the second version is required to get a correct decimal average.</p>
+
+        <div class="concepts">
+          <div class="concepts-label">CONCEPTS EXPOSED</div>
+          <span class="concept-chip">int vs double</span>
+          <span class="concept-chip">Implicit conversion</span>
+          <span class="concept-chip">Explicit casting</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART Q ===================== -->
+    <section class="part" id="part-q">
+      <div class="filetab">
+        <div class="fname"><b>Part Q</b> — memory-notes.md</div>
+        <div class="part-badge">OBSERVATION</div>
+      </div>
+      <div class="part-body">
+        <h2>Java Memory &amp; Garbage Collection Observation</h2>
+        <p class="part-sub">An observation activity rather than a coding requirement — create several Employee objects, then release one.</p>
+
+        <div class="codeblock">
+          <div class="gutter"><div>1</div><div>2</div><div>3</div><div>4</div></div>
+          <pre><code><span class="cls">Employee</span> emp1 = <span class="kw">new</span> <span class="cls">Employee</span>(...);
+<span class="cls">Employee</span> emp2 = <span class="kw">new</span> <span class="cls">Employee</span>(...);
+<span class="cls">Employee</span> emp3 = <span class="kw">new</span> <span class="cls">Employee</span>(...);
+emp2 = <span class="kw">null</span>;  <span class="cmt">// emp2's object becomes eligible for GC</span></code></pre>
+        </div>
+
+        <div class="structure">
+<span class="root">Stack</span>
+  |
+  |-- <span class="leaf">emp1 reference</span>
+  |-- <span class="leaf">emp2 reference</span>
+  |-- <span class="leaf">emp3 reference</span>
+          |
+          &darr;
+        <span class="root">Heap</span>
+     Employee Objects
+        </div>
+
+        <div class="discuss-card">
+          <h4>Students should understand</h4>
+          <ul>
+            <li>Objects are created in heap memory.</li>
+            <li>References are used to access objects.</li>
+            <li>An object with no reachable reference becomes eligible for garbage collection.</li>
+            <li>The garbage collector manages memory automatically.</li>
+            <li><code>System.gc()</code> is only a request/hint — it does not guarantee immediate collection.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PART R ===================== -->
+    <section class="part" id="part-r">
+      <div class="filetab">
+        <div class="fname"><b>Part R</b> — architecture-notes.md</div>
+        <div class="part-badge">OBSERVATION</div>
+      </div>
+      <div class="part-body">
+        <h2>Java Architecture &amp; Security Observation</h2>
+        <p class="part-sub">Short-answer questions to complete after executing the application.</p>
+
+        <h3>Java architecture</h3>
+        <div class="structure">
+<span class="leaf">Java Source Code</span>
+      &darr;
+<span class="leaf">javac Compiler</span>
+      &darr;
+<span class="leaf">Bytecode (.class)</span>
+      &darr;
+<span class="leaf">JVM</span>
+      &darr;
+<span class="root">Machine-specific execution</span>
+        </div>
+
+        <div class="note">
+          <b>To clarify —</b> the JDK is the development kit, bundling the tools and runtime components needed to build and run Java applications; the JVM is the engine that executes the compiled bytecode.
+        </div>
+
+        <h3>Discussion</h3>
+        <div class="discuss-grid">
+          <div class="discuss-card">
+            <h4>Identify the roles of</h4>
+            <ul>
+              <li>JDK</li>
+              <li>JRE (conceptually)</li>
+              <li>JVM</li>
+              <li>Java Compiler</li>
+              <li>Bytecode</li>
+            </ul>
+          </div>
+          <div class="discuss-card">
+            <h4>Why is Java safer than languages that manipulate memory directly?</h4>
+            <ul>
+              <li>Strong type checking</li>
+              <li>Automatic memory management</li>
+              <li>No direct pointer arithmetic in ordinary Java programming</li>
+              <li>Bytecode verification</li>
+              <li>JVM-managed execution &amp; runtime checks</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  Practical 1 · Employee Payroll &amp; Performance Management System · Core Java, no external framework or database
+</footer>
+
+<script>
+  // Highlight the active section in the explorer as the user scrolls
+  const links = Array.from(document.querySelectorAll('.explorer a'));
+  const sections = links.map(l => document.querySelector(l.getAttribute('href')));
+
+  function setActive(){
+    let currentIndex = 0;
+    const scrollPos = window.scrollY + 90;
+    sections.forEach((sec, i) => {
+      if (sec && sec.offsetTop <= scrollPos) currentIndex = i;
+    });
+    links.forEach((l, i) => l.classList.toggle('active', i === currentIndex));
+  }
+  window.addEventListener('scroll', setActive, { passive: true });
+  setActive();
+</script>
+
+</body>
+</html>
