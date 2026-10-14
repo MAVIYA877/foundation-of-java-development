@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Arrays &amp; Strings | IT Training Module — Hour 7</title>
+<style>
+  :root{
+    --bg:#282a36;
+    --bg-alt:#1e1f29;
+    --surface:#2f3140;
+    --surface-2:#363849;
+    --border:#44475a;
+    --text:#f8f8f2;
+    --text-dim:#b8bcd4;
+    --purple:#bd93f9;
+    --pink:#ff79c6;
+    --green:#50fa7b;
+    --cyan:#8be9fd;
+    --orange:#ffb86c;
+    --yellow:#f1fa8c;
+    --red:#ff5555;
+    --radius:14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(189,147,249,0.10), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(139,233,253,0.08), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    line-height:1.65;
+  }
+  a{color:var(--cyan);}
+  code, pre{ font-family:'Cascadia Code','Fira Code',Consolas,'Courier New',monospace; }
+
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(30,31,41,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:10px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+  }
+  .topbar .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px; }
+  .brand .logo{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px; color:#1e1f29; font-weight:900;
+  }
+  .progress-track{
+    flex:1; max-width:420px; height:8px; border-radius:20px;
+    background:var(--surface-2); overflow:hidden; border:1px solid var(--border);
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--green),var(--cyan));
+    transition:width .15s ease;
+  }
+  .nav-links{ display:flex; gap:6px; flex-wrap:wrap; font-size:12.5px; }
+  .nav-links a{
+    color:var(--text-dim); text-decoration:none; padding:6px 10px;
+    border-radius:20px; border:1px solid transparent; white-space:nowrap;
+  }
+  .nav-links a:hover, .nav-links a.active{
+    background:var(--surface-2); color:var(--text); border-color:var(--border);
+  }
+
+  .hero{
+    padding:70px 24px 50px; text-align:center; position:relative; overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:42px 42px; opacity:0.12;
+    mask-image:radial-gradient(circle at 50% 20%, black, transparent 70%);
+  }
+  .hero-inner{position:relative; z-index:1;}
+  .badge-pill{
+    display:inline-block; padding:6px 16px; border-radius:30px;
+    background:var(--surface-2); border:1px solid var(--border);
+    font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--green); font-weight:700; margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(24px,4.4vw,42px); margin:0 0 12px;
+    background:linear-gradient(90deg,var(--green),var(--cyan) 55%,var(--purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
+  }
+  .hero p.sub{ max-width:680px; margin:0 auto; color:var(--text-dim); font-size:16px; }
+  .hero-meta{ display:flex; justify-content:center; gap:28px; margin-top:28px; flex-wrap:wrap; }
+  .hero-meta div{font-size:13px; color:var(--text-dim);}
+  .hero-meta strong{display:block; font-size:20px; color:var(--text);}
+
+  .wrap{max-width:1080px; margin:0 auto; padding:10px 24px 100px;}
+  section.module{ padding:56px 0; border-bottom:1px dashed var(--border); scroll-margin-top:80px; }
+  section.module:last-child{border-bottom:none;}
+  .module-head{ display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .module-num{
+    flex:0 0 auto; width:52px;height:52px;border-radius:14px;
+    background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:20px; color:var(--green);
+  }
+  .module-head h2{ margin:0; font-size:26px; font-weight:800; }
+  .module-head p{margin:2px 0 0; color:var(--text-dim); font-size:14px;}
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:22px; box-shadow:var(--shadow);
+  }
+  .card h3{margin-top:0; font-size:17px; color:var(--cyan); display:flex; gap:8px; align-items:center;}
+  .card h3 .icon{font-size:18px;}
+  .card ul, .card ol{margin:10px 0; padding-left:22px;}
+  .card li{margin-bottom:6px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  .grid-5{display:grid; grid-template-columns:repeat(5,1fr); gap:12px;}
+  @media (max-width:760px){ .grid-2, .grid-3, .grid-4, .grid-5{grid-template-columns:1fr;} }
+
+  .callout{
+    border-radius:var(--radius); padding:16px 20px; margin:18px 0;
+    border:1px solid; display:flex; gap:14px; align-items:flex-start; font-size:14.5px;
+  }
+  .callout .ico{font-size:20px; line-height:1;}
+  .callout.teach{background:rgba(80,250,123,0.08); border-color:rgba(80,250,123,0.4);}
+  .callout.avoid{background:rgba(255,85,85,0.08); border-color:rgba(255,85,85,0.4);}
+  .callout.tip{background:rgba(139,233,253,0.08); border-color:rgba(139,233,253,0.4);}
+  .callout b{color:var(--text);}
+
+  .danger-list{
+    background:rgba(255,85,85,0.06); border:1px solid rgba(255,85,85,0.35);
+    border-radius:var(--radius); padding:18px 22px; margin:16px 0;
+  }
+  .danger-list h4{margin:0 0 10px; color:var(--red); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .danger-list ul{margin:0; padding-left:20px;}
+  .danger-list li{margin-bottom:6px; color:var(--text);}
+
+  .pipe{ display:flex; flex-direction:column; align-items:center; gap:0; margin:26px 0; }
+  .pipe-node{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px;
+    padding:12px 22px; font-weight:700; font-size:14.5px; text-align:center; min-width:200px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  }
+  .pipe-node.accent-purple{border-color:var(--purple); color:var(--purple);}
+  .pipe-node.accent-green{border-color:var(--green); color:var(--green);}
+  .pipe-node.accent-cyan{border-color:var(--cyan); color:var(--cyan);}
+  .pipe-node.accent-orange{border-color:var(--orange); color:var(--orange);}
+  .pipe-node.accent-pink{border-color:var(--pink); color:var(--pink);}
+  .pipe-node.accent-yellow{border-color:var(--yellow); color:var(--yellow);}
+  .pipe-node.accent-red{border-color:var(--red); color:var(--red);}
+  .pipe-arrow{ color:var(--text-dim); font-size:20px; margin:2px 0; line-height:1; }
+  .pipe-split{ display:flex; gap:60px; margin:6px 0 0; flex-wrap:wrap; justify-content:center; }
+  .pipe-split .branch{ display:flex; flex-direction:column; align-items:center; }
+  .pipe-split .branch .branch-label{ font-size:12px; color:var(--text-dim); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+  .pipe-hrow{ display:flex; align-items:stretch; gap:14px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+  .pipe-hrow .pipe-node{min-width:130px;}
+  .pipe-harrow{align-self:center; font-size:22px; color:var(--text-dim);}
+
+  .diagram-box{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin:20px 0; overflow-x:auto;
+  }
+  .diagram-caption{ text-align:center; font-size:12.5px; color:var(--text-dim); margin-top:8px; font-style:italic; }
+
+  .feat-card{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+    padding:16px; display:flex; flex-direction:column; gap:8px;
+  }
+  .feat-card .num{
+    width:30px;height:30px;border-radius:8px; background:var(--bg-alt);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--green); font-size:13px;
+  }
+  .feat-card h4{margin:0; font-size:15px;}
+  .feat-card p{margin:0; font-size:13px; color:var(--text-dim);}
+
+  .code-block{
+    background:#1a1b24; border:1px solid var(--border); border-radius:12px;
+    overflow:hidden; margin:16px 0;
+  }
+  .code-head{
+    display:flex; align-items:center; justify-content:space-between;
+    background:#20212c; padding:9px 16px; border-bottom:1px solid var(--border);
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .code-dots{display:flex; gap:6px;}
+  .code-dots span{width:10px;height:10px;border-radius:50%;}
+  .code-dots span:nth-child(1){background:#ff5f56;}
+  .code-dots span:nth-child(2){background:#ffbd2e;}
+  .code-dots span:nth-child(3){background:#27c93f;}
+  pre.code{ margin:0; padding:18px 20px; overflow-x:auto; font-size:14px; line-height:1.7; }
+  .kw{color:var(--pink);}
+  .cls{color:var(--cyan);}
+  .str{color:var(--yellow);}
+  .mth{color:var(--green);}
+  .cmt{color:#6272a4;}
+  .num-lit{color:var(--orange);}
+  .op{color:var(--red);}
+  .prm{color:var(--purple);}
+  .ths{color:var(--orange); font-weight:700;}
+
+  .code-output{
+    background:#151621; border-top:1px dashed var(--border);
+    padding:12px 20px; font-size:13.5px; color:var(--green); font-family:'Cascadia Code',monospace;
+  }
+  .code-output .lbl{color:var(--text-dim); font-size:11px; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;}
+
+  .line-explain{ display:grid; grid-template-columns:170px 1fr; gap:6px 16px; margin:14px 0; font-size:14px; }
+  .line-explain .lterm{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:8px;
+    padding:4px 10px; font-family:'Cascadia Code',monospace; color:var(--yellow); font-size:13px; align-self:start;
+  }
+  .line-explain .ldesc{color:var(--text-dim); align-self:center;}
+
+  .steps{counter-reset:stepnum; margin:20px 0;}
+  .step{
+    position:relative; padding:16px 20px 16px 56px; margin-bottom:14px;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+  }
+  .step::before{
+    counter-increment:stepnum; content:counter(stepnum);
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:28px; height:28px; border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; color:#1e1f29;
+  }
+  .step h4{margin:0 0 4px; font-size:15px;}
+  .step p{margin:0; font-size:13.5px; color:var(--text-dim);}
+  .step code{background:var(--bg-alt); padding:1px 6px; border-radius:5px; color:var(--cyan); border:1px solid var(--border);}
+
+  .analogy{
+    display:flex; gap:18px; align-items:center; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius); padding:20px; margin:16px 0;
+  }
+  .analogy .side{flex:1; min-width:220px;}
+  .analogy .side h4{margin:0 0 6px; color:var(--orange); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .analogy .arrow{font-size:26px; color:var(--pink);}
+
+  table.breakdown{ width:100%; border-collapse:collapse; margin:14px 0; font-size:14.5px; }
+  table.breakdown th, table.breakdown td{ padding:10px 14px; border-bottom:1px solid var(--border); text-align:left; }
+  table.breakdown th{color:var(--orange); font-size:12px; text-transform:uppercase; letter-spacing:.5px;}
+  table.breakdown td code{ color:var(--cyan); }
+  table.breakdown tr.highlight td{ background:rgba(80,250,123,0.06); }
+
+  .type-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0; }
+  @media (max-width:760px){ .type-grid{grid-template-columns:repeat(2,1fr);} }
+  .type-chip{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:12px; text-align:center; font-family:'Cascadia Code',monospace; color:var(--yellow); font-weight:700;
+  }
+
+  /* Array memory boxes */
+  .array-row{ display:flex; justify-content:center; gap:0; margin:20px 0; flex-wrap:wrap; }
+  .array-cell{
+    width:76px; height:60px; border:1.5px solid var(--border); background:var(--bg-alt);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-weight:700; font-size:15px; color:var(--cyan); position:relative;
+  }
+  .array-cell .idx{ position:absolute; bottom:-22px; font-size:11px; color:var(--text-dim); font-weight:400; }
+  .array-cell.highlight{ border-color:var(--green); color:var(--green); background:rgba(80,250,123,0.08); }
+  .array-row-wrap{ margin-bottom:32px; }
+
+  /* Loop cycle diagram */
+  .cycle{ display:flex; flex-direction:column; align-items:center; margin:24px 0; gap:0; }
+  .cycle-diamond{
+    background:var(--surface-2); border:2px solid var(--cyan); color:var(--cyan);
+    padding:14px 24px; border-radius:12px; font-weight:700; font-size:14px; text-align:center;
+  }
+  .cycle-body{
+    background:var(--bg-alt); border:1.5px solid var(--green); color:var(--green);
+    padding:12px 22px; border-radius:10px; font-weight:700; font-size:13.5px; text-align:center; margin:10px 0;
+  }
+  .cycle-loopback{ font-size:12px; color:var(--text-dim); margin:2px 0; }
+  .cycle-exit{
+    background:var(--bg-alt); border:1.5px solid var(--red); color:var(--red);
+    padding:8px 20px; border-radius:10px; font-weight:700; font-size:13px; text-align:center; margin-top:14px;
+  }
+
+  /* Max-finding trace table */
+  table.trace{ width:100%; border-collapse:collapse; margin:14px 0; font-size:13.5px; text-align:center; }
+  table.trace th, table.trace td{ padding:8px 10px; border:1px solid var(--border); }
+  table.trace th{ background:var(--surface-2); color:var(--orange); font-size:11px; text-transform:uppercase; }
+  table.trace td.upd{ color:var(--green); font-weight:700; }
+  table.trace td.nochg{ color:var(--text-dim); }
+
+  /* 2D grid */
+  .matrix-grid{ display:inline-grid; grid-template-columns:repeat(3, 56px); gap:4px; margin:20px auto; }
+  .matrix-cell{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:8px;
+    height:48px; display:flex; align-items:center; justify-content:center;
+    font-weight:700; color:var(--yellow); font-family:'Cascadia Code',monospace; font-size:14px;
+  }
+  .matrix-wrap{ text-align:center; }
+  .matrix-coord{ font-size:10px; color:var(--text-dim); display:block; margin-top:1px; }
+
+  /* String pool diagram */
+  .pool-diagram{ display:flex; gap:40px; justify-content:center; flex-wrap:wrap; margin:22px 0; }
+  .pool-col{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .pool-title{ font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--text-dim); margin-bottom:6px; }
+  .pool-box{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:10px;
+    padding:10px 18px; font-family:'Cascadia Code',monospace; font-size:13px; text-align:center; min-width:140px;
+  }
+  .pool-box.shared{ border-color:var(--green); color:var(--green); }
+  .pool-box.heap1{ border-color:var(--pink); color:var(--pink); }
+  .pool-box.heap2{ border-color:var(--purple); color:var(--purple); }
+  .pool-arrow-down{ font-size:16px; color:var(--text-dim); }
+
+  /* Method cheat sheet grid */
+  .method-cheat{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0; }
+  @media (max-width:760px){ .method-cheat{grid-template-columns:1fr;} }
+  .cheat-item{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:12px 14px;
+  }
+  .cheat-item .cname{ color:var(--green); font-family:'Cascadia Code',monospace; font-weight:700; font-size:13.5px; }
+  .cheat-item .cex{ color:var(--text-dim); font-family:'Cascadia Code',monospace; font-size:12px; margin-top:4px; }
+  .cheat-item .cout{ color:var(--cyan); font-family:'Cascadia Code',monospace; font-size:12px; margin-top:2px; }
+
+  /* StringBuilder buffer diagram */
+  .buffer-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; margin:20px 0; }
+  .buffer-box{
+    background:var(--bg-alt); border:1.5px solid var(--green); border-radius:10px;
+    padding:10px 18px; font-family:'Cascadia Code',monospace; color:var(--green); font-weight:700; font-size:13.5px;
+  }
+  .buffer-arrow{ font-size:18px; color:var(--text-dim); }
+
+  .quiz-box{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-top:20px;
+  }
+  .quiz-q{font-weight:700; margin-bottom:14px; font-size:15.5px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:10px;}
+  .quiz-opt{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 16px; cursor:pointer; font-size:14px; transition:.15s;
+  }
+  .quiz-opt:hover{border-color:var(--green);}
+  .quiz-opt.correct{background:rgba(80,250,123,0.15); border-color:var(--green); color:var(--green);}
+  .quiz-opt.wrong{background:rgba(255,85,85,0.15); border-color:var(--red); color:var(--red);}
+  .quiz-feedback{margin-top:12px; font-size:13.5px; color:var(--text-dim); min-height:18px;}
+  .quiz-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+  .quiz-nav button{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:9px 18px; border-radius:20px; cursor:pointer; font-size:13.5px; font-weight:600;
+  }
+  .quiz-nav button:hover{border-color:var(--green);}
+  .quiz-nav button:disabled{opacity:.35; cursor:not-allowed;}
+  .quiz-dots{display:flex; gap:6px;}
+  .quiz-dots span{width:8px;height:8px;border-radius:50%; background:var(--border);}
+  .quiz-dots span.active{background:var(--cyan);}
+  .quiz-dots span.done{background:var(--green);}
+  .quiz-score{ text-align:center; padding:20px; font-size:18px; font-weight:800; }
+
+  footer{ text-align:center; padding:30px 20px; color:var(--text-dim); font-size:12.5px; border-top:1px solid var(--border); }
+  ::selection{background:var(--green); color:#1e1f29;}
+
+  .scrolltop{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    color:#1e1f29; font-weight:900; cursor:pointer; box-shadow:var(--shadow);
+    opacity:0; pointer-events:none; transition:.2s;
+  }
+  .scrolltop.show{opacity:1; pointer-events:auto;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="logo">J</div> Java Foundations · Hour 7</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#m44">44. Arrays</a>
+    <a href="#m45">45. Creation</a>
+    <a href="#m46">46. Looping</a>
+    <a href="#m47">47. Max</a>
+    <a href="#m48">48. 2D Array</a>
+    <a href="#m49">49. Strings</a>
+    <a href="#m50">50. Creation</a>
+    <a href="#m51">51. Immutability</a>
+    <a href="#m52">52. Methods</a>
+    <a href="#m53">53. == vs equals</a>
+    <a href="#m54">54. StringBuilder</a>
+    <a href="#quiz">Quiz</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="badge-pill">IT Training &middot; Core Java Track &middot; Hour 7</span>
+    <h1>Arrays &amp; Strings</h1>
+    <p class="sub">In this hour, I'm showing you how to store many related values under one name instead of a pile of separate variables, and how Java's text type actually behaves under the hood — including the immutability quirk that catches almost every beginner off guard.</p>
+    <div class="hero-meta">
+      <div><strong>11</strong>Modules</div>
+      <div><strong>~110 min</strong>Session Length</div>
+      <div><strong>Beginner</strong>Level</div>
+      <div><strong>10</strong>Code Walkthroughs</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- MODULE 44 -->
+  <section class="module" id="m44">
+    <div class="module-head">
+      <div class="module-num">44</div>
+      <div>
+        <h2>Arrays</h2>
+        <p>Why I stop declaring a separate variable for every value</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">📚</span> The Problem With Separate Variables</h3>
+      <p>Imagine storing four exam marks. My first instinct as a beginner might be this:</p>
+      <div class="code-block">
+        <div class="code-head"><span>Before — Don't Do This</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span> mark1 = <span class="num-lit">80</span>;
+<span class="kw">int</span> mark2 = <span class="num-lit">75</span>;
+<span class="kw">int</span> mark3 = <span class="num-lit">90</span>;
+<span class="kw">int</span> mark4 = <span class="num-lit">85</span>;</pre>
+      </div>
+      <p>This falls apart immediately — what if there are 50 marks? 500? I'd need 500 separate variable names. Instead:</p>
+      <div class="code-block">
+        <div class="code-head"><span>After — Use an Array</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span>[] marks = {<span class="num-lit">80</span>, <span class="num-lit">75</span>, <span class="num-lit">90</span>, <span class="num-lit">85</span>};</pre>
+      </div>
+      <div class="array-row-wrap">
+        <div class="array-row">
+          <div class="array-cell">80<span class="idx">[0]</span></div>
+          <div class="array-cell">75<span class="idx">[1]</span></div>
+          <div class="array-cell">90<span class="idx">[2]</span></div>
+          <div class="array-cell">85<span class="idx">[3]</span></div>
+        </div>
+      </div>
+      <p class="diagram-caption">One variable name, <code>marks</code>, holding four values side by side in memory — each accessed by its <b>index</b>, which always starts counting at <code>0</code>.</p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>The rule I want you internalizing:</b> reach for an array anytime you have multiple related values of the <b>same type</b> that you'll want to work with as a group — looping over them, searching them, sorting them.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 45 -->
+  <section class="module" id="m45">
+    <div class="module-head">
+      <div class="module-num">45</div>
+      <div>
+        <h2>Array Creation</h2>
+        <p>Reserving space first, then filling it in</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧱</span> Creating a Fixed-Size Array</h3>
+      <div class="code-block">
+        <div class="code-head"><span>ArrayDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">ArrayDemo</span> {
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="kw">int</span>[] marks = <span class="kw">new</span> <span class="kw">int</span>[<span class="num-lit">5</span>];
+
+        marks[<span class="num-lit">0</span>] = <span class="num-lit">80</span>;
+        marks[<span class="num-lit">1</span>] = <span class="num-lit">75</span>;
+        marks[<span class="num-lit">2</span>] = <span class="num-lit">90</span>;
+        marks[<span class="num-lit">3</span>] = <span class="num-lit">85</span>;
+        marks[<span class="num-lit">4</span>] = <span class="num-lit">70</span>;
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(marks[<span class="num-lit">0</span>]);
+
+    }
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>80</div>
+      </div>
+
+      <p>Here's exactly what I want you tracing through step by step:</p>
+      <div class="steps">
+        <div class="step">
+          <h4>Step 1 — Reserve the space</h4>
+          <p><code>new int[5]</code> tells Java: "reserve five slots for integers, right now." Every slot starts at the default value <code>0</code>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 2 — Fill in each slot by index</h4>
+          <p><code>marks[0] = 80;</code> places <code>80</code> into the very first slot. Indexes run from <code>0</code> to <code>4</code> for a size-5 array — never <code>5</code> itself.</p>
+        </div>
+        <div class="step">
+          <h4>Step 3 — Read a value back out</h4>
+          <p><code>marks[0]</code> retrieves whatever is currently sitting in slot 0 — here, <code>80</code>.</p>
+        </div>
+      </div>
+
+      <div class="array-row-wrap">
+        <div class="array-row">
+          <div class="array-cell highlight">80<span class="idx">[0]</span></div>
+          <div class="array-cell">75<span class="idx">[1]</span></div>
+          <div class="array-cell">90<span class="idx">[2]</span></div>
+          <div class="array-cell">85<span class="idx">[3]</span></div>
+          <div class="array-cell">70<span class="idx">[4]</span></div>
+        </div>
+      </div>
+      <p class="diagram-caption">The size you give <code>new int[5]</code> is fixed forever — you can change the values inside, but you can never grow or shrink this array after creation.</p>
+    </div>
+
+    <div class="callout avoid">
+      <div class="ico">🚫</div>
+      <div><b>The error every beginner eventually hits:</b> <code>ArrayIndexOutOfBoundsException</code>. For a 5-element array, valid indexes are <code>0</code> through <code>4</code> — trying to access <code>marks[5]</code> crashes the program immediately.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 46 -->
+  <section class="module" id="m46">
+    <div class="module-head">
+      <div class="module-num">46</div>
+      <div>
+        <h2>Loop Through Array</h2>
+        <p>Visiting every element without repeating yourself</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔁</span> Classic for Loop</h3>
+      <div class="code-block">
+        <div class="code-head"><span>LoopDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span>[] marks = {<span class="num-lit">80</span>, <span class="num-lit">75</span>, <span class="num-lit">90</span>, <span class="num-lit">85</span>, <span class="num-lit">70</span>};
+
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num-lit">0</span>; i &lt; marks.length; i++) {
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>(marks[i]);
+
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>80
+75
+90
+85
+70</div>
+      </div>
+
+      <div class="cycle">
+        <div class="cycle-diamond">i &lt; marks.length ?</div>
+        <div class="cycle-loopback">↓ true</div>
+        <div class="cycle-body">print marks[i], then i++</div>
+        <div class="cycle-loopback">↻ back to condition check</div>
+        <div class="cycle-exit">i == 5 → false → exit</div>
+      </div>
+      <p class="diagram-caption"><code>marks.length</code> gives you the array's size — <code>5</code> here — so the loop automatically stops right after the last valid index, <code>4</code>.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">✨</span> Enhanced for (the "for-each" loop)</h3>
+      <div class="code-block">
+        <div class="code-head"><span>EnhancedForDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">for</span> (<span class="kw">int</span> mark : marks) {
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>(mark);
+
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>80
+75
+90
+85
+70</div>
+      </div>
+      <p>Same result, no index variable at all — <code>mark</code> is automatically assigned each element in turn, from first to last.</p>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>When I reach for each style:</b> the classic <code>for</code> loop when I need the index itself (to modify elements, compare positions, or go backwards). The enhanced <code>for</code> when I just need to read each value in order — it's shorter and harder to get wrong.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 47 -->
+  <section class="module" id="m47">
+    <div class="module-head">
+      <div class="module-num">47</div>
+      <div>
+        <h2>Find Maximum</h2>
+        <p>An excellent beginner exercise for combining loops and conditionals</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🏆</span> Finding the Largest Number</h3>
+      <div class="code-block">
+        <div class="code-head"><span>MaxNumber.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">MaxNumber</span> {
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="kw">int</span>[] numbers = {<span class="num-lit">10</span>, <span class="num-lit">45</span>, <span class="num-lit">23</span>, <span class="num-lit">89</span>, <span class="num-lit">12</span>};
+
+        <span class="kw">int</span> max = numbers[<span class="num-lit">0</span>];
+
+        <span class="kw">for</span> (<span class="kw">int</span> number : numbers) {
+
+            <span class="kw">if</span> (number &gt; max) {
+
+                max = number;
+
+            }
+
+        }
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Maximum = "</span> + max);
+
+    }
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Maximum = 89</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔍</span> Tracing max Through Every Iteration</h3>
+      <p>This is the exact trace I want you able to reproduce on a whiteboard for any interview:</p>
+      <table class="trace">
+        <thead><tr><th>number</th><th>number &gt; max ?</th><th>max after this step</th></tr></thead>
+        <tbody>
+          <tr><td>start</td><td>—</td><td class="nochg">10 (initial value)</td></tr>
+          <tr><td>10</td><td>10 &gt; 10 → false</td><td class="nochg">10</td></tr>
+          <tr><td>45</td><td>45 &gt; 10 → true</td><td class="upd">45</td></tr>
+          <tr><td>23</td><td>23 &gt; 45 → false</td><td class="nochg">45</td></tr>
+          <tr><td>89</td><td>89 &gt; 45 → true</td><td class="upd">89</td></tr>
+          <tr><td>12</td><td>12 &gt; 89 → false</td><td class="nochg">89</td></tr>
+        </tbody>
+      </table>
+      <p class="diagram-caption"><code>max</code> only ever changes when the current element beats the best one seen so far — that's the entire algorithm.</p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>Why I always start with <code>max = numbers[0]</code>, not <code>0</code>:</b> if every number in the array happened to be negative, starting from <code>0</code> would give the wrong answer. Starting from the array's own first element guarantees <code>max</code> begins as a value that's actually in the array.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 48 -->
+  <section class="module" id="m48">
+    <div class="module-head">
+      <div class="module-num">48</div>
+      <div>
+        <h2>Multidimensional Array</h2>
+        <p>A grid of values — rows and columns, not just a single line</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧮</span> A 3×3 Matrix</h3>
+      <div class="code-block">
+        <div class="code-head"><span>MatrixDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">int</span>[][] matrix = {
+
+    {<span class="num-lit">1</span>, <span class="num-lit">2</span>, <span class="num-lit">3</span>},
+    {<span class="num-lit">4</span>, <span class="num-lit">5</span>, <span class="num-lit">6</span>},
+    {<span class="num-lit">7</span>, <span class="num-lit">8</span>, <span class="num-lit">9</span>}
+
+};</pre>
+      </div>
+
+      <div class="matrix-wrap">
+        <div class="matrix-grid">
+          <div class="matrix-cell">1<span class="matrix-coord">[0][0]</span></div>
+          <div class="matrix-cell">2<span class="matrix-coord">[0][1]</span></div>
+          <div class="matrix-cell">3<span class="matrix-coord">[0][2]</span></div>
+          <div class="matrix-cell">4<span class="matrix-coord">[1][0]</span></div>
+          <div class="matrix-cell">5<span class="matrix-coord">[1][1]</span></div>
+          <div class="matrix-cell">6<span class="matrix-coord">[1][2]</span></div>
+          <div class="matrix-cell">7<span class="matrix-coord">[2][0]</span></div>
+          <div class="matrix-cell">8<span class="matrix-coord">[2][1]</span></div>
+          <div class="matrix-cell">9<span class="matrix-coord">[2][2]</span></div>
+        </div>
+      </div>
+      <p class="diagram-caption">Think of <code>matrix</code> as "an array of arrays" — <code>matrix[i]</code> gives you a whole row, and <code>matrix[i][j]</code> drills into a specific cell: row <code>i</code>, column <code>j</code>.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🖨️</span> Printing It With Nested Loops</h3>
+      <div class="code-block">
+        <div class="code-head"><span>MatrixPrint.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="num-lit">0</span>; i &lt; matrix.length; i++) {
+
+    <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num-lit">0</span>; j &lt; matrix[i].length; j++) {
+
+        System.<span class="mth">out</span>.<span class="mth">print</span>(matrix[i][j] + <span class="str">" "</span>);
+
+    }
+
+    System.<span class="mth">out</span>.<span class="mth">println</span>();
+
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>1 2 3 
+4 5 6 
+7 8 9 </div>
+      </div>
+      <div class="line-explain">
+        <div class="lterm">outer loop (i)</div>
+        <div class="ldesc">walks through each <b>row</b> — runs 3 times total</div>
+        <div class="lterm">inner loop (j)</div>
+        <div class="ldesc">walks through each <b>column</b> within that row — also runs 3 times, for every single row</div>
+        <div class="lterm">println()</div>
+        <div class="ldesc">called once per row, after the inner loop finishes, to start a new line</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULE 49 -->
+  <section class="module" id="m49">
+    <div class="module-head">
+      <div class="module-num">49</div>
+      <div>
+        <h2>Strings</h2>
+        <p>Java's built-in type for text</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔤</span> A Sequence of Characters</h3>
+      <p>A <code>String</code> represents a sequence of characters — think of it as a chain of individual letters bundled together as one value.</p>
+      <div class="code-block">
+        <div class="code-head"><span>StringDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="cls">String</span> name = <span class="str">"Rahul"</span>;</pre>
+      </div>
+      <div class="array-row-wrap">
+        <div class="array-row">
+          <div class="array-cell">R<span class="idx">[0]</span></div>
+          <div class="array-cell">a<span class="idx">[1]</span></div>
+          <div class="array-cell">h<span class="idx">[2]</span></div>
+          <div class="array-cell">u<span class="idx">[3]</span></div>
+          <div class="array-cell">l<span class="idx">[4]</span></div>
+        </div>
+      </div>
+      <p class="diagram-caption">You'll notice this looks a lot like the array diagrams from earlier — internally, a <code>String</code> really is backed by a sequence of characters, each at its own index.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 50 -->
+  <section class="module" id="m50">
+    <div class="module-head">
+      <div class="module-num">50</div>
+      <div>
+        <h2>String Creation</h2>
+        <p>Two ways to create a String — and which one I actually recommend</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🏗️</span> Literal vs <code>new</code></h3>
+      <div class="code-block">
+        <div class="code-head"><span>StringCreation.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="cls">String</span> firstName = <span class="str">"Rahul"</span>;
+
+<span class="cls">String</span> lastName = <span class="kw">new</span> <span class="cls">String</span>(<span class="str">"Sharma"</span>);
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(firstName);
+System.<span class="mth">out</span>.<span class="mth">println</span>(lastName);</pre>
+        <div class="code-output"><span class="lbl">Output</span>Rahul
+Sharma</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="feat-card">
+          <h4>String literal — <code>"Rahul"</code></h4>
+          <p>Java checks a special shared area called the <b>String pool</b> first. If an identical literal already exists there, it reuses it instead of creating a new object.</p>
+        </div>
+        <div class="feat-card">
+          <h4><code>new String("Sharma")</code></h4>
+          <p>Forces Java to create a <b>brand-new object</b> on the heap, every single time — even if an identical string already exists in the pool.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>For beginners, the rule is simple:</b> string literals are generally preferred when appropriate. They're more memory-efficient because of pooling, and they're what you'll see in the vast majority of real code. Reach for <code>new String(...)</code> only when you have a specific reason to guarantee a distinct object.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 51 -->
+  <section class="module" id="m51">
+    <div class="module-head">
+      <div class="module-num">51</div>
+      <div>
+        <h2>String Immutability</h2>
+        <p>A very important interview concept</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">❓</span> Why Doesn't This Work?</h3>
+      <div class="code-block">
+        <div class="code-head"><span>ImmutableDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="cls">String</span> name = <span class="str">"Java"</span>;
+
+name.<span class="mth">concat</span>(<span class="str">" Programming"</span>);
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(name);</pre>
+        <div class="code-output"><span class="lbl">Output</span>Java</div>
+      </div>
+      <p>Notice the output is still just <code>"Java"</code> — the concatenation appears to have done nothing at all. This trips up nearly every beginner the first time.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔒</span> Why: Because String Is Immutable</h3>
+      <div class="pipe">
+        <div class="pipe-node accent-cyan">String name = "Java"</div>
+        <div class="pipe-arrow">↓ name.concat(" Programming") is called</div>
+        <div class="pipe-node accent-pink">a NEW String "Java Programming" is created in memory</div>
+        <div class="pipe-arrow">↓ but nothing captured the result</div>
+        <div class="pipe-node accent-red">the new String is discarded — name still points to the original "Java"</div>
+      </div>
+      <p class="diagram-caption"><code>concat()</code> never modifies the original <code>String</code> object — it can't, because <code>String</code> objects are immutable in Java. Every method that appears to "change" a string actually returns a brand-new one.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">✅</span> The Correct Way</h3>
+      <div class="code-block">
+        <div class="code-head"><span>ImmutableFixed.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code">name = name.<span class="mth">concat</span>(<span class="str">" Programming"</span>);
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(name);</pre>
+        <div class="code-output"><span class="lbl">Output</span>Java Programming</div>
+      </div>
+      <p>This time I'm capturing the new string that <code>concat()</code> returns and reassigning it back into <code>name</code>. <code>name</code> now points to the new object instead of the old one.</p>
+    </div>
+
+    <div class="callout avoid">
+      <div class="ico">🚫</div>
+      <div><b>The rule I want burned in for interviews:</b> every <code>String</code> method that looks like it modifies the string — <code>concat()</code>, <code>replace()</code>, <code>toUpperCase()</code>, <code>substring()</code>, all of them — actually returns a new <code>String</code> and leaves the original untouched. If you don't capture the return value, your change is silently lost.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 52 -->
+  <section class="module" id="m52">
+    <div class="module-head">
+      <div class="module-num">52</div>
+      <div>
+        <h2>Common String Methods</h2>
+        <p>A practical cheat sheet you'll reach for constantly</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">📋</span> Working Off One String</h3>
+      <div class="code-block">
+        <div class="code-head"><span>StringMethods.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="cls">String</span> text = <span class="str">"Java Programming"</span>;</pre>
+      </div>
+
+      <div class="method-cheat">
+        <div class="cheat-item"><div class="cname">text.length()</div><div class="cex">→ counts every character</div><div class="cout">17</div></div>
+        <div class="cheat-item"><div class="cname">text.charAt(0)</div><div class="cex">→ character at index 0</div><div class="cout">J</div></div>
+        <div class="cheat-item"><div class="cname">text.toUpperCase()</div><div class="cex">→ new all-caps string</div><div class="cout">JAVA PROGRAMMING</div></div>
+        <div class="cheat-item"><div class="cname">text.toLowerCase()</div><div class="cex">→ new all-lowercase string</div><div class="cout">java programming</div></div>
+        <div class="cheat-item"><div class="cname">text.contains("Java")</div><div class="cex">→ does it include this substring?</div><div class="cout">true</div></div>
+        <div class="cheat-item"><div class="cname">text.startsWith("Java")</div><div class="cex">→ does it begin with this?</div><div class="cout">true</div></div>
+        <div class="cheat-item"><div class="cname">text.endsWith("ing")</div><div class="cex">→ does it end with this?</div><div class="cout">true</div></div>
+        <div class="cheat-item"><div class="cname">text.substring(5)</div><div class="cex">→ everything from index 5 onward</div><div class="cout">Programming</div></div>
+        <div class="cheat-item"><div class="cname">text.replace("Java","Python")</div><div class="cex">→ new string with replacement</div><div class="cout">Python Programming</div></div>
+        <div class="cheat-item"><div class="cname">a.equals(b)</div><div class="cex">→ same characters, in order?</div><div class="cout">true</div></div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>Notice the pattern from Module 51 repeating everywhere here:</b> <code>toUpperCase()</code>, <code>replace()</code>, and <code>substring()</code> all <b>return new strings</b> — none of them touch the original <code>text</code> variable. Only <code>length()</code>, <code>charAt()</code>, <code>contains()</code>, and similar "question" methods return something other than a string.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 53 -->
+  <section class="module" id="m53">
+    <div class="module-head">
+      <div class="module-num">53</div>
+      <div>
+        <h2>== vs .equals()</h2>
+        <p>Extremely important — and one of the most common Java bugs</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">⚔️</span> The Classic Gotcha</h3>
+      <div class="code-block">
+        <div class="code-head"><span>EqualsDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="cls">String</span> a = <span class="kw">new</span> <span class="cls">String</span>(<span class="str">"Java"</span>);
+<span class="cls">String</span> b = <span class="kw">new</span> <span class="cls">String</span>(<span class="str">"Java"</span>);
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(a == b);
+System.<span class="mth">out</span>.<span class="mth">println</span>(a.<span class="mth">equals</span>(b));</pre>
+        <div class="code-output"><span class="lbl">Output</span>false
+true</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧠</span> Why Two Different Answers for the "Same" String?</h3>
+      <div class="pool-diagram">
+        <div class="pool-col">
+          <div class="pool-title">a → new String("Java")</div>
+          <div class="pool-box heap1">Heap Object #1<br>"Java"</div>
+        </div>
+        <div class="pool-col">
+          <div class="pool-title">b → new String("Java")</div>
+          <div class="pool-box heap2">Heap Object #2<br>"Java"</div>
+        </div>
+      </div>
+      <p class="diagram-caption">Each <code>new String(...)</code> forces a distinct object on the heap — <code>a</code> and <code>b</code> point to two <b>different boxes</b> in memory, even though both boxes happen to hold the same text.</p>
+
+      <table class="breakdown">
+        <thead><tr><th>Operator / Method</th><th>What it actually checks</th></tr></thead>
+        <tbody>
+          <tr><td><code>==</code></td><td>reference identity for objects — are these two variables pointing at the <b>exact same object</b> in memory?</td></tr>
+          <tr><td><code>.equals()</code></td><td>logical/content equality — do these two objects hold the <b>same characters</b>, regardless of where they live in memory?</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout avoid">
+      <div class="ico">🚫</div>
+      <div><b>The bug this causes in real code:</b> using <code>==</code> to compare Strings can appear to work fine with literals (thanks to the String pool sharing objects) and then mysteriously break the moment a string comes from user input, a file, or a database — because those Strings are rarely pooled. Always use <code>.equals()</code> to compare String content. Reserve <code>==</code> for checking whether two references point to the literal same object.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 54 -->
+  <section class="module" id="m54">
+    <div class="module-head">
+      <div class="module-num">54</div>
+      <div>
+        <h2>Building Strings — StringBuilder</h2>
+        <p>What to reach for when you're modifying text repeatedly</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧵</span> Why Not Just Keep Using String?</h3>
+      <p>Because every <code>String</code> is immutable, repeatedly modifying one — say, inside a loop — creates a brand-new object every single time, which wastes memory and slows your program down. <code>StringBuilder</code> solves this: it's <b>mutable</b>, so it can grow and change in place.</p>
+      <div class="code-block">
+        <div class="code-head"><span>StringBuilderDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">StringBuilderDemo</span> {
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="cls">StringBuilder</span> builder = <span class="kw">new</span> <span class="cls">StringBuilder</span>();
+
+        builder.<span class="mth">append</span>(<span class="str">"Java"</span>);
+        builder.<span class="mth">append</span>(<span class="str">" "</span>);
+        builder.<span class="mth">append</span>(<span class="str">"Programming"</span>);
+        builder.<span class="mth">append</span>(<span class="str">" "</span>);
+        builder.<span class="mth">append</span>(<span class="str">"Training"</span>);
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(builder);
+
+    }
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>Java Programming Training</div>
+      </div>
+
+      <p>Unlike <code>String.concat()</code>, watch how the <b>same object</b> just keeps growing:</p>
+      <div class="buffer-row">
+        <div class="buffer-box">"Java"</div>
+        <div class="buffer-arrow">→ append(" ")</div>
+        <div class="buffer-box">"Java "</div>
+        <div class="buffer-arrow">→ append("Programming")</div>
+        <div class="buffer-box">"Java Programming"</div>
+      </div>
+      <p class="diagram-caption">No new object is created on each <code>append()</code> call — the <b>same</b> <code>StringBuilder</code> object is modified in place, which is exactly why it's far more efficient for repeated changes.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🛠️</span> The Core Methods to Know</h3>
+      <div class="grid-3">
+        <div class="feat-card"><h4><code>append()</code></h4><p>Adds text to the end.</p></div>
+        <div class="feat-card"><h4><code>insert()</code></h4><p>Adds text at a specific position.</p></div>
+        <div class="feat-card"><h4><code>delete()</code></h4><p>Removes a range of characters.</p></div>
+        <div class="feat-card"><h4><code>replace()</code></h4><p>Swaps a range of characters for new text.</p></div>
+        <div class="feat-card"><h4><code>reverse()</code></h4><p>Flips the entire sequence backwards.</p></div>
+        <div class="feat-card"><h4><code>toString()</code></h4><p>Converts back into a regular immutable String.</p></div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-head"><span>StringBuilderChain.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="cls">StringBuilder</span> sb = <span class="kw">new</span> <span class="cls">StringBuilder</span>(<span class="str">"Java"</span>);
+
+sb.<span class="mth">append</span>(<span class="str">" Training"</span>);
+
+sb.<span class="mth">insert</span>(<span class="num-lit">0</span>, <span class="str">"Core "</span>);
+
+System.<span class="mth">out</span>.<span class="mth">println</span>(sb);</pre>
+        <div class="code-output"><span class="lbl">Output</span>Core Java Training</div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <h4>Step 1 — Start</h4>
+          <p><code>sb</code> holds <code>"Java"</code>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 2 — append(" Training")</h4>
+          <p>Adds to the end → <code>"Java Training"</code>.</p>
+        </div>
+        <div class="step">
+          <h4>Step 3 — insert(0, "Core ")</h4>
+          <p>Inserts at index <code>0</code>, pushing everything else to the right → <code>"Core Java Training"</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>The decision rule I want you leaving with today:</b> use a plain <code>String</code> when the text won't change. Reach for <code>StringBuilder</code> the moment you're building or modifying text repeatedly — especially inside a loop — since it avoids creating a new object on every single change.</div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="module" id="quiz">
+    <div class="module-head">
+      <div class="module-num">✓</div>
+      <div>
+        <h2>Quick Knowledge Check</h2>
+        <p>8 questions to reinforce this hour's concepts</p>
+      </div>
+    </div>
+
+    <div class="quiz-box" id="quizBox">
+      <div id="quizQuestionArea"></div>
+      <div class="quiz-nav">
+        <button id="prevBtn">← Previous</button>
+        <div class="quiz-dots" id="quizDots"></div>
+        <button id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Java Foundations Training Module — Hour 7 &middot; Prepared for IT Training Cohort &middot; Confidential Training Material</footer>
+
+<div class="scrolltop" id="scrollTop">↑</div>
+
+<script>
+  const progressFill = document.getElementById('progressFill');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  const sections = document.querySelectorAll('section.module');
+  const navLinks = document.querySelectorAll('#navLinks a');
+
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressFill.style.width = scrolled + '%';
+    scrollTopBtn.classList.toggle('show', h.scrollTop > 500);
+
+    let current = '';
+    sections.forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= 120 && rect.bottom >= 120) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  const questions = [
+    {
+      q: "Why use `int[] marks = {80, 75, 90, 85};` instead of four separate variables?",
+      options: [
+        "Arrays run faster than int variables",
+        "It lets you store and work with multiple related values under one name, especially useful when looping",
+        "Java doesn't allow more than 3 int variables",
+        "Arrays automatically sort themselves"
+      ],
+      correct: 1,
+      explain: "Separate variables don't scale — arrays let you group related values under one name and process them together, especially with loops.",
+      correctFeedback: "Exactly right!",
+      incorrectFeedback: "Think about what happens when you need 50 or 500 related values."
+    },
+    {
+      q: "For `int[] marks = new int[5];`, which indexes are valid?",
+      options: [
+        "1 through 5",
+        "0 through 5",
+        "0 through 4",
+        "0 through 4, but only even numbers"
+      ],
+      correct: 2,
+      explain: "Array indexing always starts at 0, so a size-5 array has valid indexes 0 through 4. Accessing marks[5] throws ArrayIndexOutOfBoundsException.",
+      correctFeedback: "Correct!",
+      incorrectFeedback: "Remember: array indexes start at 0, and the last valid index is size - 1."
+    },
+    {
+      q: "In the find-maximum exercise, why does the code start with `int max = numbers[0];` instead of `int max = 0;`?",
+      options: [
+        "It's purely a style choice with no real reason",
+        "Starting from the array's own first element guarantees max begins as a value actually in the array — important if all values were negative",
+        "Java requires max to start at index 0",
+        "It makes the loop run faster"
+      ],
+      correct: 1,
+      explain: "If every number were negative, starting max at 0 would give a wrong answer, since 0 isn't in the array. Starting from numbers[0] avoids that bug entirely.",
+      correctFeedback: "That's the reasoning!",
+      incorrectFeedback: "Think about what could go wrong if every value in the array were negative."
+    },
+    {
+      q: "In `int[][] matrix`, what does `matrix[1][2]` refer to?",
+      options: [
+        "The first row, second column",
+        "The second row, third column",
+        "The entire second row",
+        "An invalid expression"
+      ],
+      correct: 1,
+      explain: "matrix[i][j] means row i, column j — and since indexing starts at 0, matrix[1][2] is the second row, third column.",
+      correctFeedback: "Nailed it!",
+      incorrectFeedback: "Remember indexing starts at 0 for both dimensions."
+    },
+    {
+      q: "Given `String name = \"Java\"; name.concat(\" Programming\"); System.out.println(name);`, what prints?",
+      options: [
+        "Java Programming",
+        "Java",
+        "Programming",
+        "A compile error"
+      ],
+      correct: 1,
+      explain: "String is immutable — concat() returns a new String but doesn't change the original. Since the result wasn't captured, name still refers to the original \"Java\".",
+      correctFeedback: "Exactly!",
+      incorrectFeedback: "Remember: String methods that look like they modify the string actually return a new one."
+    },
+    {
+      q: "What's the fix to actually apply the result of `name.concat(\" Programming\")`?",
+      options: [
+        "Call concat() twice",
+        "Reassign the result: `name = name.concat(\" Programming\");`",
+        "Use a StringBuilder instead — there's no way to fix it with String",
+        "Nothing — the original code is already correct"
+      ],
+      correct: 1,
+      explain: "Since concat() returns a new String rather than modifying the original, you need to capture that return value by reassigning it back to the variable.",
+      correctFeedback: "That's right!",
+      incorrectFeedback: "Think about what concat() actually returns, and what needs to happen with that return value."
+    },
+    {
+      q: "Given `String a = new String(\"Java\"); String b = new String(\"Java\");`, why does `a == b` print false while `a.equals(b)` prints true?",
+      options: [
+        "== and equals() do the exact same thing; this is a bug",
+        "== checks reference identity (different objects in memory), equals() checks content equality (same characters)",
+        "== only works on numbers, never on Strings",
+        "equals() is deprecated and unreliable"
+      ],
+      correct: 1,
+      explain: "new String(...) forces a distinct object each time, so a and b point to two different objects in memory — == (reference identity) is false. But equals() compares the actual characters, which match — so it's true.",
+      correctFeedback: "Spot on!",
+      incorrectFeedback: "Think about what each new String(\"Java\") call actually creates in memory."
+    },
+    {
+      q: "Why reach for StringBuilder instead of String when building text inside a loop?",
+      options: [
+        "StringBuilder is immutable, just like String, so there's no real difference",
+        "StringBuilder is mutable — it modifies the same object in place instead of creating a new object on every change",
+        "String cannot be used inside loops at all",
+        "StringBuilder automatically sorts the characters"
+      ],
+      correct: 1,
+      explain: "Because String is immutable, repeated modification creates a new object every time, wasting memory. StringBuilder is mutable, so append(), insert(), etc. modify the same object in place.",
+      correctFeedback: "That's the key benefit!",
+      incorrectFeedback: "Think about what 'mutable' means and how it differs from String's immutability."
+    }
+  ];
+
+  let current = 0;
+  const answered = new Array(questions.length).fill(null);
+
+  const qArea = document.getElementById('quizQuestionArea');
+  const dotsWrap = document.getElementById('quizDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function renderDots(){
+    dotsWrap.innerHTML = '';
+    questions.forEach((_, i) => {
+      const d = document.createElement('span');
+      if (i === current) d.classList.add('active');
+      else if (answered[i] !== null) d.classList.add('done');
+      dotsWrap.appendChild(d);
+    });
+  }
+
+  function renderQuestion(){
+    if (current >= questions.length){
+      const correctCount = answered.filter((a,i) => a === questions[i].correct).length;
+      qArea.innerHTML = `<div class="quiz-score">🎉 You scored ${correctCount} / ${questions.length}</div>`;
+      prevBtn.disabled = false;
+      nextBtn.disabled = true;
+      renderDots();
+      return;
+    }
+    const item = questions[current];
+    let optsHtml = item.options.map((opt, i) => {
+      let cls = 'quiz-opt';
+      if (answered[current] !== null){
+        if (i === item.correct) cls += ' correct';
+        else if (i === answered[current]) cls += ' wrong';
+      }
+      return `<div class="${cls}" data-idx="${i}">${opt}</div>`;
+    }).join('');
+
+    let feedbackHtml = '';
+    if (answered[current] !== null){
+      const wasCorrect = answered[current] === item.correct;
+      const verdict = wasCorrect ? (item.correctFeedback || "That's right.") : (item.incorrectFeedback || "Not quite.");
+      feedbackHtml = `<b>${verdict}</b> ${item.explain}`;
+    }
+
+    qArea.innerHTML = `
+      <div class="quiz-q">Q${current+1}. ${item.q}</div>
+      <div class="quiz-opts">${optsHtml}</div>
+      <div class="quiz-feedback">${feedbackHtml}</div>
+    `;
+
+    document.querySelectorAll('.quiz-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        if (answered[current] !== null) return;
+        answered[current] = parseInt(el.getAttribute('data-idx'));
+        renderQuestion();
+      });
+    });
+
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = false;
+    nextBtn.textContent = current === questions.length - 1 ? 'Finish →' : 'Next →';
+    renderDots();
+  }
+
+  prevBtn.addEventListener('click', () => { if (current > 0){ current--; renderQuestion(); } });
+  nextBtn.addEventListener('click', () => { current++; renderQuestion(); });
+
+  renderQuestion();
+</script>
+
+</body>
+</html>

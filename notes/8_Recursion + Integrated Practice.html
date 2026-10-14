@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Recursion &amp; Integrated Practice | IT Training Module — Hour 8</title>
+<style>
+  :root{
+    --bg:#282a36;
+    --bg-alt:#1e1f29;
+    --surface:#2f3140;
+    --surface-2:#363849;
+    --border:#44475a;
+    --text:#f8f8f2;
+    --text-dim:#b8bcd4;
+    --purple:#bd93f9;
+    --pink:#ff79c6;
+    --green:#50fa7b;
+    --cyan:#8be9fd;
+    --orange:#ffb86c;
+    --yellow:#f1fa8c;
+    --red:#ff5555;
+    --radius:14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(189,147,249,0.10), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(139,233,253,0.08), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    line-height:1.65;
+  }
+  a{color:var(--cyan);}
+  code, pre{ font-family:'Cascadia Code','Fira Code',Consolas,'Courier New',monospace; }
+
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(30,31,41,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:10px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+  }
+  .topbar .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px; }
+  .brand .logo{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px; color:#1e1f29; font-weight:900;
+  }
+  .progress-track{
+    flex:1; max-width:420px; height:8px; border-radius:20px;
+    background:var(--surface-2); overflow:hidden; border:1px solid var(--border);
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--green),var(--cyan));
+    transition:width .15s ease;
+  }
+  .nav-links{ display:flex; gap:6px; flex-wrap:wrap; font-size:12.5px; }
+  .nav-links a{
+    color:var(--text-dim); text-decoration:none; padding:6px 10px;
+    border-radius:20px; border:1px solid transparent; white-space:nowrap;
+  }
+  .nav-links a:hover, .nav-links a.active{
+    background:var(--surface-2); color:var(--text); border-color:var(--border);
+  }
+
+  .hero{
+    padding:70px 24px 50px; text-align:center; position:relative; overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:42px 42px; opacity:0.12;
+    mask-image:radial-gradient(circle at 50% 20%, black, transparent 70%);
+  }
+  .hero-inner{position:relative; z-index:1;}
+  .badge-pill{
+    display:inline-block; padding:6px 16px; border-radius:30px;
+    background:var(--surface-2); border:1px solid var(--border);
+    font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--green); font-weight:700; margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(24px,4.4vw,42px); margin:0 0 12px;
+    background:linear-gradient(90deg,var(--green),var(--cyan) 55%,var(--purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
+  }
+  .hero p.sub{ max-width:680px; margin:0 auto; color:var(--text-dim); font-size:16px; }
+  .hero-meta{ display:flex; justify-content:center; gap:28px; margin-top:28px; flex-wrap:wrap; }
+  .hero-meta div{font-size:13px; color:var(--text-dim);}
+  .hero-meta strong{display:block; font-size:20px; color:var(--text);}
+
+  .wrap{max-width:1080px; margin:0 auto; padding:10px 24px 100px;}
+  section.module{ padding:56px 0; border-bottom:1px dashed var(--border); scroll-margin-top:80px; }
+  section.module:last-child{border-bottom:none;}
+  .module-head{ display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .module-num{
+    flex:0 0 auto; width:52px;height:52px;border-radius:14px;
+    background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:20px; color:var(--green);
+  }
+  .module-head h2{ margin:0; font-size:26px; font-weight:800; }
+  .module-head p{margin:2px 0 0; color:var(--text-dim); font-size:14px;}
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:22px; box-shadow:var(--shadow);
+  }
+  .card h3{margin-top:0; font-size:17px; color:var(--cyan); display:flex; gap:8px; align-items:center;}
+  .card h3 .icon{font-size:18px;}
+  .card ul, .card ol{margin:10px 0; padding-left:22px;}
+  .card li{margin-bottom:6px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  .grid-5{display:grid; grid-template-columns:repeat(5,1fr); gap:12px;}
+  @media (max-width:760px){ .grid-2, .grid-3, .grid-4, .grid-5{grid-template-columns:1fr;} }
+
+  .callout{
+    border-radius:var(--radius); padding:16px 20px; margin:18px 0;
+    border:1px solid; display:flex; gap:14px; align-items:flex-start; font-size:14.5px;
+  }
+  .callout .ico{font-size:20px; line-height:1;}
+  .callout.teach{background:rgba(80,250,123,0.08); border-color:rgba(80,250,123,0.4);}
+  .callout.avoid{background:rgba(255,85,85,0.08); border-color:rgba(255,85,85,0.4);}
+  .callout.tip{background:rgba(139,233,253,0.08); border-color:rgba(139,233,253,0.4);}
+  .callout b{color:var(--text);}
+
+  .danger-list{
+    background:rgba(255,85,85,0.06); border:1px solid rgba(255,85,85,0.35);
+    border-radius:var(--radius); padding:18px 22px; margin:16px 0;
+  }
+  .danger-list h4{margin:0 0 10px; color:var(--red); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .danger-list ul{margin:0; padding-left:20px;}
+  .danger-list li{margin-bottom:6px; color:var(--text);}
+
+  .pipe{ display:flex; flex-direction:column; align-items:center; gap:0; margin:26px 0; }
+  .pipe-node{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px;
+    padding:12px 22px; font-weight:700; font-size:14.5px; text-align:center; min-width:200px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  }
+  .pipe-node.accent-purple{border-color:var(--purple); color:var(--purple);}
+  .pipe-node.accent-green{border-color:var(--green); color:var(--green);}
+  .pipe-node.accent-cyan{border-color:var(--cyan); color:var(--cyan);}
+  .pipe-node.accent-orange{border-color:var(--orange); color:var(--orange);}
+  .pipe-node.accent-pink{border-color:var(--pink); color:var(--pink);}
+  .pipe-node.accent-yellow{border-color:var(--yellow); color:var(--yellow);}
+  .pipe-node.accent-red{border-color:var(--red); color:var(--red);}
+  .pipe-arrow{ color:var(--text-dim); font-size:20px; margin:2px 0; line-height:1; }
+  .pipe-split{ display:flex; gap:60px; margin:6px 0 0; flex-wrap:wrap; justify-content:center; }
+  .pipe-split .branch{ display:flex; flex-direction:column; align-items:center; }
+  .pipe-split .branch .branch-label{ font-size:12px; color:var(--text-dim); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+  .pipe-hrow{ display:flex; align-items:stretch; gap:14px; justify-content:center; flex-wrap:wrap; margin:20px 0; }
+  .pipe-hrow .pipe-node{min-width:130px;}
+  .pipe-harrow{align-self:center; font-size:22px; color:var(--text-dim);}
+
+  .diagram-box{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin:20px 0; overflow-x:auto;
+  }
+  .diagram-caption{ text-align:center; font-size:12.5px; color:var(--text-dim); margin-top:8px; font-style:italic; }
+
+  .feat-card{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+    padding:16px; display:flex; flex-direction:column; gap:8px;
+  }
+  .feat-card .num{
+    width:30px;height:30px;border-radius:8px; background:var(--bg-alt);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--green); font-size:13px;
+  }
+  .feat-card h4{margin:0; font-size:15px;}
+  .feat-card p{margin:0; font-size:13px; color:var(--text-dim);}
+
+  .code-block{
+    background:#1a1b24; border:1px solid var(--border); border-radius:12px;
+    overflow:hidden; margin:16px 0;
+  }
+  .code-head{
+    display:flex; align-items:center; justify-content:space-between;
+    background:#20212c; padding:9px 16px; border-bottom:1px solid var(--border);
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .code-dots{display:flex; gap:6px;}
+  .code-dots span{width:10px;height:10px;border-radius:50%;}
+  .code-dots span:nth-child(1){background:#ff5f56;}
+  .code-dots span:nth-child(2){background:#ffbd2e;}
+  .code-dots span:nth-child(3){background:#27c93f;}
+  pre.code{ margin:0; padding:18px 20px; overflow-x:auto; font-size:14px; line-height:1.7; }
+  .kw{color:var(--pink);}
+  .cls{color:var(--cyan);}
+  .str{color:var(--yellow);}
+  .mth{color:var(--green);}
+  .cmt{color:#6272a4;}
+  .num-lit{color:var(--orange);}
+  .op{color:var(--red);}
+  .prm{color:var(--purple);}
+  .ths{color:var(--orange); font-weight:700;}
+
+  .code-output{
+    background:#151621; border-top:1px dashed var(--border);
+    padding:12px 20px; font-size:13.5px; color:var(--green); font-family:'Cascadia Code',monospace;
+  }
+  .code-output .lbl{color:var(--text-dim); font-size:11px; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;}
+
+  .line-explain{ display:grid; grid-template-columns:170px 1fr; gap:6px 16px; margin:14px 0; font-size:14px; }
+  .line-explain .lterm{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:8px;
+    padding:4px 10px; font-family:'Cascadia Code',monospace; color:var(--yellow); font-size:13px; align-self:start;
+  }
+  .line-explain .ldesc{color:var(--text-dim); align-self:center;}
+
+  .steps{counter-reset:stepnum; margin:20px 0;}
+  .step{
+    position:relative; padding:16px 20px 16px 56px; margin-bottom:14px;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+  }
+  .step::before{
+    counter-increment:stepnum; content:counter(stepnum);
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:28px; height:28px; border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; color:#1e1f29;
+  }
+  .step h4{margin:0 0 4px; font-size:15px;}
+  .step p{margin:0; font-size:13.5px; color:var(--text-dim);}
+  .step code{background:var(--bg-alt); padding:1px 6px; border-radius:5px; color:var(--cyan); border:1px solid var(--border);}
+
+  .analogy{
+    display:flex; gap:18px; align-items:center; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius); padding:20px; margin:16px 0;
+  }
+  .analogy .side{flex:1; min-width:220px;}
+  .analogy .side h4{margin:0 0 6px; color:var(--orange); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .analogy .arrow{font-size:26px; color:var(--pink);}
+
+  table.breakdown{ width:100%; border-collapse:collapse; margin:14px 0; font-size:14.5px; }
+  table.breakdown th, table.breakdown td{ padding:10px 14px; border-bottom:1px solid var(--border); text-align:left; }
+  table.breakdown th{color:var(--orange); font-size:12px; text-transform:uppercase; letter-spacing:.5px;}
+  table.breakdown td code{ color:var(--cyan); }
+  table.breakdown tr.highlight td{ background:rgba(80,250,123,0.06); }
+
+  /* Folder tree diagram */
+  .tree{ font-family:'Cascadia Code',monospace; font-size:14px; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; margin:18px 0; line-height:2; overflow-x:auto; }
+  .tree .fold{ color:var(--orange); font-weight:700; }
+  .tree .file{ color:var(--text-dim); }
+  .tree .indent1{ padding-left:28px; }
+  .tree .indent2{ padding-left:56px; }
+  .tree .indent3{ padding-left:84px; }
+
+  /* Call stack diagram */
+  .stack-wrap{ display:flex; flex-direction:column-reverse; align-items:center; gap:4px; margin:20px auto; max-width:320px; }
+  .stack-frame{
+    width:100%; background:var(--surface-2); border:1.5px solid var(--border); border-radius:8px;
+    padding:10px 16px; text-align:center; font-family:'Cascadia Code',monospace; font-size:13px;
+  }
+  .stack-frame.f0{border-color:var(--cyan); color:var(--cyan);}
+  .stack-frame.f1{border-color:var(--green); color:var(--green);}
+  .stack-frame.f2{border-color:var(--yellow); color:var(--yellow);}
+  .stack-frame.f3{border-color:var(--orange); color:var(--orange);}
+  .stack-frame.f4{border-color:var(--pink); color:var(--pink);}
+  .stack-frame.f5{border-color:var(--purple); color:var(--purple);}
+  .stack-label{ text-align:center; font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.6px; margin-bottom:6px; }
+
+  /* Unwind / rewind two-phase diagram */
+  .phase-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:20px 0; }
+  @media (max-width:760px){ .phase-grid{grid-template-columns:1fr;} }
+  .phase-col h4{ text-align:center; font-size:13px; text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; }
+  .phase-col.down h4{ color:var(--pink); }
+  .phase-col.up h4{ color:var(--green); }
+  .phase-line{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:8px;
+    padding:8px 14px; text-align:center; font-family:'Cascadia Code',monospace; font-size:12.5px; margin-bottom:4px;
+  }
+  .phase-col.down .phase-line{ border-left:3px solid var(--pink); }
+  .phase-col.up .phase-line{ border-left:3px solid var(--green); }
+
+  /* Feature checklist for mini project */
+  .feature-list{ display:flex; flex-direction:column; gap:10px; margin:16px 0; }
+  .feature-list .fitem{
+    display:flex; align-items:center; gap:12px;
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px;
+  }
+  .feature-list .fnum{
+    width:26px; height:26px; border-radius:50%; background:var(--surface-2); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:var(--green); flex-shrink:0;
+  }
+
+  /* Concept reinforcement grid */
+  .concept-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0; }
+  @media (max-width:760px){ .concept-grid{grid-template-columns:repeat(2,1fr);} }
+  .concept-chip{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:10px; text-align:center; font-size:12.5px; color:var(--cyan); font-weight:600;
+  }
+
+  /* Menu flow diagram */
+  .menu-flow{ display:flex; flex-direction:column; align-items:center; margin:20px 0; }
+  .menu-box{
+    background:var(--surface-2); border:1.5px solid var(--cyan); color:var(--cyan); border-radius:10px;
+    padding:12px 20px; text-align:center; font-size:13px; margin-bottom:6px; font-family:'Cascadia Code',monospace;
+  }
+  .menu-branches{ display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin:10px 0; }
+  .menu-choice{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:8px; padding:8px 14px;
+    font-size:12px; text-align:center; min-width:110px;
+  }
+  .menu-choice.exit{ border-color:var(--red); color:var(--red); }
+  .menu-loopback{ font-size:11.5px; color:var(--text-dim); margin-top:8px; }
+
+  .quiz-box{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-top:20px;
+  }
+  .quiz-q{font-weight:700; margin-bottom:14px; font-size:15.5px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:10px;}
+  .quiz-opt{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 16px; cursor:pointer; font-size:14px; transition:.15s;
+  }
+  .quiz-opt:hover{border-color:var(--green);}
+  .quiz-opt.correct{background:rgba(80,250,123,0.15); border-color:var(--green); color:var(--green);}
+  .quiz-opt.wrong{background:rgba(255,85,85,0.15); border-color:var(--red); color:var(--red);}
+  .quiz-feedback{margin-top:12px; font-size:13.5px; color:var(--text-dim); min-height:18px;}
+  .quiz-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+  .quiz-nav button{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:9px 18px; border-radius:20px; cursor:pointer; font-size:13.5px; font-weight:600;
+  }
+  .quiz-nav button:hover{border-color:var(--green);}
+  .quiz-nav button:disabled{opacity:.35; cursor:not-allowed;}
+  .quiz-dots{display:flex; gap:6px;}
+  .quiz-dots span{width:8px;height:8px;border-radius:50%; background:var(--border);}
+  .quiz-dots span.active{background:var(--cyan);}
+  .quiz-dots span.done{background:var(--green);}
+  .quiz-score{ text-align:center; padding:20px; font-size:18px; font-weight:800; }
+
+  footer{ text-align:center; padding:30px 20px; color:var(--text-dim); font-size:12.5px; border-top:1px solid var(--border); }
+  ::selection{background:var(--green); color:#1e1f29;}
+
+  .scrolltop{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    color:#1e1f29; font-weight:900; cursor:pointer; box-shadow:var(--shadow);
+    opacity:0; pointer-events:none; transition:.2s;
+  }
+  .scrolltop.show{opacity:1; pointer-events:auto;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="logo">J</div> Java Foundations · Hour 8</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#m55">55. Recursion</a>
+    <a href="#m56">56. Basic Recursion</a>
+    <a href="#m57">57. Factorial</a>
+    <a href="#m58">58. Call Stack</a>
+    <a href="#project">Mini-Project</a>
+    <a href="#quiz">Quiz</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="badge-pill">IT Training &middot; Core Java Track &middot; Hour 8 (Final)</span>
+    <h1>Recursion &amp; Integrated Practice</h1>
+    <p class="sub">In this final hour, I'm introducing the one concept that trips up almost everyone at first — a method calling itself — and then we bring absolutely everything from the last seven hours together into one complete, working console application.</p>
+    <div class="hero-meta">
+      <div><strong>4</strong>Modules</div>
+      <div><strong>1</strong>Mini-Project</div>
+      <div><strong>~120 min</strong>Session Length</div>
+      <div><strong>18</strong>Concepts Reinforced</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- MODULE 55 -->
+  <section class="module" id="m55">
+    <div class="module-head">
+      <div class="module-num">55</div>
+      <div>
+        <h2>Recursion</h2>
+        <p>A method that calls itself to solve a smaller version of the same problem</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧩</span> The Simplest Way I Can Put It</h3>
+      <div class="pipe">
+        <div class="pipe-node accent-purple">Recursion means a method calls itself</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-green">to solve a smaller version of the same problem</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">📁</span> A Real-Life Example — Opening Folders</h3>
+      <p>Imagine you need to search every file inside a folder, including whatever is inside every subfolder:</p>
+      <div class="tree">
+<div><span class="fold">Folder A</span></div>
+<div class="indent1"><span class="file">├── File</span></div>
+<div class="indent1"><span class="fold">├── Folder B</span></div>
+<div class="indent2"><span class="file">│&nbsp;&nbsp;&nbsp;├── File</span></div>
+<div class="indent2"><span class="fold">│&nbsp;&nbsp;&nbsp;└── Folder C</span></div>
+<div class="indent3"><span class="file">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── File</span></div>
+      </div>
+      <p>To search every folder, the <b>same operation</b> — "look at what's inside, and if it's a folder, search it too" — can be repeated for each subfolder, no matter how deeply nested it is. That repeating-the-same-operation-on-a-smaller-piece idea is exactly what recursion is.</p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>Every recursive method needs two things:</b> a <b>base case</b> — the smallest version of the problem, where the method stops calling itself and just returns an answer directly — and a <b>recursive case</b>, where it calls itself again on a smaller piece of the problem, moving one step closer to that base case each time.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 56 -->
+  <section class="module" id="m56">
+    <div class="module-head">
+      <div class="module-num">56</div>
+      <div>
+        <h2>Basic Recursion</h2>
+        <p>Counting down to zero, one recursive call at a time</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">⏱️</span> A Countdown Timer</h3>
+      <div class="code-block">
+        <div class="code-head"><span>RecursionDemo.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">RecursionDemo</span> {
+
+    <span class="kw">static void</span> <span class="mth">countDown</span>(<span class="kw">int</span> <span class="prm">number</span>) {
+
+        <span class="kw">if</span> (<span class="prm">number</span> == <span class="num-lit">0</span>) {
+
+            <span class="kw">return</span>;
+
+        }
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="prm">number</span>);
+
+        <span class="mth">countDown</span>(<span class="prm">number</span> - <span class="num-lit">1</span>);
+
+    }
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="mth">countDown</span>(<span class="num-lit">5</span>);
+
+    }
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>5
+4
+3
+2
+1</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔍</span> Identifying the Base Case and Recursive Case</h3>
+      <div class="steps">
+        <div class="step">
+          <h4>Step 1 — The base case</h4>
+          <p><code>if (number == 0) { return; }</code> — this is where the recursion stops. Without this, the method would call itself forever.</p>
+        </div>
+        <div class="step">
+          <h4>Step 2 — The recursive case</h4>
+          <p><code>countDown(number - 1);</code> — the method calls itself again, but with a smaller value, moving one step closer to the base case every time.</p>
+        </div>
+        <div class="step">
+          <h4>Step 3 — Trace it call by call</h4>
+          <p><code>countDown(5)</code> prints <code>5</code>, then calls <code>countDown(4)</code>, which prints <code>4</code>, then calls <code>countDown(3)</code> — and so on, until <code>countDown(0)</code> hits the base case and simply returns, ending the chain.</p>
+        </div>
+      </div>
+
+      <div class="pipe">
+        <div class="pipe-node accent-cyan">countDown(5) → print 5</div>
+        <div class="pipe-arrow">↓ calls countDown(4)</div>
+        <div class="pipe-node accent-green">countDown(4) → print 4</div>
+        <div class="pipe-arrow">↓ calls countDown(3)</div>
+        <div class="pipe-node accent-yellow">countDown(3) → print 3</div>
+        <div class="pipe-arrow">↓ ... continues down to 1</div>
+        <div class="pipe-node accent-red">countDown(0) → base case → return, no more calls</div>
+      </div>
+    </div>
+
+    <div class="callout avoid">
+      <div class="ico">🚫</div>
+      <div><b>The bug every beginner eventually writes:</b> forgetting the base case, or writing one that's never actually reached. Either mistake causes <b>infinite recursion</b>, which eventually crashes the program with a <code>StackOverflowError</code> — the recursive equivalent of an infinite loop.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 57 -->
+  <section class="module" id="m57">
+    <div class="module-head">
+      <div class="module-num">57</div>
+      <div>
+        <h2>Factorial</h2>
+        <p>The classic recursion example — and for good reason</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">✖️</span> The Math First</h3>
+      <div class="pipe">
+        <div class="pipe-node accent-orange">5! = 5 × 4 × 3 × 2 × 1</div>
+        <div class="pipe-arrow">↓ which can be rewritten recursively as</div>
+        <div class="pipe-node accent-green">n! = n × (n − 1)!</div>
+      </div>
+      <p class="diagram-caption">Notice that <code>n!</code> is defined <b>in terms of itself</b> — that's precisely the shape every recursive method follows.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">💻</span> The Code</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Factorial.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">Factorial</span> {
+
+    <span class="kw">static int</span> <span class="mth">factorial</span>(<span class="kw">int</span> <span class="prm">n</span>) {
+
+        <span class="kw">if</span> (<span class="prm">n</span> == <span class="num-lit">0</span> || <span class="prm">n</span> == <span class="num-lit">1</span>) {
+
+            <span class="kw">return</span> <span class="num-lit">1</span>;
+
+        }
+
+        <span class="kw">return</span> <span class="prm">n</span> * <span class="mth">factorial</span>(<span class="prm">n</span> - <span class="num-lit">1</span>);
+
+    }
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="mth">factorial</span>(<span class="num-lit">5</span>));
+
+    }
+}</pre>
+        <div class="code-output"><span class="lbl">Output</span>120</div>
+      </div>
+
+      <div class="line-explain">
+        <div class="lterm">n == 0 || n == 1</div>
+        <div class="ldesc"><b>Base case</b> — both <code>0!</code> and <code>1!</code> equal <code>1</code> by definition, so we stop recursing here.</div>
+        <div class="lterm">n * factorial(n - 1)</div>
+        <div class="ldesc"><b>Recursive case</b> — multiply <code>n</code> by the factorial of everything smaller than it.</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>Why the base case checks both 0 and 1:</b> mathematically, <code>0! = 1</code> is a defined special case, and <code>1!</code> also equals <code>1</code>. Covering both means <code>factorial(0)</code> and <code>factorial(1)</code> both return immediately without needing an extra recursive call.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 58 -->
+  <section class="module" id="m58">
+    <div class="module-head">
+      <div class="module-num">58</div>
+      <div>
+        <h2>Explain the Call Stack</h2>
+        <p>Where recursion actually happens in memory — an excellent bridge into stack memory</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">📉</span> Phase 1 — Going Down (Calls Pile Up)</h3>
+      <p>Watch what happens when <code>factorial(5)</code> starts. Each call pauses and waits, stacking on top of the one before it, because it needs the result of the smaller call before it can finish its own multiplication:</p>
+      <div class="diagram-box">
+        <div class="phase-grid">
+          <div class="phase-col down">
+            <h4>↓ Calls stack up</h4>
+            <div class="phase-line">factorial(5)</div>
+            <div class="phase-line">5 × factorial(4)</div>
+            <div class="phase-line">4 × factorial(3)</div>
+            <div class="phase-line">3 × factorial(2)</div>
+            <div class="phase-line">2 × factorial(1)</div>
+            <div class="phase-line" style="border-left-color:var(--green); color:var(--green);">factorial(1) → base case → returns 1</div>
+          </div>
+          <div class="phase-col up">
+            <h4>↑ Results unwind back up</h4>
+            <div class="phase-line">1</div>
+            <div class="phase-line">2 × 1 = 2</div>
+            <div class="phase-line">3 × 2 = 6</div>
+            <div class="phase-line">4 × 6 = 24</div>
+            <div class="phase-line" style="border-left-color:var(--cyan); color:var(--cyan);">5 × 24 = 120</div>
+          </div>
+        </div>
+      </div>
+      <p class="diagram-caption">Nothing actually multiplies until <code>factorial(1)</code> hits the base case and returns <code>1</code>. Only then does every waiting call finish its own multiplication, one level at a time, unwinding back up to the very first call.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🗂️</span> Visualizing It as a Literal Stack</h3>
+      <div class="stack-wrap">
+        <div class="stack-label">↑ top of stack = most recently called, resolves first</div>
+        <div class="stack-frame f4">factorial(1) → returns 1</div>
+        <div class="stack-frame f3">factorial(2) waiting on factorial(1)</div>
+        <div class="stack-frame f2">factorial(3) waiting on factorial(2)</div>
+        <div class="stack-frame f1">factorial(4) waiting on factorial(3)</div>
+        <div class="stack-frame f0">factorial(5) waiting on factorial(4)</div>
+      </div>
+      <p class="diagram-caption">Each recursive call gets pushed onto the <b>call stack</b> as its own frame, waiting for the call above it to finish. This is genuinely the same call stack every Java method uses — recursion just pushes many frames of the <i>same</i> method onto it in a row.</p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>Why this matters beyond factorial:</b> this is exactly why a missing or unreachable base case causes a <code>StackOverflowError</code> — the stack keeps growing with new frames that never get to return, until it runs out of space. Understanding this call-stack picture is what makes recursion click for most students.</div>
+    </div>
+  </section>
+
+  <!-- FINAL MINI PROJECT -->
+  <section class="module" id="project">
+    <div class="module-head">
+      <div class="module-num">🎓</div>
+      <div>
+        <h2>Final Integrated Mini-Project</h2>
+        <p>Student Management System — bringing all eight hours together</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🎯</span> Requirements</h3>
+      <div class="feature-list">
+        <div class="fitem"><span class="fnum">1</span> Add student</div>
+        <div class="fitem"><span class="fnum">2</span> Display student</div>
+        <div class="fitem"><span class="fnum">3</span> Calculate average marks</div>
+        <div class="fitem"><span class="fnum">4</span> Determine grade</div>
+        <div class="fitem"><span class="fnum">5</span> Exit</div>
+      </div>
+      <p>Plan on spending approximately <b>30–40 minutes</b> building and walking through this together — it's the payoff for everything covered across the last eight hours.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔄</span> How the Menu Loop Works</h3>
+      <div class="menu-flow">
+        <div class="menu-box">do { show menu, read choice }</div>
+        <div class="menu-branches">
+          <div class="menu-choice">1 → inputStudent()</div>
+          <div class="menu-choice">2 → displayStudent()</div>
+          <div class="menu-choice exit">3 → print "Thank you!"</div>
+        </div>
+        <div class="menu-loopback">↻ while (choice != 3)</div>
+      </div>
+      <p class="diagram-caption">This is Module 29's <code>do-while</code> and Module 30's <code>switch</code>, working together — the menu always shows at least once, and keeps re-showing until the student explicitly chooses to exit.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">💻</span> Complete Beginner-Friendly Implementation</h3>
+      <div class="code-block">
+        <div class="code-head"><span>StudentManagementSystem.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">import</span> java.util.Scanner;
+
+<span class="kw">public class</span> <span class="cls">StudentManagementSystem</span> {
+
+    <span class="kw">static</span> <span class="cls">String</span> studentName;
+    <span class="kw">static</span> <span class="kw">int</span>[] marks = <span class="kw">new</span> <span class="kw">int</span>[<span class="num-lit">3</span>];
+
+    <span class="kw">static void</span> <span class="mth">inputStudent</span>(<span class="cls">Scanner</span> <span class="prm">scanner</span>) {
+
+        System.<span class="mth">out</span>.<span class="mth">print</span>(<span class="str">"Enter student name: "</span>);
+        studentName = <span class="prm">scanner</span>.<span class="mth">nextLine</span>();
+
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num-lit">0</span>; i &lt; marks.length; i++) {
+
+            System.<span class="mth">out</span>.<span class="mth">print</span>(<span class="str">"Enter marks for subject "</span> + (i + <span class="num-lit">1</span>) + <span class="str">": "</span>);
+
+            marks[i] = <span class="prm">scanner</span>.<span class="mth">nextInt</span>();
+
+        }
+
+        <span class="prm">scanner</span>.<span class="mth">nextLine</span>();
+    }
+
+    <span class="kw">static double</span> <span class="mth">calculateAverage</span>() {
+
+        <span class="kw">int</span> total = <span class="num-lit">0</span>;
+
+        <span class="kw">for</span> (<span class="kw">int</span> mark : marks) {
+
+            total += mark;
+
+        }
+
+        <span class="kw">return</span> (<span class="kw">double</span>) total / marks.length;
+    }
+
+    <span class="kw">static</span> <span class="cls">String</span> <span class="mth">calculateGrade</span>(<span class="kw">double</span> <span class="prm">average</span>) {
+
+        <span class="kw">if</span> (<span class="prm">average</span> &gt;= <span class="num-lit">90</span>) {
+
+            <span class="kw">return</span> <span class="str">"A+"</span>;
+
+        } <span class="kw">else if</span> (<span class="prm">average</span> &gt;= <span class="num-lit">80</span>) {
+
+            <span class="kw">return</span> <span class="str">"A"</span>;
+
+        } <span class="kw">else if</span> (<span class="prm">average</span> &gt;= <span class="num-lit">70</span>) {
+
+            <span class="kw">return</span> <span class="str">"B"</span>;
+
+        } <span class="kw">else if</span> (<span class="prm">average</span> &gt;= <span class="num-lit">60</span>) {
+
+            <span class="kw">return</span> <span class="str">"C"</span>;
+
+        } <span class="kw">else if</span> (<span class="prm">average</span> &gt;= <span class="num-lit">40</span>) {
+
+            <span class="kw">return</span> <span class="str">"D"</span>;
+
+        } <span class="kw">else</span> {
+
+            <span class="kw">return</span> <span class="str">"F"</span>;
+
+        }
+    }
+
+    <span class="kw">static void</span> <span class="mth">displayStudent</span>() {
+
+        <span class="kw">double</span> average = <span class="mth">calculateAverage</span>();
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"\n----- Student Details -----"</span>);
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Name: "</span> + studentName);
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Marks:"</span>);
+
+        <span class="kw">for</span> (<span class="kw">int</span> mark : marks) {
+
+            System.<span class="mth">out</span>.<span class="mth">println</span>(mark);
+
+        }
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Average: "</span> + average);
+
+        System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Grade: "</span> + <span class="mth">calculateGrade</span>(average));
+
+    }
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="cls">Scanner</span> scanner = <span class="kw">new</span> <span class="cls">Scanner</span>(System.in);
+
+        <span class="kw">int</span> choice;
+
+        <span class="kw">do</span> {
+
+            System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"\n===== Student Management System ====="</span>);
+
+            System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"1. Add Student"</span>);
+
+            System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"2. Display Student"</span>);
+
+            System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"3. Exit"</span>);
+
+            System.<span class="mth">out</span>.<span class="mth">print</span>(<span class="str">"Enter your choice: "</span>);
+
+            choice = scanner.<span class="mth">nextInt</span>();
+
+            scanner.<span class="mth">nextLine</span>();
+
+            <span class="kw">switch</span> (choice) {
+
+                <span class="kw">case</span> <span class="num-lit">1</span>:
+
+                    <span class="mth">inputStudent</span>(scanner);
+
+                    <span class="kw">break</span>;
+
+                <span class="kw">case</span> <span class="num-lit">2</span>:
+
+                    <span class="mth">displayStudent</span>();
+
+                    <span class="kw">break</span>;
+
+                <span class="kw">case</span> <span class="num-lit">3</span>:
+
+                    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Thank you!"</span>);
+
+                    <span class="kw">break</span>;
+
+                <span class="kw">default</span>:
+
+                    System.<span class="mth">out</span>.<span class="mth">println</span>(<span class="str">"Invalid choice."</span>);
+
+            }
+
+        } <span class="kw">while</span> (choice != <span class="num-lit">3</span>);
+
+        scanner.<span class="mth">close</span>();
+
+    }
+}</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧭</span> Walking Through It Method by Method</h3>
+      <div class="steps">
+        <div class="step">
+          <h4>Step 1 — inputStudent(scanner)</h4>
+          <p>Reads the student's name, then loops through the <code>marks</code> array (from Module 44–46) collecting one score per subject.</p>
+        </div>
+        <div class="step">
+          <h4>Step 2 — calculateAverage()</h4>
+          <p>Sums every value in <code>marks</code> using an enhanced <code>for</code> loop, then divides by <code>marks.length</code> — casting to <code>double</code> first so the division doesn't truncate, exactly like Module 21's type conversion lesson.</p>
+        </div>
+        <div class="step">
+          <h4>Step 3 — calculateGrade(average)</h4>
+          <p>An else-if ladder, top to bottom, straight from Module 24 — the first threshold that matches decides the grade.</p>
+        </div>
+        <div class="step">
+          <h4>Step 4 — displayStudent()</h4>
+          <p>Calls both <code>calculateAverage()</code> and <code>calculateGrade()</code>, showing how one method's return value can feed directly into another.</p>
+        </div>
+        <div class="step">
+          <h4>Step 5 — main() menu loop</h4>
+          <p>A <code>do-while</code> loop wrapping a <code>switch</code> — the menu always displays at least once, and keeps looping until the student picks option <code>3</code> to exit.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧠</span> Every Concept This Project Reinforces</h3>
+      <p>This single project pulls together everything from Hours 1 through 8:</p>
+      <div class="concept-grid">
+        <div class="concept-chip">Variables</div>
+        <div class="concept-chip">Constants / values</div>
+        <div class="concept-chip">Data types</div>
+        <div class="concept-chip">Operators</div>
+        <div class="concept-chip">Type casting</div>
+        <div class="concept-chip">if-else</div>
+        <div class="concept-chip">switch</div>
+        <div class="concept-chip">for loop</div>
+        <div class="concept-chip">do-while</div>
+        <div class="concept-chip">Methods</div>
+        <div class="concept-chip">Method parameters</div>
+        <div class="concept-chip">Return values</div>
+        <div class="concept-chip">Arrays</div>
+        <div class="concept-chip">Strings</div>
+        <div class="concept-chip">Classes</div>
+        <div class="concept-chip">Objects</div>
+        <div class="concept-chip">Access concepts</div>
+        <div class="concept-chip">Scanner input</div>
+      </div>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>Why I always end a fundamentals course this way:</b> reading isolated examples teaches syntax, but only building one real, working program shows how every piece — loops, methods, arrays, conditionals, even user input — fits together into something you'd actually ship. This is the bridge from "I understand Java syntax" to "I can build a Java program."</div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="module" id="quiz">
+    <div class="module-head">
+      <div class="module-num">✓</div>
+      <div>
+        <h2>Quick Knowledge Check</h2>
+        <p>6 questions to reinforce this hour's concepts</p>
+      </div>
+    </div>
+
+    <div class="quiz-box" id="quizBox">
+      <div id="quizQuestionArea"></div>
+      <div class="quiz-nav">
+        <button id="prevBtn">← Previous</button>
+        <div class="quiz-dots" id="quizDots"></div>
+        <button id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Java Foundations Training Module — Hour 8 (Final) &middot; Prepared for IT Training Cohort &middot; Confidential Training Material</footer>
+
+<div class="scrolltop" id="scrollTop">↑</div>
+
+<script>
+  const progressFill = document.getElementById('progressFill');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  const sections = document.querySelectorAll('section.module');
+  const navLinks = document.querySelectorAll('#navLinks a');
+
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressFill.style.width = scrolled + '%';
+    scrollTopBtn.classList.toggle('show', h.scrollTop > 500);
+
+    let current = '';
+    sections.forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= 120 && rect.bottom >= 120) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  const questions = [
+    {
+      q: "What are the two essential parts every recursive method needs?",
+      options: [
+        "A for loop and a while loop",
+        "A base case (where recursion stops) and a recursive case (where it calls itself on a smaller problem)",
+        "A constructor and a destructor",
+        "Two return statements"
+      ],
+      correct: 1,
+      explain: "Every recursive method needs a base case to stop the recursion, and a recursive case that calls itself again on a smaller version of the problem, moving toward that base case.",
+      correctFeedback: "Exactly right!",
+      incorrectFeedback: "Think about what stops a recursive method from calling itself forever."
+    },
+    {
+      q: "In `countDown(int number)`, what is the base case?",
+      options: [
+        "System.out.println(number);",
+        "countDown(number - 1);",
+        "if (number == 0) { return; }",
+        "public static void main"
+      ],
+      correct: 2,
+      explain: "if (number == 0) { return; } is the base case — the point where the method stops calling itself instead of recursing further.",
+      correctFeedback: "Correct!",
+      incorrectFeedback: "Look for the condition that causes the method to return without calling itself again."
+    },
+    {
+      q: "What happens if a recursive method's base case is missing or never reached?",
+      options: [
+        "The method runs faster",
+        "Java automatically adds a base case for you",
+        "Infinite recursion occurs, eventually causing a StackOverflowError",
+        "The method simply returns 0"
+      ],
+      correct: 2,
+      explain: "Without a reachable base case, the method keeps calling itself indefinitely, pushing more and more frames onto the call stack until it runs out of space — a StackOverflowError.",
+      correctFeedback: "That's the danger!",
+      incorrectFeedback: "Think about what keeps growing on the call stack if calls never stop."
+    },
+    {
+      q: "In `factorial(5)`, when does the actual multiplication happen?",
+      options: [
+        "Immediately, as soon as factorial(5) is called",
+        "Only after factorial(1) hits the base case and returns 1, causing the waiting calls to unwind and multiply one level at a time",
+        "Multiplication never actually happens in recursion",
+        "Before the base case is checked"
+      ],
+      correct: 1,
+      explain: "Each call pauses and waits for the smaller call's result. Only once factorial(1) returns 1 does the chain unwind, with each waiting call completing its multiplication in turn: 2×1=2, 3×2=6, 4×6=24, 5×24=120.",
+      correctFeedback: "Exactly!",
+      incorrectFeedback: "Think about the two phases: calls piling up, then results unwinding back up."
+    },
+    {
+      q: "In the Student Management System, why does the main() menu use a do-while loop instead of a plain while loop?",
+      options: [
+        "do-while runs faster than while",
+        "do-while guarantees the menu displays at least once before checking whether to exit",
+        "while loops cannot contain a switch statement",
+        "There's no real reason, it's just a style choice"
+      ],
+      correct: 1,
+      explain: "do-while checks its condition after the body runs, so the menu always shows at least once — exactly the behavior wanted before the user has even had a chance to choose 'exit'.",
+      correctFeedback: "That's the reasoning!",
+      incorrectFeedback: "Recall Module 29's key trait of do-while: it runs the body before ever checking the condition."
+    },
+    {
+      q: "In calculateAverage(), why is `total` cast to `(double)` before dividing by `marks.length`?",
+      options: [
+        "Casting is purely optional stylistic flair",
+        "Without it, both operands would be int, causing integer division that truncates any decimal portion of the average",
+        "double division is faster than int division",
+        "marks.length is already a double, so no cast is needed"
+      ],
+      correct: 1,
+      explain: "If both total and marks.length stayed int, Java would perform integer division and drop the decimal — exactly the Module 15 and Module 21 lesson about truncation and type conversion.",
+      correctFeedback: "Nailed it!",
+      incorrectFeedback: "Think back to what happens when both operands of / are integer types."
+    }
+  ];
+
+  let current = 0;
+  const answered = new Array(questions.length).fill(null);
+
+  const qArea = document.getElementById('quizQuestionArea');
+  const dotsWrap = document.getElementById('quizDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function renderDots(){
+    dotsWrap.innerHTML = '';
+    questions.forEach((_, i) => {
+      const d = document.createElement('span');
+      if (i === current) d.classList.add('active');
+      else if (answered[i] !== null) d.classList.add('done');
+      dotsWrap.appendChild(d);
+    });
+  }
+
+  function renderQuestion(){
+    if (current >= questions.length){
+      const correctCount = answered.filter((a,i) => a === questions[i].correct).length;
+      qArea.innerHTML = `<div class="quiz-score">🎉 You scored ${correctCount} / ${questions.length} — Course complete!</div>`;
+      prevBtn.disabled = false;
+      nextBtn.disabled = true;
+      renderDots();
+      return;
+    }
+    const item = questions[current];
+    let optsHtml = item.options.map((opt, i) => {
+      let cls = 'quiz-opt';
+      if (answered[current] !== null){
+        if (i === item.correct) cls += ' correct';
+        else if (i === answered[current]) cls += ' wrong';
+      }
+      return `<div class="${cls}" data-idx="${i}">${opt}</div>`;
+    }).join('');
+
+    let feedbackHtml = '';
+    if (answered[current] !== null){
+      const wasCorrect = answered[current] === item.correct;
+      const verdict = wasCorrect ? (item.correctFeedback || "That's right.") : (item.incorrectFeedback || "Not quite.");
+      feedbackHtml = `<b>${verdict}</b> ${item.explain}`;
+    }
+
+    qArea.innerHTML = `
+      <div class="quiz-q">Q${current+1}. ${item.q}</div>
+      <div class="quiz-opts">${optsHtml}</div>
+      <div class="quiz-feedback">${feedbackHtml}</div>
+    `;
+
+    document.querySelectorAll('.quiz-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        if (answered[current] !== null) return;
+        answered[current] = parseInt(el.getAttribute('data-idx'));
+        renderQuestion();
+      });
+    });
+
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = false;
+    nextBtn.textContent = current === questions.length - 1 ? 'Finish →' : 'Next →';
+    renderDots();
+  }
+
+  prevBtn.addEventListener('click', () => { if (current > 0){ current--; renderQuestion(); } });
+  nextBtn.addEventListener('click', () => { current++; renderQuestion(); });
+
+  renderQuestion();
+</script>
+
+</body>
+</html>
