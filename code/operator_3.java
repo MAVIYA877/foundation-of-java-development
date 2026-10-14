@@ -93,4 +93,47 @@ public class operator {
 */
 
 
-//Pre-Increment
+//=================Pre-Increment=================//
+/* 
+public class operator {
+
+    public static void main(String[] args) {
+
+        int y = 10;
+
+            System.out.println(++y);
+    }
+}
+*/
+
+
+//=================pre-decrement=================//
+/* 
+public class operator {
+
+    public static void main(String[] args) {
+        
+        int z = 10;
+
+        System.out.println(--z);
+    }
+}
+*/
+
+
+//=================ternery-operator=================//
+/* 
+public class operator {
+
+    public static void main(String[] args) {
+
+        int age = 20;
+
+            String result = age >= 18 ? "Adult" : "Minor";
+
+                System.out.println(result);
+    }
+}
+*/
+
+
