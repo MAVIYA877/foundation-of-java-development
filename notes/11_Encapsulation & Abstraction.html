@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encapsulation &amp; Abstraction | IT Training Module — Hour 11</title>
+<style>
+  :root{
+    --bg:#282a36;
+    --bg-alt:#1e1f29;
+    --surface:#2f3140;
+    --surface-2:#363849;
+    --border:#44475a;
+    --text:#f8f8f2;
+    --text-dim:#b8bcd4;
+    --purple:#bd93f9;
+    --pink:#ff79c6;
+    --green:#50fa7b;
+    --cyan:#8be9fd;
+    --orange:#ffb86c;
+    --yellow:#f1fa8c;
+    --red:#ff5555;
+    --radius:14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(80,250,123,0.09), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(255,121,198,0.09), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    line-height:1.65;
+  }
+  a{color:var(--cyan);}
+  code, pre{ font-family:'Cascadia Code','Fira Code',Consolas,'Courier New',monospace; }
+
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(30,31,41,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:10px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+  }
+  .topbar .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px; }
+  .brand .logo{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(135deg,var(--green),var(--pink));
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px; color:#1e1f29; font-weight:900;
+  }
+  .progress-track{
+    flex:1; max-width:420px; height:8px; border-radius:20px;
+    background:var(--surface-2); overflow:hidden; border:1px solid var(--border);
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--green),var(--pink));
+    transition:width .15s ease;
+  }
+  .nav-links{ display:flex; gap:6px; flex-wrap:wrap; font-size:12.5px; }
+  .nav-links a{
+    color:var(--text-dim); text-decoration:none; padding:6px 10px;
+    border-radius:20px; border:1px solid transparent; white-space:nowrap;
+  }
+  .nav-links a:hover, .nav-links a.active{
+    background:var(--surface-2); color:var(--text); border-color:var(--border);
+  }
+
+  .hero{
+    padding:70px 24px 50px; text-align:center; position:relative; overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:42px 42px; opacity:0.12;
+    mask-image:radial-gradient(circle at 50% 20%, black, transparent 70%);
+  }
+  .hero-inner{position:relative; z-index:1;}
+  .badge-pill{
+    display:inline-block; padding:6px 16px; border-radius:30px;
+    background:var(--surface-2); border:1px solid var(--border);
+    font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--green); font-weight:700; margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(26px,4.6vw,44px); margin:0 0 12px;
+    background:linear-gradient(90deg,var(--green),var(--pink) 55%,var(--purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
+  }
+  .hero p.sub{ max-width:680px; margin:0 auto; color:var(--text-dim); font-size:16px; }
+  .hero-meta{ display:flex; justify-content:center; gap:28px; margin-top:28px; flex-wrap:wrap; }
+  .hero-meta div{font-size:13px; color:var(--text-dim);}
+  .hero-meta strong{display:block; font-size:20px; color:var(--text);}
+
+  .wrap{max-width:1080px; margin:0 auto; padding:10px 24px 100px;}
+  section.module{ padding:56px 0; border-bottom:1px dashed var(--border); scroll-margin-top:80px; }
+  section.module:last-child{border-bottom:none;}
+  .module-head{ display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .module-num{
+    flex:0 0 auto; width:52px;height:52px;border-radius:14px;
+    background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:20px; color:var(--green);
+  }
+  .module-head h2{ margin:0; font-size:26px; font-weight:800; }
+  .module-head p{margin:2px 0 0; color:var(--text-dim); font-size:14px;}
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:22px; box-shadow:var(--shadow);
+  }
+  .card h3{margin-top:0; font-size:17px; color:var(--cyan); display:flex; gap:8px; align-items:center;}
+  .card h3 .icon{font-size:18px;}
+  .card ul, .card ol{margin:10px 0; padding-left:22px;}
+  .card li{margin-bottom:6px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:760px){ .grid-2, .grid-3{grid-template-columns:1fr;} }
+
+  .callout{
+    border-radius:var(--radius); padding:16px 20px; margin:18px 0;
+    border:1px solid; display:flex; gap:14px; align-items:flex-start; font-size:14.5px;
+  }
+  .callout .ico{font-size:20px; line-height:1;}
+  .callout.teach{background:rgba(80,250,123,0.08); border-color:rgba(80,250,123,0.4);}
+  .callout.avoid{background:rgba(255,85,85,0.08); border-color:rgba(255,85,85,0.4);}
+  .callout.tip{background:rgba(139,233,253,0.08); border-color:rgba(139,233,253,0.4);}
+  .callout b{color:var(--text);}
+
+  .question-card{
+    background:linear-gradient(135deg, rgba(80,250,123,0.10), rgba(255,121,198,0.08));
+    border:1px solid var(--green); border-radius:var(--radius);
+    padding:22px 24px; margin:18px 0; font-size:16px;
+  }
+  .question-card .q-label{ color:var(--green); font-size:12px; text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:8px; }
+  .question-card .answer{ margin-top:12px; color:var(--text-dim); font-size:14.5px; }
+
+  .atm-split{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+  @media (max-width:760px){ .atm-split{grid-template-columns:1fr;} }
+  .atm-half{ background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:16px; }
+  .atm-half h4{ margin:0 0 10px; font-size:13.5px; text-transform:uppercase; letter-spacing:.5px; }
+  .atm-half.hidden-side{ border-color:var(--red); }
+  .atm-half.hidden-side h4{ color:var(--red); }
+  .atm-half.exposed-side{ border-color:var(--green); }
+  .atm-half.exposed-side h4{ color:var(--green); }
+  .atm-half ul{ margin:0; padding-left:18px; font-size:13.5px; color:var(--text-dim); }
+
+  .code-block{
+    background:#1a1b24; border:1px solid var(--border); border-radius:12px;
+    overflow:hidden; margin:16px 0;
+  }
+  .code-head{
+    display:flex; align-items:center; justify-content:space-between;
+    background:#20212c; padding:9px 16px; border-bottom:1px solid var(--border);
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .code-dots{display:flex; gap:6px;}
+  .code-dots span{width:10px;height:10px;border-radius:50%;}
+  .code-dots span:nth-child(1){background:#ff5f56;}
+  .code-dots span:nth-child(2){background:#ffbd2e;}
+  .code-dots span:nth-child(3){background:#27c93f;}
+  pre.code{ margin:0; padding:18px 20px; overflow-x:auto; font-size:14px; line-height:1.7; }
+  .kw{color:var(--pink);}
+  .cls{color:var(--cyan);}
+  .str{color:var(--yellow);}
+  .mth{color:var(--green);}
+  .cmt{color:#6272a4;}
+  .num-lit{color:var(--orange);}
+  .fld{color:var(--purple);}
+
+  .code-output{
+    background:#151621; border-top:1px dashed var(--border);
+    padding:12px 20px; font-size:13.5px; color:var(--green); font-family:'Cascadia Code',monospace;
+  }
+  .code-output .lbl{color:var(--text-dim); font-size:11px; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;}
+
+  .pipe{ display:flex; flex-direction:column; align-items:center; gap:0; margin:26px 0; }
+  .pipe-node{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px;
+    padding:12px 22px; font-weight:700; font-size:14.5px; text-align:center; min-width:200px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  }
+  .pipe-node.accent-purple{border-color:var(--purple); color:var(--purple);}
+  .pipe-node.accent-green{border-color:var(--green); color:var(--green);}
+  .pipe-node.accent-cyan{border-color:var(--cyan); color:var(--cyan);}
+  .pipe-node.accent-orange{border-color:var(--orange); color:var(--orange);}
+  .pipe-node.accent-pink{border-color:var(--pink); color:var(--pink);}
+  .pipe-node.accent-red{border-color:var(--red); color:var(--red);}
+  .pipe-arrow{ color:var(--text-dim); font-size:20px; margin:2px 0; line-height:1; }
+
+  .danger-block{
+    background:rgba(255,85,85,0.08); border:1px solid rgba(255,85,85,0.4);
+    border-radius:12px; padding:14px 18px; margin:14px 0; font-family:'Cascadia Code',monospace;
+    font-size:14px; color:var(--red);
+  }
+
+  table.cmp{ width:100%; border-collapse:collapse; margin:14px 0; font-size:13.8px; }
+  table.cmp th, table.cmp td{ padding:11px 14px; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; }
+  table.cmp th{ font-size:12px; text-transform:uppercase; letter-spacing:.5px; }
+  table.cmp th.enc-col{ color:var(--green); }
+  table.cmp th.abs-col{ color:var(--cyan); }
+  table.cmp tr:hover td{ background:var(--surface-2); }
+
+  .quiz-box{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-top:20px;
+  }
+  .quiz-q{font-weight:700; margin-bottom:14px; font-size:15.5px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:10px;}
+  .quiz-opt{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 16px; cursor:pointer; font-size:14px; transition:.15s;
+  }
+  .quiz-opt:hover{border-color:var(--green);}
+  .quiz-opt.correct{background:rgba(80,250,123,0.15); border-color:var(--green); color:var(--green);}
+  .quiz-opt.wrong{background:rgba(255,85,85,0.15); border-color:var(--red); color:var(--red);}
+  .quiz-feedback{margin-top:12px; font-size:13.5px; color:var(--text-dim); min-height:18px;}
+  .quiz-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+  .quiz-nav button{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:9px 18px; border-radius:20px; cursor:pointer; font-size:13.5px; font-weight:600;
+  }
+  .quiz-nav button:hover{border-color:var(--green);}
+  .quiz-nav button:disabled{opacity:.35; cursor:not-allowed;}
+  .quiz-dots{display:flex; gap:6px;}
+  .quiz-dots span{width:8px;height:8px;border-radius:50%; background:var(--border);}
+  .quiz-dots span.active{background:var(--pink);}
+  .quiz-dots span.done{background:var(--green);}
+  .quiz-score{ text-align:center; padding:20px; font-size:18px; font-weight:800; }
+
+  footer{ text-align:center; padding:30px 20px; color:var(--text-dim); font-size:12.5px; border-top:1px solid var(--border); }
+  ::selection{background:var(--green); color:#1e1f29;}
+
+  .scrolltop{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--pink));
+    display:flex; align-items:center; justify-content:center;
+    color:#1e1f29; font-weight:900; cursor:pointer; box-shadow:var(--shadow);
+    opacity:0; pointer-events:none; transition:.2s;
+  }
+  .scrolltop.show{opacity:1; pointer-events:auto;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="logo">J</div> Java Foundations · Hour 11</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#m10">10. Encapsulation</a>
+    <a href="#m11">11. Poor Design</a>
+    <a href="#m12">12. private</a>
+    <a href="#m13">13. Getter/Setter</a>
+    <a href="#m14">14. Why It Matters</a>
+    <a href="#m15">15. Abstraction</a>
+    <a href="#m16">16. Abstraction Class</a>
+    <a href="#m17">17. Enc vs Abs</a>
+    <a href="#quiz">Quiz</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="badge-pill">IT Training &middot; Core Java Track &middot; Hour 11</span>
+    <h1>Encapsulation &amp; Abstraction</h1>
+    <p class="sub">This hour I'm handing you two of the four pillars I introduced last time, and I want you leaving with a reflex: whenever you see exposed data or exposed steps, you should feel uneasy about it.</p>
+    <div class="hero-meta">
+      <div><strong>8</strong>Modules</div>
+      <div><strong>~95 min</strong>Session Length</div>
+      <div><strong>Beginner</strong>Level</div>
+      <div><strong>5</strong>Code Walkthroughs</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- MODULE 10 -->
+  <section class="module" id="m10">
+    <div class="module-head">
+      <div class="module-num">10</div>
+      <div>
+        <h2>Encapsulation</h2>
+        <p>Protecting data by controlling how it's reached</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🏧</span> Think About an ATM</h3>
+      <p>I want you picturing an ATM machine right now. You never directly manipulate what's actually sitting behind it:</p>
+      <div class="atm-split">
+        <div class="atm-half hidden-side">
+          <h4>🔒 What I never touch directly</h4>
+          <ul>
+            <li>Bank Database</li>
+            <li>Account Balance</li>
+            <li>Transaction Ledger</li>
+          </ul>
+        </div>
+        <div class="atm-half exposed-side">
+          <h4>✅ What I interact through</h4>
+          <ul>
+            <li>Withdraw</li>
+            <li>Deposit</li>
+            <li>Check Balance</li>
+          </ul>
+        </div>
+      </div>
+      <p>The machine hands me a small, controlled set of buttons, and everything behind those buttons — the actual data — stays protected. <b>That's encapsulation</b>, and I want that ATM picture in your head every time the word comes up.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 11 -->
+  <section class="module" id="m11">
+    <div class="module-head">
+      <div class="module-num">11</div>
+      <div>
+        <h2>Poor Design</h2>
+        <p>What I want you to recognize as a red flag</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">⚠️</span> Here's the Mistake I Want You Avoiding</h3>
+      <div class="code-block">
+        <div class="code-head"><span>BankAccount.java (don't do this)</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">BankAccount</span> {
+
+    <span class="kw">public double</span> balance;
+}</pre>
+      </div>
+      <p>The moment I mark <code>balance</code> as <code>public</code>, I've handed the keys to anyone holding a reference to this object. Watch what that lets them do:</p>
+      <div class="danger-block">account.balance = -500000;</div>
+      <p>I want you to feel how wrong that line looks. <b>That's dangerous</b> — nothing is stopping an account from going hundreds of thousands into the negative with a single careless assignment.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 12 -->
+  <section class="module" id="m12">
+    <div class="module-head">
+      <div class="module-num">12</div>
+      <div>
+        <h2>Encapsulation with <code>private</code></h2>
+        <p>Fixing the mistake I just showed you</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔐</span> Locking the Data Down</h3>
+      <div class="code-block">
+        <div class="code-head"><span>BankAccount.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">BankAccount</span> {
+
+    <span class="kw">private double</span> balance;
+
+    <span class="kw">public void</span> <span class="mth">deposit</span>(<span class="kw">double</span> amount) {
+
+        <span class="kw">if</span> (amount > <span class="num-lit">0</span>) {
+            balance += amount;
+        }
+    }
+
+    <span class="kw">public double</span> <span class="mth">getBalance</span>() {
+
+        <span class="kw">return</span> balance;
+    }
+}</pre>
+      </div>
+      <p>And here's how I'd use it:</p>
+      <div class="code-block">
+        <div class="code-head"><span>Main.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">Main</span> {
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="cls">BankAccount</span> account = <span class="kw">new</span> <span class="cls">BankAccount</span>();
+
+        account.<span class="mth">deposit</span>(<span class="num-lit">5000</span>);
+
+        <span class="cls">System</span>.out.<span class="mth">println</span>(
+            <span class="str">"Balance: "</span> + account.<span class="mth">getBalance</span>()
+        );
+    }
+}</pre>
+      </div>
+      <div class="code-output"><span class="lbl">Console Output</span>Balance: 5000.0</div>
+      <p>Notice I can no longer write <code>account.balance = -500000;</code> at all — the compiler won't let me, since <code>balance</code> is <code>private</code>. The only door in is <code>deposit()</code>, and I put a guard (<code>amount > 0</code>) right at that door.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧭</span> The Flow I Want You Tracing Every Time</h3>
+      <div class="pipe">
+        <div class="pipe-node accent-red">private data</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-orange">controlled methods</div>
+        <div class="pipe-arrow">↓</div>
+        <div class="pipe-node accent-green">safe access</div>
+      </div>
+      <p class="diagram-caption">Lock the data down, expose only a controlled method, and what comes through that method is safe by design — not by accident.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 13 -->
+  <section class="module" id="m13">
+    <div class="module-head">
+      <div class="module-num">13</div>
+      <div>
+        <h2>Getter and Setter</h2>
+        <p>The pattern you'll write constantly</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧱</span> A Practical Example</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Employee.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">Employee</span> {
+
+    <span class="kw">private</span> <span class="cls">String</span> name;
+    <span class="kw">private double</span> salary;
+
+    <span class="kw">public</span> <span class="cls">String</span> <span class="mth">getName</span>() {
+        <span class="kw">return</span> name;
+    }
+
+    <span class="kw">public void</span> <span class="mth">setName</span>(<span class="cls">String</span> name) {
+        <span class="kw">this</span>.name = name;
+    }
+
+    <span class="kw">public double</span> <span class="mth">getSalary</span>() {
+        <span class="kw">return</span> salary;
+    }
+
+    <span class="kw">public void</span> <span class="mth">setSalary</span>(<span class="kw">double</span> salary) {
+
+        <span class="kw">if</span> (salary >= <span class="num-lit">0</span>) {
+            <span class="kw">this</span>.salary = salary;
+        }
+    }
+}</pre>
+      </div>
+      <p>I want you noticing the pattern I'm repeating: every private field gets a <code>get</code> method to read it safely, and a <code>set</code> method to write it — with a guard, where one makes sense. <b>This is a practical, everyday example of encapsulation</b> — you'll write this exact shape hundreds of times in your career.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 14 -->
+  <section class="module" id="m14">
+    <div class="module-head">
+      <div class="module-num">14</div>
+      <div>
+        <h2>Why Encapsulation Matters in Industry</h2>
+        <p>The payoff that makes all of this worth it</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🏭</span> Let Me Show You the Real Benefit</h3>
+      <p>Say I have this field:</p>
+      <div class="code-block">
+        <div class="code-head"><span>Employee.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">private double</span> salary;</pre>
+      </div>
+      <p>Later, a new business rule comes in. I can add this inside <code>setSalary()</code> without touching anything else:</p>
+      <div class="code-block">
+        <div class="code-head"><span>Employee.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">if</span> (salary < minimumSalary) {
+    <span class="kw">throw new</span> <span class="cls">IllegalArgumentException</span>();
+}</pre>
+      </div>
+      <p>I didn't have to go hunt down every place in the codebase that touches an employee's salary — I changed it in exactly one place, because that one place was always the only legal entry point.</p>
+    </div>
+
+    <div class="callout teach">
+      <div class="ico">✅</div>
+      <div><b>This is the benefit I most want you walking away with:</b> the internal implementation can change while the public contract remains stable. That's what makes large codebases survivable over years of change.</div>
+    </div>
+  </section>
+
+  <!-- MODULE 15 -->
+  <section class="module" id="m15">
+    <div class="module-head">
+      <div class="module-num">15</div>
+      <div>
+        <h2>Abstraction</h2>
+        <p>Hiding "how," exposing only "what"</p>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-label">Let me ask you something</div>
+      When you drive a car, do you need to know exactly how fuel injection works?
+      <div class="answer">No — and I want you to notice just how little you actually need to know to drive it well.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🚗</span> What You Actually Interact With</h3>
+      <div class="pipe">
+        <div class="pipe-node accent-green">start()</div>
+        <div class="pipe-node accent-cyan">accelerate()</div>
+        <div class="pipe-node accent-pink">brake()</div>
+      </div>
+      <p>That's the entire interface I need as a driver. <b>The internal implementation is hidden.</b> That's abstraction — and I want you distinguishing it clearly from encapsulation, which we'll do in a moment.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 16 -->
+  <section class="module" id="m16">
+    <div class="module-head">
+      <div class="module-num">16</div>
+      <div>
+        <h2>Abstraction with a Class</h2>
+        <p>Writing the car's interface in code</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔧</span> One Public Method, Several Hidden Steps</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Car.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">Car</span> {
+
+    <span class="kw">public void</span> <span class="mth">start</span>() {
+
+        <span class="mth">checkFuel</span>();
+        <span class="mth">startEngine</span>();
+        <span class="mth">activateElectronics</span>();
+
+        <span class="cls">System</span>.out.<span class="mth">println</span>(<span class="str">"Car started"</span>);
+    }
+
+    <span class="kw">private void</span> <span class="mth">checkFuel</span>() {
+
+        <span class="cls">System</span>.out.<span class="mth">println</span>(<span class="str">"Checking fuel..."</span>);
+    }
+
+    <span class="kw">private void</span> <span class="mth">startEngine</span>() {
+
+        <span class="cls">System</span>.out.<span class="mth">println</span>(<span class="str">"Starting engine..."</span>);
+    }
+
+    <span class="kw">private void</span> <span class="mth">activateElectronics</span>() {
+
+        <span class="cls">System</span>.out.<span class="mth">println</span>(<span class="str">"Activating electronics..."</span>);
+    }
+}</pre>
+      </div>
+      <p>From the outside, all I ever call is:</p>
+      <div class="code-block">
+        <div class="code-head"><span>Main.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code">car.<span class="mth">start</span>();</pre>
+      </div>
+      <p>I don't need to know about <code>checkFuel()</code>, <code>startEngine()</code>, or <code>activateElectronics()</code> at all — they're <code>private</code>, tucked behind the one method I'm allowed to call. <b>The user doesn't need to know the internal steps</b>, and that's exactly the point.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 17 -->
+  <section class="module" id="m17">
+    <div class="module-head">
+      <div class="module-num">17</div>
+      <div>
+        <h2>Encapsulation vs Abstraction</h2>
+        <p>The distinction I test you on every single time</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="ico">💡</div>
+      <div><b>I want you to take this section seriously</b> — this distinction is very important for interviews, and it's one of the most commonly confused pairs in all of OOP.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">⚖️</span> Side by Side</h3>
+      <table class="cmp">
+        <thead><tr><th class="enc-col">Encapsulation</th><th class="abs-col">Abstraction</th></tr></thead>
+        <tbody>
+          <tr><td>Controls access to data/implementation</td><td>Hides unnecessary implementation details</td></tr>
+          <tr><td>Often achieved with access modifiers</td><td>Achieved using interfaces/abstract classes and good API design</td></tr>
+          <tr><td>Focuses on "how access is controlled"</td><td>Focuses on "what should be exposed"</td></tr>
+          <tr><td>Example: <code>private balance</code></td><td>Example: <code>payment.pay()</code></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:13.5px; color:var(--text-dim);">The way I'd say it in one breath: encapsulation protects the data, abstraction simplifies the interface. They work together constantly, but they're answering two different questions.</p>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="module" id="quiz">
+    <div class="module-head">
+      <div class="module-num">✓</div>
+      <div>
+        <h2>Quick Knowledge Check</h2>
+        <p>5 questions to reinforce this hour's concepts</p>
+      </div>
+    </div>
+
+    <div class="quiz-box" id="quizBox">
+      <div id="quizQuestionArea"></div>
+      <div class="quiz-nav">
+        <button id="prevBtn">← Previous</button>
+        <div class="quiz-dots" id="quizDots"></div>
+        <button id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Java Foundations Training Module — Hour 11 &middot; Prepared for IT Training Cohort &middot; Confidential Training Material</footer>
+
+<div class="scrolltop" id="scrollTop">↑</div>
+
+<script>
+  const progressFill = document.getElementById('progressFill');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  const sections = document.querySelectorAll('section.module');
+  const navLinks = document.querySelectorAll('#navLinks a');
+
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressFill.style.width = scrolled + '%';
+    scrollTopBtn.classList.toggle('show', h.scrollTop > 500);
+
+    let current = '';
+    sections.forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= 120 && rect.bottom >= 120) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  const questions = [
+    {
+      q: "In the ATM analogy, what stays protected and hidden from direct access?",
+      options: [
+        "The Withdraw and Deposit buttons",
+        "The Bank Database, Account Balance, and Transaction Ledger",
+        "The ATM's screen",
+        "The receipt printer"
+      ],
+      correct: 1,
+      explain: "You interact only through Withdraw, Deposit, and Check Balance — the actual data behind them stays protected, which is the essence of encapsulation."
+    },
+    {
+      q: "Why is `public double balance;` considered poor design?",
+      options: [
+        "Because public fields are slower to access",
+        "Because anyone can set it to an invalid value directly, like account.balance = -500000;",
+        "Because Java doesn't allow public fields",
+        "Because it uses too much memory"
+      ],
+      correct: 1,
+      explain: "A public field has no guard — any code with a reference to the object can assign it any value, including nonsensical ones."
+    },
+    {
+      q: "What's the main benefit I highlighted when salary is private with a validated setter?",
+      options: [
+        "The program runs faster",
+        "I can change the internal validation logic in one place while the public contract (the method signatures) stays stable",
+        "Private fields take up less memory than public ones",
+        "It removes the need for a constructor"
+      ],
+      correct: 1,
+      explain: "Because every write goes through setSalary(), I can add new validation rules there without touching any other code that uses Employee."
+    },
+    {
+      q: "In the Car example, why are checkFuel(), startEngine(), and activateElectronics() marked private?",
+      options: [
+        "Because private methods run faster than public ones",
+        "So the caller only needs to know about start() — the internal steps are hidden implementation detail",
+        "Because Java requires helper methods to be private",
+        "To prevent the Car class from compiling"
+      ],
+      correct: 1,
+      explain: "This is abstraction in action: start() is the single exposed interface, and everything it depends on internally stays hidden."
+    },
+    {
+      q: "Which statement best captures the difference between encapsulation and abstraction?",
+      options: [
+        "They're the same thing with different names",
+        "Encapsulation controls access to data, while abstraction hides unnecessary implementation details behind a simple interface",
+        "Encapsulation is only about methods; abstraction is only about variables",
+        "Abstraction is a Java-only concept that doesn't apply to other languages"
+      ],
+      correct: 1,
+      explain: "Encapsulation focuses on how access is controlled (e.g. private balance); abstraction focuses on what should be exposed (e.g. payment.pay())."
+    }
+  ];
+
+  let current = 0;
+  const answered = new Array(questions.length).fill(null);
+
+  const qArea = document.getElementById('quizQuestionArea');
+  const dotsWrap = document.getElementById('quizDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function renderDots(){
+    dotsWrap.innerHTML = '';
+    questions.forEach((_, i) => {
+      const d = document.createElement('span');
+      if (i === current) d.classList.add('active');
+      else if (answered[i] !== null) d.classList.add('done');
+      dotsWrap.appendChild(d);
+    });
+  }
+
+  function renderQuestion(){
+    if (current >= questions.length){
+      const correctCount = answered.filter((a,i) => a === questions[i].correct).length;
+      qArea.innerHTML = `<div class="quiz-score">🎉 You scored ${correctCount} / ${questions.length}</div>`;
+      prevBtn.disabled = false;
+      nextBtn.disabled = true;
+      renderDots();
+      return;
+    }
+    const item = questions[current];
+    let optsHtml = item.options.map((opt, i) => {
+      let cls = 'quiz-opt';
+      if (answered[current] !== null){
+        if (i === item.correct) cls += ' correct';
+        else if (i === answered[current]) cls += ' wrong';
+      }
+      return `<div class="${cls}" data-idx="${i}">${opt}</div>`;
+    }).join('');
+
+    qArea.innerHTML = `
+      <div class="quiz-q">Q${current+1}. ${item.q}</div>
+      <div class="quiz-opts">${optsHtml}</div>
+      <div class="quiz-feedback">${answered[current] !== null ? item.explain : ''}</div>
+    `;
+
+    document.querySelectorAll('.quiz-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        if (answered[current] !== null) return;
+        answered[current] = parseInt(el.getAttribute('data-idx'));
+        renderQuestion();
+      });
+    });
+
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = false;
+    nextBtn.textContent = current === questions.length - 1 ? 'Finish →' : 'Next →';
+    renderDots();
+  }
+
+  prevBtn.addEventListener('click', () => { if (current > 0){ current--; renderQuestion(); } });
+  nextBtn.addEventListener('click', () => { current++; renderQuestion(); });
+
+  renderQuestion();
+</script>
+
+</body>
+</html>

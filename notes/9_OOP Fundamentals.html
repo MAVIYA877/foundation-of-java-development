@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Objects, Classes &amp; Instantiation | IT Training Module — Hour 9</title>
+<style>
+  :root{
+    --bg:#282a36;
+    --bg-alt:#1e1f29;
+    --surface:#2f3140;
+    --surface-2:#363849;
+    --border:#44475a;
+    --text:#f8f8f2;
+    --text-dim:#b8bcd4;
+    --purple:#bd93f9;
+    --pink:#ff79c6;
+    --green:#50fa7b;
+    --cyan:#8be9fd;
+    --orange:#ffb86c;
+    --yellow:#f1fa8c;
+    --red:#ff5555;
+    --radius:14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(189,147,249,0.12), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(255,121,198,0.08), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    line-height:1.65;
+  }
+  a{color:var(--cyan);}
+  code, pre{ font-family:'Cascadia Code','Fira Code',Consolas,'Courier New',monospace; }
+
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(30,31,41,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:10px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+  }
+  .topbar .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px; }
+  .brand .logo{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px; color:#1e1f29; font-weight:900;
+  }
+  .progress-track{
+    flex:1; max-width:420px; height:8px; border-radius:20px;
+    background:var(--surface-2); overflow:hidden; border:1px solid var(--border);
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--purple),var(--pink));
+    transition:width .15s ease;
+  }
+  .nav-links{ display:flex; gap:6px; flex-wrap:wrap; font-size:12.5px; }
+  .nav-links a{
+    color:var(--text-dim); text-decoration:none; padding:6px 10px;
+    border-radius:20px; border:1px solid transparent; white-space:nowrap;
+  }
+  .nav-links a:hover, .nav-links a.active{
+    background:var(--surface-2); color:var(--text); border-color:var(--border);
+  }
+
+  .hero{
+    padding:70px 24px 50px; text-align:center; position:relative; overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:42px 42px; opacity:0.12;
+    mask-image:radial-gradient(circle at 50% 20%, black, transparent 70%);
+  }
+  .hero-inner{position:relative; z-index:1;}
+  .badge-pill{
+    display:inline-block; padding:6px 16px; border-radius:30px;
+    background:var(--surface-2); border:1px solid var(--border);
+    font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--purple); font-weight:700; margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(26px,4.6vw,44px); margin:0 0 12px;
+    background:linear-gradient(90deg,var(--purple),var(--pink) 55%,var(--orange));
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
+  }
+  .hero p.sub{ max-width:680px; margin:0 auto; color:var(--text-dim); font-size:16px; }
+  .hero-meta{ display:flex; justify-content:center; gap:28px; margin-top:28px; flex-wrap:wrap; }
+  .hero-meta div{font-size:13px; color:var(--text-dim);}
+  .hero-meta strong{display:block; font-size:20px; color:var(--text);}
+
+  .wrap{max-width:1080px; margin:0 auto; padding:10px 24px 100px;}
+  section.module{ padding:56px 0; border-bottom:1px dashed var(--border); scroll-margin-top:80px; }
+  section.module:last-child{border-bottom:none;}
+  .module-head{ display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .module-num{
+    flex:0 0 auto; width:52px;height:52px;border-radius:14px;
+    background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:20px; color:var(--purple);
+  }
+  .module-head h2{ margin:0; font-size:26px; font-weight:800; }
+  .module-head p{margin:2px 0 0; color:var(--text-dim); font-size:14px;}
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:22px; box-shadow:var(--shadow);
+  }
+  .card h3{margin-top:0; font-size:17px; color:var(--cyan); display:flex; gap:8px; align-items:center;}
+  .card h3 .icon{font-size:18px;}
+  .card ul, .card ol{margin:10px 0; padding-left:22px;}
+  .card li{margin-bottom:6px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .grid-7{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
+  @media (max-width:760px){ .grid-2, .grid-3, .grid-7{grid-template-columns:repeat(2,1fr);} }
+
+  .question-card{
+    background:linear-gradient(135deg, rgba(189,147,249,0.12), rgba(255,121,198,0.08));
+    border:1px solid var(--purple); border-radius:var(--radius);
+    padding:22px 24px; margin:18px 0; font-size:16px;
+  }
+  .question-card .q-label{ color:var(--purple); font-size:12px; text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:8px; }
+  .question-card .answer{ margin-top:12px; color:var(--text-dim); font-size:14.5px; }
+
+  .entity-chip{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:10px;
+    padding:10px 14px; text-align:center; font-size:13.5px; font-weight:600; color:var(--cyan);
+  }
+
+  .callout{
+    border-radius:var(--radius); padding:16px 20px; margin:18px 0;
+    border:1px solid; display:flex; gap:14px; align-items:flex-start; font-size:14.5px;
+  }
+  .callout .ico{font-size:20px; line-height:1;}
+  .callout.teach{background:rgba(80,250,123,0.08); border-color:rgba(80,250,123,0.4);}
+  .callout.avoid{background:rgba(255,85,85,0.08); border-color:rgba(255,85,85,0.4);}
+  .callout.tip{background:rgba(139,233,253,0.08); border-color:rgba(139,233,253,0.4);}
+  .callout b{color:var(--text);}
+
+  .split-box{
+    display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0;
+  }
+  @media (max-width:760px){ .split-box{grid-template-columns:1fr;} }
+  .split-box .half{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:16px;
+  }
+  .split-box .half h4{ margin:0 0 10px; font-size:14px; text-transform:uppercase; letter-spacing:.5px; }
+  .split-box .half.state h4{ color:var(--orange); }
+  .split-box .half.behavior h4{ color:var(--green); }
+  .split-box .half ul{ margin:0; padding-left:18px; font-size:13.5px; color:var(--text-dim); }
+
+  .analogy{
+    display:flex; gap:18px; align-items:center; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius); padding:20px; margin:16px 0;
+  }
+  .analogy .side{flex:1; min-width:220px; text-align:center;}
+  .analogy .side h4{margin:0 0 6px; color:var(--orange); font-size:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .analogy .side .emoji{ font-size:40px; display:block; margin-bottom:8px; }
+  .analogy .arrow{font-size:26px; color:var(--pink);}
+
+  .code-block{
+    background:#1a1b24; border:1px solid var(--border); border-radius:12px;
+    overflow:hidden; margin:16px 0;
+  }
+  .code-head{
+    display:flex; align-items:center; justify-content:space-between;
+    background:#20212c; padding:9px 16px; border-bottom:1px solid var(--border);
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .code-dots{display:flex; gap:6px;}
+  .code-dots span{width:10px;height:10px;border-radius:50%;}
+  .code-dots span:nth-child(1){background:#ff5f56;}
+  .code-dots span:nth-child(2){background:#ffbd2e;}
+  .code-dots span:nth-child(3){background:#27c93f;}
+  pre.code{ margin:0; padding:18px 20px; overflow-x:auto; font-size:14px; line-height:1.7; }
+  .kw{color:var(--pink);}
+  .cls{color:var(--cyan);}
+  .str{color:var(--yellow);}
+  .mth{color:var(--green);}
+  .cmt{color:#6272a4;}
+  .num-lit{color:var(--orange);}
+  .fld{color:var(--purple);}
+
+  .code-output{
+    background:#151621; border-top:1px dashed var(--border);
+    padding:12px 20px; font-size:13.5px; color:var(--green); font-family:'Cascadia Code',monospace;
+  }
+  .code-output .lbl{color:var(--text-dim); font-size:11px; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px;}
+
+  .line-explain{ display:grid; grid-template-columns:140px 1fr; gap:6px 16px; margin:14px 0; font-size:14px; }
+  .line-explain .lterm{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:8px;
+    padding:4px 10px; font-family:'Cascadia Code',monospace; color:var(--yellow); font-size:13px; align-self:start;
+  }
+  .line-explain .ldesc{color:var(--text-dim); align-self:center;}
+
+  .steps{counter-reset:stepnum; margin:20px 0;}
+  .step{
+    position:relative; padding:16px 20px 16px 56px; margin-bottom:14px;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+  }
+  .step::before{
+    counter-increment:stepnum; content:counter(stepnum);
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:28px; height:28px; border-radius:50%;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; color:#1e1f29;
+  }
+  .step h4{margin:0 0 4px; font-size:15px;}
+  .step p{margin:0; font-size:13.5px; color:var(--text-dim);}
+  .step code{background:var(--bg-alt); padding:1px 6px; border-radius:5px; color:var(--cyan); border:1px solid var(--border);}
+
+  .diagram-box{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin:20px 0; overflow-x:auto;
+  }
+  .diagram-caption{ text-align:center; font-size:12.5px; color:var(--text-dim); margin-top:8px; font-style:italic; }
+
+  .pipe{ display:flex; flex-direction:column; align-items:center; gap:0; margin:26px 0; }
+  .pipe-node{
+    background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px;
+    padding:12px 22px; font-weight:700; font-size:14.5px; text-align:center; min-width:200px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  }
+  .pipe-node.accent-purple{border-color:var(--purple); color:var(--purple);}
+  .pipe-node.accent-green{border-color:var(--green); color:var(--green);}
+  .pipe-node.accent-cyan{border-color:var(--cyan); color:var(--cyan);}
+  .pipe-node.accent-orange{border-color:var(--orange); color:var(--orange);}
+  .pipe-node.accent-pink{border-color:var(--pink); color:var(--pink);}
+  .pipe-arrow{ color:var(--text-dim); font-size:20px; margin:2px 0; line-height:1; }
+
+  .objects-row{
+    display:flex; gap:20px; justify-content:center; flex-wrap:wrap; margin:20px 0;
+  }
+  .object-card{
+    background:var(--surface-2); border:1.5px solid var(--pink); border-radius:12px;
+    padding:14px 20px; text-align:center; min-width:140px;
+  }
+  .object-card .tag{ font-size:11px; color:var(--pink); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+  .object-card .name{ font-weight:700; font-size:15px; }
+  .blueprint-to-objects{
+    display:flex; flex-direction:column; align-items:center; gap:12px; margin:20px 0;
+  }
+  .blueprint-node{
+    background:var(--surface-2); border:1.5px solid var(--orange); border-radius:12px;
+    padding:12px 26px; font-weight:700; color:var(--orange); font-size:15px;
+  }
+  .fanout-arrows{
+    display:flex; gap:60px; align-items:flex-end; color:var(--text-dim); font-size:20px;
+  }
+
+  .quiz-box{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-top:20px;
+  }
+  .quiz-q{font-weight:700; margin-bottom:14px; font-size:15.5px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:10px;}
+  .quiz-opt{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 16px; cursor:pointer; font-size:14px; transition:.15s;
+  }
+  .quiz-opt:hover{border-color:var(--purple);}
+  .quiz-opt.correct{background:rgba(80,250,123,0.15); border-color:var(--green); color:var(--green);}
+  .quiz-opt.wrong{background:rgba(255,85,85,0.15); border-color:var(--red); color:var(--red);}
+  .quiz-feedback{margin-top:12px; font-size:13.5px; color:var(--text-dim); min-height:18px;}
+  .quiz-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+  .quiz-nav button{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:9px 18px; border-radius:20px; cursor:pointer; font-size:13.5px; font-weight:600;
+  }
+  .quiz-nav button:hover{border-color:var(--purple);}
+  .quiz-nav button:disabled{opacity:.35; cursor:not-allowed;}
+  .quiz-dots{display:flex; gap:6px;}
+  .quiz-dots span{width:8px;height:8px;border-radius:50%; background:var(--border);}
+  .quiz-dots span.active{background:var(--pink);}
+  .quiz-dots span.done{background:var(--green);}
+  .quiz-score{ text-align:center; padding:20px; font-size:18px; font-weight:800; }
+
+  footer{ text-align:center; padding:30px 20px; color:var(--text-dim); font-size:12.5px; border-top:1px solid var(--border); }
+  ::selection{background:var(--purple); color:#1e1f29;}
+
+  .scrolltop{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    display:flex; align-items:center; justify-content:center;
+    color:#1e1f29; font-weight:900; cursor:pointer; box-shadow:var(--shadow);
+    opacity:0; pointer-events:none; transition:.2s;
+  }
+  .scrolltop.show{opacity:1; pointer-events:auto;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="logo">J</div> Java Foundations · Hour 9</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#m15">15. What is OOP</a>
+    <a href="#m16">16. Object</a>
+    <a href="#m17">17. Class</a>
+    <a href="#m18">18. Creating an Object</a>
+    <a href="#m19">19. Multiple Objects</a>
+    <a href="#quiz">Quiz</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="badge-pill">IT Training &middot; Core Java Track &middot; Hour 9</span>
+    <h1>Objects, Classes &amp; Instantiation</h1>
+    <p class="sub">This hour, I'm shifting you from "writing instructions" to "modeling a world." By the end of it, you'll be creating your own objects from your own classes without hesitating.</p>
+    <div class="hero-meta">
+      <div><strong>5</strong>Modules</div>
+      <div><strong>~75 min</strong>Session Length</div>
+      <div><strong>Beginner</strong>Level</div>
+      <div><strong>4</strong>Code Walkthroughs</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- MODULE 15 -->
+  <section class="module" id="m15">
+    <div class="module-head">
+      <div class="module-num">15</div>
+      <div>
+        <h2>What is OOP?</h2>
+        <p>The mindset shift I want you to make before we touch any syntax</p>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-label">Let me ask you something</div>
+      If we were building Amazon, would we write the entire application as one huge sequence of instructions, top to bottom?
+      <div class="answer">Obviously not. And I want you to understand exactly why not.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧩</span> Instead, I'd Identify Entities</h3>
+      <p>The first thing I'd do is look at the problem and pull out the real-world "things" involved:</p>
+      <div class="grid-7">
+        <div class="entity-chip">Customer</div>
+        <div class="entity-chip">Product</div>
+        <div class="entity-chip">Order</div>
+        <div class="entity-chip">Payment</div>
+        <div class="entity-chip">Cart</div>
+        <div class="entity-chip">Address</div>
+        <div class="entity-chip">Employee</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">⚙️</span> Every Entity I Identify Has Two Parts</h3>
+      <div class="pipe">
+        <div class="pipe-node accent-orange">Data</div>
+        <div class="pipe-arrow">+</div>
+        <div class="pipe-node accent-green">Behavior</div>
+      </div>
+      <p>Let me show you with <code>BankAccount</code> — this is the pairing I want you internalizing for every entity you model from now on:</p>
+      <div class="split-box">
+        <div class="half state">
+          <h4>Data</h4>
+          <ul>
+            <li>accountNumber</li>
+            <li>holderName</li>
+            <li>balance</li>
+          </ul>
+        </div>
+        <div class="half behavior">
+          <h4>Behavior</h4>
+          <ul>
+            <li>deposit()</li>
+            <li>withdraw()</li>
+            <li>checkBalance()</li>
+          </ul>
+        </div>
+      </div>
+      <p><b>This pairing — data plus behavior, bundled together — is the fundamental idea behind OOP.</b> Everything else I teach you in this hour builds on that single idea.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 16 -->
+  <section class="module" id="m16">
+    <div class="module-head">
+      <div class="module-num">16</div>
+      <div>
+        <h2>Object</h2>
+        <p>Turning "data + behavior" into something real</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧠</span> My Definition</h3>
+      <p>An object is a <b style="color:var(--pink)">runtime entity</b> that contains <b style="color:var(--orange)">state</b> and <b style="color:var(--green)">behavior</b>.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🚗</span> Let's Use a Car</h3>
+      <div class="analogy">
+        <div class="side">
+          <span class="emoji">🎨</span>
+          <h4>State</h4>
+          <code style="color:var(--text-dim); display:block;">color = red<br>brand = Toyota<br>speed = 80</code>
+        </div>
+        <div class="arrow">+</div>
+        <div class="side">
+          <span class="emoji">🏎️</span>
+          <h4>Behavior</h4>
+          <code style="color:var(--text-dim); display:block;">start()<br>accelerate()<br>brake()<br>stop()</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">💻</span> Now Let's Write It in Java</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Car.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">Car</span> {
+
+    <span class="cls">String</span> brand;
+    <span class="cls">String</span> color;
+    <span class="kw">int</span> speed;
+
+    <span class="kw">void</span> <span class="mth">start</span>() {
+        <span class="cls">System</span>.out.<span class="mth">println</span>(<span class="str">"Car started"</span>);
+    }
+
+    <span class="kw">void</span> <span class="mth">accelerate</span>() {
+        speed += <span class="num-lit">10</span>;
+        <span class="cls">System</span>.out.<span class="mth">println</span>(<span class="str">"Speed: "</span> + speed);
+    }
+
+    <span class="kw">void</span> <span class="mth">brake</span>() {
+        speed -= <span class="num-lit">10</span>;
+        <span class="cls">System</span>.out.<span class="mth">println</span>(<span class="str">"Speed: "</span> + speed);
+    }
+}</pre>
+      </div>
+      <p>Notice what I did here: <code class="fld" style="background:var(--bg-alt); padding:1px 6px; border-radius:5px; border:1px solid var(--border);">brand</code>, <code class="fld" style="background:var(--bg-alt); padding:1px 6px; border-radius:5px; border:1px solid var(--border);">color</code>, and <code class="fld" style="background:var(--bg-alt); padding:1px 6px; border-radius:5px; border:1px solid var(--border);">speed</code> are the <b>state</b>, and <code>start()</code>, <code>accelerate()</code>, and <code>brake()</code> are the <b>behavior</b> — exactly the pairing I showed you above, now written as real code.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 17 -->
+  <section class="module" id="m17">
+    <div class="module-head">
+      <div class="module-num">17</div>
+      <div>
+        <h2>Class</h2>
+        <p>Where that code actually comes from</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">📐</span> My Definition</h3>
+      <p>A class is a <b style="color:var(--cyan)">blueprint / template</b> from which objects can be created.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🏠</span> The Analogy I Want You Remembering Forever</h3>
+      <div class="analogy">
+        <div class="side">
+          <span class="emoji">📋</span>
+          <h4>Class</h4>
+          House Blueprint
+        </div>
+        <div class="arrow">→</div>
+        <div class="side">
+          <span class="emoji">🏡</span>
+          <h4>Object</h4>
+          Actual House
+        </div>
+      </div>
+      <p>A blueprint tells you what rooms, doors, and dimensions a house <i>should</i> have — but you can't live in a blueprint. The same goes for a class: it describes what a <code>Student</code> should contain, but it isn't usable until you build one.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">💻</span> Writing the Blueprint</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Student.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">class</span> <span class="cls">Student</span> {
+
+    <span class="cls">String</span> name;
+    <span class="kw">int</span> age;
+
+    <span class="kw">void</span> <span class="mth">study</span>() {
+        <span class="cls">System</span>.out.<span class="mth">println</span>(name + <span class="str">" is studying"</span>);
+    }
+}</pre>
+      </div>
+      <p>This is the blueprint — it describes what every <code>Student</code> object should contain: a <code>name</code>, an <code>age</code>, and the ability to <code>study()</code>. I haven't built an actual student yet; that's next.</p>
+    </div>
+  </section>
+
+  <!-- MODULE 18 -->
+  <section class="module" id="m18">
+    <div class="module-head">
+      <div class="module-num">18</div>
+      <div>
+        <h2>Creating an Object</h2>
+        <p>Turning the blueprint into something I can actually use</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🛠️</span> Let's Build a Student</h3>
+      <div class="code-block">
+        <div class="code-head"><span>Main.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">Main</span> {
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="cls">Student</span> student = <span class="kw">new</span> <span class="cls">Student</span>();
+
+        student.name = <span class="str">"Rahul"</span>;
+        student.age = <span class="num-lit">21</span>;
+
+        <span class="cls">System</span>.out.<span class="mth">println</span>(student.name);
+        <span class="cls">System</span>.out.<span class="mth">println</span>(student.age);
+
+        student.<span class="mth">study</span>();
+    }
+}</pre>
+      </div>
+      <div class="code-output">
+        <span class="lbl">Console Output</span>
+        Rahul<br>21<br>Rahul is studying
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🔍</span> Let Me Break Down That One Line</h3>
+      <div class="code-block">
+        <div class="code-head"><span>The line in question</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="cls">Student</span> student = <span class="kw">new</span> <span class="cls">Student</span>();</pre>
+      </div>
+      <div class="line-explain">
+        <div class="lterm">Student</div><div class="ldesc">reference type — the type of thing I'm creating</div>
+        <div class="lterm">student</div><div class="ldesc">reference variable — the name I'll use to access it</div>
+        <div class="lterm">new</div><div class="ldesc">creates the object — allocates it on the heap</div>
+        <div class="lterm">Student()</div><div class="ldesc">constructor call — initializes the new object</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULE 19 -->
+  <section class="module" id="m19">
+    <div class="module-head">
+      <div class="module-num">19</div>
+      <div>
+        <h2>Multiple Objects</h2>
+        <p>Why I only ever write the blueprint once</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">♻️</span> One Class, Many Objects</h3>
+      <p>Here's something I want you to really appreciate: I only wrote the <code>Student</code> class once, but I can stamp out as many students from it as I need.</p>
+      <div class="code-block">
+        <div class="code-head"><span>Main.java</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+        <pre class="code"><span class="kw">public class</span> <span class="cls">Main</span> {
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="cls">String</span>[] args) {
+
+        <span class="cls">Student</span> student1 = <span class="kw">new</span> <span class="cls">Student</span>();
+        student1.name = <span class="str">"Rahul"</span>;
+
+        <span class="cls">Student</span> student2 = <span class="kw">new</span> <span class="cls">Student</span>();
+        student2.name = <span class="str">"Priya"</span>;
+
+        <span class="cls">Student</span> student3 = <span class="kw">new</span> <span class="cls">Student</span>();
+        student3.name = <span class="str">"Amit"</span>;
+
+        student1.<span class="mth">study</span>();
+        student2.<span class="mth">study</span>();
+        student3.<span class="mth">study</span>();
+    }
+}
+
+<span class="kw">class</span> <span class="cls">Student</span> {
+
+    <span class="cls">String</span> name;
+
+    <span class="kw">void</span> <span class="mth">study</span>() {
+        <span class="cls">System</span>.out.<span class="mth">println</span>(name + <span class="str">" is studying"</span>);
+    }
+}</pre>
+      </div>
+      <div class="code-output">
+        <span class="lbl">Console Output</span>
+        Rahul is studying<br>Priya is studying<br>Amit is studying
+      </div>
+      <p>This is exactly what I mean by <b>reuse</b> — one blueprint, three independent houses built from it.</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🧬</span> The Picture I Want in Your Head</h3>
+      <div class="blueprint-to-objects">
+        <div class="blueprint-node">Student (class)</div>
+        <div class="fanout-arrows">
+          <span>↙</span><span>↓</span><span>↘</span>
+        </div>
+        <div class="objects-row">
+          <div class="object-card"><div class="tag">Object 1</div><div class="name">Rahul</div></div>
+          <div class="object-card"><div class="tag">Object 2</div><div class="name">Priya</div></div>
+          <div class="object-card"><div class="tag">Object 3</div><div class="name">Amit</div></div>
+        </div>
+      </div>
+      <p class="diagram-caption">One class, three independently-tracked objects — each with its own copy of <code>name</code>, and each sharing the same <code>study()</code> behavior.</p>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="module" id="quiz">
+    <div class="module-head">
+      <div class="module-num">✓</div>
+      <div>
+        <h2>Quick Knowledge Check</h2>
+        <p>5 questions to reinforce this hour's concepts</p>
+      </div>
+    </div>
+
+    <div class="quiz-box" id="quizBox">
+      <div id="quizQuestionArea"></div>
+      <div class="quiz-nav">
+        <button id="prevBtn">← Previous</button>
+        <div class="quiz-dots" id="quizDots"></div>
+        <button id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Java Foundations Training Module — Hour 9 &middot; Prepared for IT Training Cohort &middot; Confidential Training Material</footer>
+
+<div class="scrolltop" id="scrollTop">↑</div>
+
+<script>
+  const progressFill = document.getElementById('progressFill');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  const sections = document.querySelectorAll('section.module');
+  const navLinks = document.querySelectorAll('#navLinks a');
+
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressFill.style.width = scrolled + '%';
+    scrollTopBtn.classList.toggle('show', h.scrollTop > 500);
+
+    let current = '';
+    sections.forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= 120 && rect.bottom >= 120) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  const questions = [
+    {
+      q: "What's the fundamental idea behind OOP that I want you to remember?",
+      options: [
+        "Writing the entire application as one long sequence of instructions",
+        "Bundling data and behavior together around real-world entities",
+        "Using only global variables instead of classes",
+        "Avoiding the use of methods entirely"
+      ],
+      correct: 1,
+      explain: "OOP is built on identifying entities (like Customer, Order, BankAccount) and pairing their data with their behavior."
+    },
+    {
+      q: "Which best defines an object the way I defined it?",
+      options: [
+        "A blueprint that describes what something should contain",
+        "A runtime entity that contains state and behavior",
+        "A method that returns a value",
+        "A file containing Java source code"
+      ],
+      correct: 1,
+      explain: "A class is the blueprint; an object is the actual runtime entity built from that blueprint, holding both state and behavior."
+    },
+    {
+      q: "In the house blueprint analogy, what does the class represent?",
+      options: [
+        "The actual house",
+        "The house blueprint",
+        "The furniture inside the house",
+        "The construction company"
+      ],
+      correct: 1,
+      explain: "The class is the blueprint — it describes what an object should contain, but you can't use a blueprint directly, only the house built from it."
+    },
+    {
+      q: "In `Student student = new Student();`, what does `new` do?",
+      options: [
+        "Declares the reference variable's type",
+        "Creates the object — allocates it on the heap",
+        "Calls the study() method",
+        "Deletes the previous object"
+      ],
+      correct: 1,
+      explain: "`new` is what actually creates the object in memory; `Student()` right after it is the constructor call that initializes it."
+    },
+    {
+      q: "If I create student1, student2, and student3 from the same Student class, what am I demonstrating?",
+      options: [
+        "That a class can only ever produce one object",
+        "Reuse — one class producing multiple independent objects",
+        "That objects share the same name field automatically",
+        "That classes must be rewritten for every object"
+      ],
+      correct: 1,
+      explain: "One class definition can be used to create as many independent objects as needed — each with its own copy of the class's fields."
+    }
+  ];
+
+  let current = 0;
+  const answered = new Array(questions.length).fill(null);
+
+  const qArea = document.getElementById('quizQuestionArea');
+  const dotsWrap = document.getElementById('quizDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function renderDots(){
+    dotsWrap.innerHTML = '';
+    questions.forEach((_, i) => {
+      const d = document.createElement('span');
+      if (i === current) d.classList.add('active');
+      else if (answered[i] !== null) d.classList.add('done');
+      dotsWrap.appendChild(d);
+    });
+  }
+
+  function renderQuestion(){
+    if (current >= questions.length){
+      const correctCount = answered.filter((a,i) => a === questions[i].correct).length;
+      qArea.innerHTML = `<div class="quiz-score">🎉 You scored ${correctCount} / ${questions.length}</div>`;
+      prevBtn.disabled = false;
+      nextBtn.disabled = true;
+      renderDots();
+      return;
+    }
+    const item = questions[current];
+    let optsHtml = item.options.map((opt, i) => {
+      let cls = 'quiz-opt';
+      if (answered[current] !== null){
+        if (i === item.correct) cls += ' correct';
+        else if (i === answered[current]) cls += ' wrong';
+      }
+      return `<div class="${cls}" data-idx="${i}">${opt}</div>`;
+    }).join('');
+
+    qArea.innerHTML = `
+      <div class="quiz-q">Q${current+1}. ${item.q}</div>
+      <div class="quiz-opts">${optsHtml}</div>
+      <div class="quiz-feedback">${answered[current] !== null ? item.explain : ''}</div>
+    `;
+
+    document.querySelectorAll('.quiz-opt').forEach(el => {
+      el.addEventListener('click', () => {
+        if (answered[current] !== null) return;
+        answered[current] = parseInt(el.getAttribute('data-idx'));
+        renderQuestion();
+      });
+    });
+
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = false;
+    nextBtn.textContent = current === questions.length - 1 ? 'Finish →' : 'Next →';
+    renderDots();
+  }
+
+  prevBtn.addEventListener('click', () => { if (current > 0){ current--; renderQuestion(); } });
+  nextBtn.addEventListener('click', () => { current++; renderQuestion(); });
+
+  renderQuestion();
+</script>
+
+</body>
+</html>
